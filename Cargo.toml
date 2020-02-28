@@ -8,6 +8,7 @@ repository = "https://github.com/Axect/puruspe"
 categories = ["science"]
 keywords = ["gamma", "special", "beta", "erf"]
 exclude = ["src/bin/"]
+license = ["BSD-3-Clause"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
