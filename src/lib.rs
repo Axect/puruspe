@@ -1,6 +1,9 @@
 use std::f64::{EPSILON, MIN_POSITIVE};
 use std::f64::consts::PI;
 
+// =============================================================================
+// Constants
+// =============================================================================
 const EPS: f64 = EPSILON;
 const FPMIN: f64 = MIN_POSITIVE / EPS;
 const G: f64 = 5f64;
@@ -24,7 +27,10 @@ const W: [f64; 18] = [
     0.084078218979661945, 0.085346685739338721, 0.085983275670394821
 ];
 
-// Incomplete Gamma function P(a,x)
+// =============================================================================
+// Incomplete Gamma function
+// =============================================================================
+/// Incomplete Gamma function P(a,x)
 pub fn gammp(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {
@@ -41,7 +47,7 @@ pub fn gammp(a: f64, x: f64) -> f64 {
     }
 }
 
-// Incomplete Gamma function Q(a,x)
+/// Incomplete Gamma function Q(a,x)
 pub fn gammq(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {
@@ -58,9 +64,9 @@ pub fn gammq(a: f64, x: f64) -> f64 {
     }
 }
 
-// Series expansion
+/// Series expansion
 fn gser(a: f64, x: f64) -> f64 {
-    let gln = ln_gamma(a);
+    let gln = ln_gamma_approx(a);
     let mut ap = a;
     let mut del = 1f64 / a;
     let mut sum = 1f64 / a;
@@ -75,7 +81,7 @@ fn gser(a: f64, x: f64) -> f64 {
 }
 
 fn gcf(a: f64, x: f64) -> f64 {
-    let gln = ln_gamma(a);
+    let gln = ln_gamma_approx(a);
     let mut b = x + 1f64 - a;
     let mut c = 1f64 / FPMIN;
     let mut d = 1f64 / b;
@@ -102,17 +108,19 @@ fn gcf(a: f64, x: f64) -> f64 {
     (-x + a * x.ln() - gln).exp() * h
 }
 
+/// Kinds of Incomplete Gamma function
 #[derive(Debug, Copy, Clone)]
 enum IncGamma {
     P,
     Q
 }
 
+/// Gauss Legendre Quadrature (order of 18)
 fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     let a1 = a - 1f64;
     let lna1 = a1.ln();
     let sqrta1 = a1.sqrt();
-    let gln = ln_gamma(a);
+    let gln = ln_gamma_approx(a);
     let xu = if x > a1 {
         (a1 + 11.5 * sqrta1).max(x + 6f64 * sqrta1)
     } else {
@@ -143,7 +151,10 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     }
 }
 
-// Lanczos g=5, n=7
+// =============================================================================
+// Lanczos approximation of Gamma
+// =============================================================================
+/// Lanczos g=5, n=7
 const LG5N7: [f64; 7] = [
     1.000000000189712,
     76.18009172948503,
@@ -154,7 +165,8 @@ const LG5N7: [f64; 7] = [
     -0.00000539702438713199
 ];
 
-fn ln_gamma(z: f64) -> f64 {
+/// Logarithm Gamma
+fn ln_gamma_approx(z: f64) -> f64 {
     let z = z - 1f64;
     let base = z + G + 0.5;
     let mut s = 0f64;
@@ -163,4 +175,29 @@ fn ln_gamma(z: f64) -> f64 {
     }
     s += LG5N7[0];
     (2f64 * PI).sqrt().ln() + s.ln() - base + base.ln() * (z + 0.5)
+}
+
+/// Gamma function
+pub fn gamma_approx(z: f64) -> f64 {
+    if z > 1f64 {
+        let z_int = z as usize;
+        if z - (z_int as f64) == 0f64 {
+            return factorial(z_int-1) as f64;
+        }
+    }
+
+    if z < 0.5 {
+        PI / ((PI * z).sin() * gamma_approx(1f64 - z))
+    } else {
+        ln_gamma_approx(z).exp()
+    }
+}
+
+/// Just factorial
+pub fn factorial(n: usize) -> usize {
+    let mut p = 1usize;
+    for i in 1..(n + 1) {
+        p *= i;
+    }
+    p
 }
