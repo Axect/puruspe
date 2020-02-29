@@ -87,7 +87,7 @@ fn gcf(a: f64, x: f64) -> f64 {
     let mut c = 1f64 / FPMIN;
     let mut d = 1f64 / b;
     let mut h = d;
-    let mut an = 0f64;
+    let mut an: f64;
     for i in 1 .. {
         an = -i as f64 * (i as f64 - a);
         b += 2f64;
@@ -128,7 +128,7 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
         0f64.max((a1 - 7.5 * sqrta1).min(x - 5f64 * sqrta1))
     };
     let mut sum = 0f64;
-    let mut t = 0f64;
+    let mut t: f64;
     for j in 0 .. NGAU {
         t = x + (xu - x) * Y[j];
         sum += W[j] * (-(t-a1) + a1*(t.ln() - lna1)).exp();
@@ -158,8 +158,8 @@ pub fn invgammp(p: f64, a: f64) -> f64 {
     let a1 = a - 1f64;
     let lna1 = a1.ln();
     let mut afac = 0f64;
-    let mut pp = 0f64;
-    let mut t = 0f64;
+    let pp: f64;
+    let mut t: f64;
 
     assert!(a > 0f64, "a must be positive in invgammp");
     if p >= 1f64 {
@@ -187,7 +187,7 @@ pub fn invgammp(p: f64, a: f64) -> f64 {
         }
     };
 
-    for j in 0 .. 12 {
+    for _j in 0 .. 12 {
         // x is too small to compute accurately
         if x <= 0f64 {
             return 0f64;
