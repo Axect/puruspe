@@ -16,6 +16,8 @@ There are no dependencies.
 ### Beta function
 
 * `beta` : Beta function
+* `betai` : Regularized Incomplete beta function
+* `invbetai` : Inverse regularized incomplete beta function
 
 ### Error functions
 
