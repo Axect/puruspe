@@ -26,7 +26,24 @@ const W: [f64; 18] = [
     0.076598410645870640, 0.079687828912071670, 0.082187266704339706,
     0.084078218979661945, 0.085346685739338721, 0.085983275670394821
 ];
-
+// Error functions
+const NCOEF: usize = 28;
+const COF: [f64; 28] = [
+    -1.3026537197817094, 6.4196979235649026e-1,
+    1.9476473204185836e-2, -9.561514786808631e-3,
+    -9.46595344482036e-4, 3.66839497852761e-4,
+    4.2523324806907e-5, -2.0278578112534e-5,
+    -1.624290004647e-6, 1.303655835580e-6,
+    1.5626441722e-8, -8.5238095915e-8,
+    6.529054439e-9, 5.059343495e-9,
+    -9.91364156e-10, -2.27365122e-10,
+    9.6467911e-11, 2.394038e-12,
+    -6.886027e-12, 8.94487e-13,
+    3.13092e-13, -1.12708e-13,
+    3.81e-16, 7.106e-15,
+    -1.523e-15, -9.4e-17,
+    1.21e-16,-2.8e-17
+];
 // =============================================================================
 // Incomplete Gamma function
 // =============================================================================
@@ -66,7 +83,7 @@ pub fn gammq(a: f64, x: f64) -> f64 {
 
 /// Series expansion
 fn gser(a: f64, x: f64) -> f64 {
-    let gln = ln_gamma_approx(a);
+    let gln = ln_gamma(a);
     let mut ap = a;
     let mut del = 1f64 / a;
     let mut sum = 1f64 / a;
@@ -82,7 +99,7 @@ fn gser(a: f64, x: f64) -> f64 {
 
 /// Continued Fraction
 fn gcf(a: f64, x: f64) -> f64 {
-    let gln = ln_gamma_approx(a);
+    let gln = ln_gamma(a);
     let mut b = x + 1f64 - a;
     let mut c = 1f64 / FPMIN;
     let mut d = 1f64 / b;
@@ -121,7 +138,7 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     let a1 = a - 1f64;
     let lna1 = a1.ln();
     let sqrta1 = a1.sqrt();
-    let gln = ln_gamma_approx(a);
+    let gln = ln_gamma(a);
     let xu = if x > a1 {
         (a1 + 11.5 * sqrta1).max(x + 6f64 * sqrta1)
     } else {
@@ -154,7 +171,7 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
 
 /// Iunverse Incomplete Gamma function
 pub fn invgammp(p: f64, a: f64) -> f64 {
-    let gln = ln_gamma_approx(a);
+    let gln = ln_gamma(a);
     let a1 = a - 1f64;
     let lna1 = a1.ln();
     let mut afac = 0f64;
@@ -227,7 +244,7 @@ const LG5N7: [f64; 7] = [
 ];
 
 /// Logarithm Gamma
-fn ln_gamma_approx(z: f64) -> f64 {
+fn ln_gamma(z: f64) -> f64 {
     let z = z - 1f64;
     let base = z + G + 0.5;
     let mut s = 0f64;
@@ -239,7 +256,7 @@ fn ln_gamma_approx(z: f64) -> f64 {
 }
 
 /// Gamma function
-pub fn gamma_approx(z: f64) -> f64 {
+pub fn gamma(z: f64) -> f64 {
     if z > 1f64 {
         let z_int = z as usize;
         if z - (z_int as f64) == 0f64 {
@@ -248,10 +265,83 @@ pub fn gamma_approx(z: f64) -> f64 {
     }
 
     if z < 0.5 {
-        PI / ((PI * z).sin() * gamma_approx(1f64 - z))
+        PI / ((PI * z).sin() * gamma(1f64 - z))
     } else {
-        ln_gamma_approx(z).exp()
+        ln_gamma(z).exp()
     }
+}
+
+// =============================================================================
+// Beta function
+// =============================================================================
+/// Beta function
+pub fn beta(z: f64, w: f64) -> f64 {
+    (ln_gamma(z) + ln_gamma(w) - ln_gamma(z+w)).exp()
+}
+
+
+// =============================================================================
+// Error functions
+// =============================================================================
+/// Error function
+pub fn erf(x: f64) -> f64 {
+    if x >= 0f64 {
+        1.0 - erfccheb(x)
+    } else {
+        erfccheb(-x) - 1f64
+    }
+}
+
+/// Complementary error function
+pub fn erfc(x: f64) -> f64 {
+    if x >= 0f64 {
+        erfccheb(x)
+    } else {
+        2f64 - erfccheb(-x)
+    }
+}
+
+/// Chebyshev coefficients
+fn erfccheb(z: f64) -> f64 {
+    let mut d = 0f64;
+    let mut dd = 0f64;
+
+    assert!(z >= 0f64, "erfccheb requires nonnegative argument");
+    let t = 2f64 / (2f64 + z);
+    let ty = 4f64 * t - 2f64;
+    for j in (1 .. NCOEF-1).rev() {
+        let tmp = d;
+        d = ty * d - dd + COF[j];
+        dd = tmp;
+    }
+    t * (-z.powi(2) + 0.5 * (COF[0] + ty * d) - dd).exp()
+}
+
+/// Inverse of complementary error function
+pub fn inverfc(p: f64) -> f64 {
+    // Return arbitrary large pos or neg value
+    if p >= 2f64 {
+        return -100f64;
+    } else if p <= 0f64 {
+        return 100f64;
+    }
+
+    let pp = if p < 1f64 { p } else { 2f64 - p };
+    let t = (-2f64 * (pp / 2f64).ln()).sqrt();
+    let mut x = -0.70711 * ((2.30753 + t * 0.27061) / (1f64 + t * (0.99229 + t * 0.04481)) - t);
+    for _j in 0 .. 2 {
+        let err = erfc(x) - pp;
+        x += err / (1.12837916709551257 * (-x.powi(2)).exp() - x * err);
+    }
+    if p < 1f64 {
+        x
+    } else {
+        -x
+    }
+}
+
+pub fn inverf(p: f64) -> f64 {
+    inverfc(1f64 - p)
 }
 
 // =============================================================================

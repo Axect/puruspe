@@ -13,7 +13,16 @@ There are no dependencies.
 * `gammaq` : Regularized upper gamma function
 * `invgammp` : Inverse regularized lower gamma function
 
-### Beta functions
+### Beta function
+
+* `beta` : Beta function
+
+### Error functions
+
+* `erf` : Error function
+* `erfc` : Complementary Error function
+* `inverf` : Inverse error function
+* `inverfc` : Inverse complementary error function
 
 ## Reference
 
