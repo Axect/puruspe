@@ -80,6 +80,7 @@ fn gser(a: f64, x: f64) -> f64 {
     }
 }
 
+/// Continued Fraction
 fn gcf(a: f64, x: f64) -> f64 {
     let gln = ln_gamma_approx(a);
     let mut b = x + 1f64 - a;
@@ -151,6 +152,66 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     }
 }
 
+/// Iunverse Incomplete Gamma function
+pub fn invgammp(p: f64, a: f64) -> f64 {
+    let gln = ln_gamma_approx(a);
+    let a1 = a - 1f64;
+    let lna1 = a1.ln();
+    let mut afac = 0f64;
+    let mut pp = 0f64;
+    let mut t = 0f64;
+
+    assert!(a > 0f64, "a must be positive in invgammp");
+    if p >= 1f64 {
+        return 100f64.max(a + 100f64 * a.sqrt());
+    } else if p <= 0f64 {
+        return 0f64;
+    }
+
+    // Initial guess
+    let mut x = if a > 1f64 {
+        afac = (a1 * (lna1 - 1f64) - gln).exp();
+        pp = if p < 0.5 { p } else { 1f64 - p };
+        t = (-2f64 * pp.ln()).sqrt();
+        let mut x = (2.30753 + t * 0.27061)/(1f64 + t * (0.99229 + t * 0.04481)) - t;
+        if p < 0.5 { 
+            x = -x;
+        }
+        1e-3_f64.max(a * (1f64 - 1f64 / (9f64 * a) - x / (3f64 * a.sqrt())).powi(3))
+    } else {
+        t = 1f64 - a * (0.253 + a * 0.12);
+        if p < t {
+            (p / t).powf(1f64 / a)
+        } else {
+            1f64 - (1f64 - (p - t) / (1f64 - t)).ln()
+        }
+    };
+
+    for j in 0 .. 12 {
+        // x is too small to compute accurately
+        if x <= 0f64 {
+            return 0f64;
+        }
+        let err = gammp(a, x) - p;
+        t = if a > 1f64 {
+            afac * (-(x - a1) + a1 * (x.ln() - lna1)).exp()
+        } else {
+            (-x + a1 * x.ln() - gln).exp()
+        };
+        let u = err / t;
+        // Halley's method
+        t = u / (1f64 - 0.5 * 1f64.min(u * (a1 / x - 1f64)));
+        x -= t;
+        if x <= 0f64 {
+            x = 0.5 * (x + t);
+        }
+        if t.abs() < (x * EPS).max(EPS) {
+            break;
+        }
+    }
+    x
+}
+
 // =============================================================================
 // Lanczos approximation of Gamma
 // =============================================================================
@@ -193,6 +254,9 @@ pub fn gamma_approx(z: f64) -> f64 {
     }
 }
 
+// =============================================================================
+// Util (from Peroxide)
+// =============================================================================
 /// Just factorial
 pub fn factorial(n: usize) -> usize {
     let mut p = 1usize;
