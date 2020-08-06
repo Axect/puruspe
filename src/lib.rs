@@ -85,7 +85,7 @@ pub fn gammq(a: f64, x: f64) -> f64 {
 }
 
 /// Series expansion
-fn gser(a: f64, x: f64) -> f64 {
+pub fn gser(a: f64, x: f64) -> f64 {
     let gln = ln_gamma(a);
     let mut ap = a;
     let mut del = 1f64 / a;
@@ -101,7 +101,7 @@ fn gser(a: f64, x: f64) -> f64 {
 }
 
 /// Continued Fraction
-fn gcf(a: f64, x: f64) -> f64 {
+pub fn gcf(a: f64, x: f64) -> f64 {
     let gln = ln_gamma(a);
     let mut b = x + 1f64 - a;
     let mut c = 1f64 / FPMIN;
@@ -137,7 +137,7 @@ enum IncGamma {
 }
 
 /// Gauss Legendre Quadrature (order of 18)
-fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
+pub fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     let a1 = a - 1f64;
     let lna1 = a1.ln();
     let sqrta1 = a1.sqrt();
@@ -247,7 +247,7 @@ const LG5N7: [f64; 7] = [
 ];
 
 /// Logarithm Gamma
-fn ln_gamma(z: f64) -> f64 {
+pub fn ln_gamma(z: f64) -> f64 {
     let z = z - 1f64;
     let base = z + G + 0.5;
     let mut s = 0f64;
@@ -305,7 +305,7 @@ pub fn erfc(x: f64) -> f64 {
 }
 
 /// Chebyshev coefficients
-fn erfccheb(z: f64) -> f64 {
+pub fn erfccheb(z: f64) -> f64 {
     let mut d = 0f64;
     let mut dd = 0f64;
 
@@ -369,7 +369,7 @@ pub fn betai(a: f64, b: f64, x: f64) -> f64 {
 }
 
 /// Continued fraction beta
-fn betacf(a: f64, b: f64, x: f64) -> f64 {
+pub fn betacf(a: f64, b: f64, x: f64) -> f64 {
     let qab = a + b;
     let qap = a + 1f64;
     let qam = a - 1f64;
@@ -414,7 +414,7 @@ fn betacf(a: f64, b: f64, x: f64) -> f64 {
 }
 
 /// Incomplete beta by Gauss Legendre quadrature
-fn betaiapprox(a: f64, b: f64, x: f64) -> f64 {
+pub fn betaiapprox(a: f64, b: f64, x: f64) -> f64 {
     let a1 = a - 1f64;
     let b1 = b - 1f64;
     let mu = a / (a + b);
