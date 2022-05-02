@@ -153,7 +153,7 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
         t = x + (xu - x) * Y[j];
         sum += W[j] * (-(t-a1) + a1*(t.ln() - lna1)).exp();
     }
-    let ans = sum * (xu - x) * (a1 * (lna1 - 1f64).exp() - gln);
+    let ans = sum * (xu - x) * (a1 * (lna1 - 1f64) - gln).exp();
     match psig {
         IncGamma::P => {
             if ans > 0f64 {

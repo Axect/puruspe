@@ -1,6 +1,6 @@
 [package]
 name = "puruspe"
-version = "0.1.5"
+version = "0.2.0"
 authors = ["Axect <axect@outlook.kr>"]
 description = "Pure Rust Special function library"
 edition = "2018"
