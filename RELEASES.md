@@ -1,3 +1,8 @@
+# Ver 0.2.1 (2024-02-17)
+
+* Update README.md
+  * Fix typo (`gammap` -> `gammp`, `gammaq` -> `gammq`)
+
 # Ver 0.2.0 (2022-05-02)
 
 * Fix bugs (https://github.com/Axect/puruspe/issues/4)

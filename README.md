@@ -11,8 +11,8 @@ There are no dependencies.
 
 * `ln_gamma` : Logarithmic gamma function
 * `gamma` : Gamma function
-* `gammap` : Regularized lower gamma function
-* `gammaq` : Regularized upper gamma function
+* `gammp` : Regularized lower gamma function
+* `gammq` : Regularized upper gamma function
 * `invgammp` : Inverse regularized lower gamma function
 
 ### Beta function
