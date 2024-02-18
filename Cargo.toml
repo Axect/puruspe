@@ -1,6 +1,6 @@
 [package]
 name = "puruspe"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Axect <axect@outlook.kr>"]
 description = "Pure Rust Special function library"
 edition = "2018"
@@ -12,5 +12,8 @@ license = "MIT OR Apache-2.0"
 readme = "README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[package.metadata.docs.rs]
+rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]

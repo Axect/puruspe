@@ -48,9 +48,11 @@ const COF: [f64; 28] = [
 const SWITCH: usize = 3000;
 
 // =============================================================================
-// Incomplete Gamma function
+// Incomplete Gamma function (regularized)
 // =============================================================================
 /// Incomplete Gamma function P(a,x)
+///
+/// $$P(a,x) = \frac{1}{\Gamma(a)} \int_0^x t^(a-1) exp(-t) dt$$
 pub fn gammp(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {
@@ -68,6 +70,8 @@ pub fn gammp(a: f64, x: f64) -> f64 {
 }
 
 /// Incomplete Gamma function Q(a,x)
+///
+/// $$Q(a,x) = 1 - P(a,x)$$
 pub fn gammq(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {
