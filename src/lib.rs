@@ -52,7 +52,7 @@ const SWITCH: usize = 3000;
 // =============================================================================
 /// Incomplete Gamma function P(a,x)
 ///
-/// $$P(a,x) = \frac{1}{\Gamma(a)} \int_0^x t^(a-1) exp(-t) dt$$
+/// $$P(a,x) = \frac{1}{\Gamma(a)} \int_0^x t^{a-1} e^{-t} dt$$
 pub fn gammp(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {

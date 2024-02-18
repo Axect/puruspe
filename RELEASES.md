@@ -1,3 +1,8 @@
+# Ver 0.2.3 (2024-02-18)
+
+* Add `docs.rs` badge to README.md
+* Add latex support to `gammp` and `gammq` in docs
+
 # Ver 0.2.1 (2024-02-17)
 
 * Update README.md

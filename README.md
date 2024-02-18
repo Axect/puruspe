@@ -1,6 +1,7 @@
 # PURUSPE
 
 [![On crates.io](https://img.shields.io/crates/v/puruspe.svg)](https://crates.io/crates/puruspe)
+[![On docs.rs](https://docs.rs/puruspe/badge.svg)](https://docs.rs/puruspe)
 
 **PUR**e **RUS**t **SPE**cial function library.
 There are no dependencies.
