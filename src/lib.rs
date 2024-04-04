@@ -1,5 +1,6 @@
 use std::f64::{EPSILON, MIN_POSITIVE};
 use std::f64::consts::PI;
+use std::collections::HashMap;
 
 // =============================================================================
 // Constants
@@ -589,8 +590,12 @@ fn y1(x: f64) -> f64 {
 }
 
 /// Bessel function of the second kind (n>=0)
+///
+/// # Arguments
+/// * `n` - Order of Bessel function (non-negative integer)
+/// * `x` - Argument of Bessel function
 #[allow(non_snake_case)]
-pub fn Yn(x: f64, n: usize) -> f64 {
+pub fn Yn(n: usize, x: f64) -> f64 {
     if n == 0 {
         y0(x)
     } else if n == 1 {
@@ -609,8 +614,12 @@ pub fn Yn(x: f64, n: usize) -> f64 {
 }
 
 /// Bessel function of the first kind (n>=0)
+///
+/// # Arguments
+/// * `n` - Order of Bessel function (non-negative integer)
+/// * `x` - Argument of Bessel function
 #[allow(non_snake_case)]
-pub fn Jn(x: f64, n: usize) -> f64 {
+pub fn Jn(n: usize, x: f64) -> f64 {
     let n_f64 = n as f64;
     let acc = 160f64;
     let iexp = f64::MAX_EXP / 2;
@@ -733,8 +742,12 @@ fn k1(x: f64) -> f64 {
 }
 
 /// Modified Bessel function of the second kind (n>=0)
+///
+/// # Arguments
+/// * `n` - Order of the Bessel function (non-negative integer)
+/// * `x` - Argument of the Bessel function
 #[allow(non_snake_case)]
-pub fn Kn(x: f64, n: usize) -> f64 {
+pub fn Kn(n: usize, x: f64) -> f64 {
     if n == 0 {
         k0(x)
     } else if n == 1 {
@@ -753,8 +766,12 @@ pub fn Kn(x: f64, n: usize) -> f64 {
 }
 
 /// Modified Bessel function of the first kind (n>=0)
+///
+/// # Arguments
+/// * `n` - Order of the Bessel function (non-negative integer)
+/// * `x` - Argument of the Bessel function
 #[allow(non_snake_case)]
-pub fn In(x: f64, n: usize) -> f64 {
+pub fn In(n: usize, x: f64) -> f64 {
     let acc = 200f64;
     let iexp = f64::MAX_EXP / 2;
     let n_f64 = n as f64;
@@ -791,6 +808,512 @@ pub fn In(x: f64, n: usize) -> f64 {
         }
     }
 }
+
+fn chebev(x: f64, c: &[f64], m: usize) -> f64 {
+    let mut d = 0f64;
+    let mut dd = 0f64;
+    for j in (1 .. m).rev() {
+        let sv = d;
+        d = 2f64 * x * d - dd + c[j];
+        dd = sv;
+    }
+    x * d - dd + 0.5 * c[0]
+}
+
+const C1: [f64; 7] = [
+    -1.142022680371168e0,6.5165112670737e-3,
+    3.087090173086e-4,-3.4706269649e-6,6.9437664e-9,3.67795e-11,
+    -1.356e-13
+];
+
+const C2: [f64; 8] = [
+    1.843740587300905e0,-7.68528408447867e-2,
+    1.2719271366546e-3,-4.9717367042e-6,-3.31261198e-8,2.423096e-10,
+    -1.702e-13,-1.49e-15
+];
+
+/// Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// # Returns
+/// * `J_nu(x)` - Bessel function of the first kind
+/// * `Y_nu(x)` - Bessel function of the second kind
+/// * `J_nu'(x)` - Derivative of the Bessel function of the first kind
+/// * `Y_nu'(x)` - Derivative of the Bessel function of the second kind
+pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
+    const MAXIT: usize = 10000;
+    const EPS: f64 = f64::EPSILON;
+    const FPMIN: f64 = f64::MIN_POSITIVE / EPS;
+    const XMIN: f64 = 2.0;
+    const PI: f64 = std::f64::consts::PI;
+
+    if x <= 0f64 || nu < 0f64 {
+        panic!("bad arguments in besseljy");
+    }
+    let nl = if x < XMIN { (nu + 0.5) as usize } else { 0usize.max((nu - x + 1.5) as usize) };
+    let xmu = nu - nl as f64;
+    let xmu2 = xmu.powi(2);
+    let xi = 1.0 / x;
+    let xi2 = 2.0 * xi;
+    let w = xi2 / PI;
+    let mut isign = 1i32;
+    let mut h = nu * xi;
+    if h < FPMIN {
+        h = FPMIN;
+    }
+    let mut b = xi2 * nu;
+    let mut d = 0f64;
+    let mut c = h;
+    let mut i = 0usize;
+    while i < MAXIT {
+        b += xi2;
+        d = b - d;
+        if d.abs() < FPMIN {
+            d = FPMIN;
+        }
+        c = b - 1.0 / c;
+        if c.abs() < FPMIN {
+            c = FPMIN;
+        }
+        d = 1.0 / d;
+        let del = c * d;
+        h *= del;
+        if d < 0f64 {
+            isign = -isign;
+        }
+        if (del - 1f64).abs() <= EPS {
+            break;
+        }
+        i += 1;
+    }
+    if i >= MAXIT {
+        panic!("x too large in besseljy; try asymptotic expansion");
+    }
+    let mut rjl = isign as f64 * FPMIN;
+    let mut rjpl = h * rjl;
+    let rjl1 = rjl;
+    let rjp1 = rjpl;
+
+    let rjmu: f64;
+    let mut rymu: f64;
+    let rymup: f64;
+    let mut ry1: f64;
+
+    let mut fact = nu * xi;
+    for _ in (0 .. nl).rev() {
+        let rjtemp = fact * rjl + rjpl;
+        fact -= xi;
+        rjpl = fact * rjtemp - rjl;
+        rjl = rjtemp;
+    }
+    if rjl == 0f64 {
+        rjl = EPS;
+    }
+    let f = rjpl / rjl;
+    if x < XMIN {
+        let x2 = 0.5 * x;
+        let pimu = PI * xmu;
+        fact = if pimu.abs() < EPS {
+            1f64
+        } else {
+            pimu / pimu.sin()
+        };
+        d = -x2.ln();
+        let e = xmu * d;
+        let fact2 = if e.abs() < EPS {
+            1f64
+        } else {
+            e.sinh() / e
+        };
+        let xx = 8.0 * xmu.powi(2) - 1f64;
+        let gam1 = chebev(xx, &C1, 7);
+        let gam2 = chebev(xx, &C2, 8);
+        let gampl = gam2 - xmu * gam1;
+        let gammi = gam2 + xmu * gam1;
+        let mut ff = TWOOPI * fact * (gam1 * e.cosh() + gam2 * fact2 * d);
+        let e = e.exp();
+        let mut p = e / (gampl * PI);
+        let mut q = 1f64 / (e * PI * gammi);
+        let pimu2 = 0.5 * pimu;
+        let fact3 = if pimu2.abs() < EPS {
+            1f64
+        } else {
+            pimu2.sin() / pimu2
+        };
+        let r = PI * pimu2 * fact3 * fact3;
+        let mut c = 1f64;
+        let d = -x2.powi(2);
+        let mut sum = ff + r * q;
+        let mut sum1 = p;
+        let mut i = 1usize;
+        while i <= MAXIT {
+            let i_f64 = i as f64;
+            ff = (i_f64 * ff + p + q) / (i_f64 * i_f64 - xmu2);
+            c *= d / i_f64;
+            p /= i_f64 - xmu;
+            q /= i_f64 + xmu;
+            let del = c * (ff + r * q);
+            sum += del;
+            let del1 = c * p - i_f64 * del;
+            sum1 += del1;
+            if del.abs() < (1f64 + sum.abs()) * EPS {
+                break;
+            }
+            i += 1;
+        }
+        if i > MAXIT {
+            panic!("besseljy: failure to converge in cf1");
+        }
+        rymu = -sum;
+        ry1 = -sum1 * xi2;
+        rymup = xmu * xi * rymu - ry1;
+        rjmu = w / (rymup - f * rymu);
+    } else {
+        let mut a = 0.25 - xmu2;
+        let mut p = -0.5 * xi;
+        let mut q = 1f64;
+        let br = 2f64 * x;
+        let mut bi = 2f64;
+        let mut fact = a * xi / (p * p + q * q);
+        let mut cr = br + q * fact;
+        let mut ci = bi + p * fact;
+        let mut den = br * br + bi * bi;
+        let mut dr = br / den;
+        let mut di = -bi / den;
+        let dlr = cr * dr - ci * di;
+        let dli = cr * di + ci * dr;
+        let temp = p * dlr - q * dli;
+        q = p * dli + q * dlr;
+        p = temp;
+        let mut i = 1usize;
+        while i < MAXIT {
+            let i_f64 = i as f64;
+            a += 2f64 * i_f64;
+            bi += 2f64;
+            dr = a * dr + br;
+            di = a * di + bi;
+            if dr.abs() + di.abs() < FPMIN {
+                dr = FPMIN;
+            }
+            fact = a / (cr * cr + ci * ci);
+            cr = br + cr * fact;
+            ci = bi - ci * fact;
+            if cr.abs() + ci.abs() < FPMIN {
+                cr = FPMIN;
+            }
+            den = dr * dr + di * di;
+            dr /= den;
+            di /= -den;
+            let dlr = cr * dr - ci * di;
+            let dli = cr * di + ci * dr;
+            let temp = p * dlr - q * dli;
+            q = p * dli + q * dlr;
+            p = temp;
+            if (dlr - 1f64).abs() + dli.abs() < EPS {
+                break;
+            }
+            i += 1;
+        }
+        if i >= MAXIT {
+            panic!("besseljy: failure to converge in cf2");
+        }
+        let gam = (p - f) / q;
+        let rjmu_temp = (w / ((p - f) * gam + q)).sqrt();
+        rjmu = if rjl < 0f64 { -rjmu_temp } else { rjmu_temp };
+        rymu = gam * rjmu;
+        rymup = rymu * (p + q / gam);
+        ry1 = xmu * xi * rymu - rymup;
+    }
+    let fact = rjmu / rjl;
+    let jo = rjl1 * fact;
+    let jpo = rjp1 * fact;
+    for i in 1 ..=nl {
+        let rytemp = (xmu + i as f64) * xi2 * ry1 - rymu;
+        rymu = ry1;
+        ry1 = rytemp;
+    }
+    let yo = rymu;
+    let ypo = nu * xi * rymu - ry1;
+
+    (jo, yo, jpo, ypo)
+}
+
+/// Cached Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+/// * `cache` - Cache for the Bessel functions (HashMap)
+///
+/// # Returns
+/// * `J_nu(x)` - Bessel function of the first kind
+/// * `Y_nu(x)` - Bessel function of the second kind
+/// * `J_nu'(x)` - Derivative of the Bessel function of the first kind
+/// * `Y_nu'(x)` - Derivative of the Bessel function of the second kind
+pub fn cached_besseljy(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>) -> (f64, f64, f64, f64) {
+    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+        res
+    } else {
+        let res = besseljy(nu, x);
+        cache.insert((nu.to_bits(), x.to_bits()), res);
+        res
+    }
+}
+
+/// Modified Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// # Returns
+/// * `I_nu(x)` - Modified Bessel function of the first kind
+/// * `K_nu(x)` - Modified Bessel function of the second kind
+/// * `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
+/// * `K_nu'(x)` - Derivative of the modified Bessel function of the second kind
+pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
+    const MAXIT: usize = 10000;
+    const EPS: f64 = f64::EPSILON;
+    const FPMIN: f64 = f64::MIN_POSITIVE / EPS;
+    const XMIN: f64 = 2.0;
+    const PI: f64 = std::f64::consts::PI;
+
+    if x <= 0f64 || nu < 0f64 {
+        panic!("bad arguments in besselik");
+    }
+    let nl = (nu + 0.5) as usize;
+    let xmu = nu - nl as f64;
+    let xmu2 = xmu.powi(2);
+    let xi = 1.0 / x;
+    let xi2 = 2.0 * xi;
+    let mut h = nu * xi;
+    if h < FPMIN {
+        h = FPMIN;
+    }
+    let mut b = xi2 * nu;
+    let mut d = 0f64;
+    let mut c = h;
+    let mut i = 0usize;
+    while i < MAXIT {
+        b += xi2;
+        d = 1.0 / (b + d);
+        c = b + 1.0 / c;
+        let del = c * d;
+        h *= del;
+        if (del - 1f64).abs() <= EPS {
+            break;
+        }
+        i += 1;
+    }
+    if i >= MAXIT {
+        panic!("x too large in besselik; try asymptotic expansion");
+    }
+    let mut ril = FPMIN;
+    let mut ripl = h * ril;
+    let ril1 = ril;
+    let rip1 = ripl;
+    let mut fact = nu * xi;
+    for _ in (0 .. nl).rev() {
+        let ritemp = fact * ril + ripl;
+        fact -= xi;
+        ripl = fact * ritemp + ril;
+        ril = ritemp;
+    }
+    let f = ripl / ril;
+
+    let mut rkmu: f64;
+    let mut rk1: f64;
+    if x < XMIN {
+        let x2 = 0.5 * x;
+        let pimu = PI * xmu;
+        fact = if pimu.abs() < EPS {
+            1f64
+        } else {
+            pimu / pimu.sin()
+        };
+        d = -x2.ln();
+        let e = xmu * d;
+        let fact2 = if e.abs() < EPS {
+            1f64
+        } else {
+            e.sinh() / e
+        };
+        let xx = 8.0 * xmu.powi(2) - 1f64;
+        let gam1 = chebev(xx, &C1, 7);
+        let gam2 = chebev(xx, &C2, 8);
+        let gampl = gam2 - xmu * gam1;
+        let gammi = gam2 + xmu * gam1;
+        let mut ff = fact * (gam1 * e.cosh() + gam2 * fact2 * d);
+        let mut sum = ff;
+        let e = e.exp();
+        let mut p = 0.5 * e / gampl;
+        let mut q = 0.5 / (e * gammi);
+        let mut c = 1f64;
+        let d = x2.powi(2);
+        let mut sum1 = p;
+        let mut i = 1usize;
+        while i <= MAXIT {
+            let i_f64 = i as f64;
+            ff = (i_f64 * ff + p + q) / (i_f64 * i_f64 - xmu2);
+            c *= d / i_f64;
+            p /= i_f64 - xmu;
+            q /= i_f64 + xmu;
+            let del = c * ff;
+            sum += del;
+            let del1 = c * (p - i_f64 * ff);
+            sum1 += del1;
+            if del.abs() < sum.abs() * EPS {
+                break;
+            }
+            i += 1;
+        }
+        if i > MAXIT {
+            panic!("besselik: failure to converge in cf1");
+        }
+        rkmu = sum;
+        rk1 = sum1 * xi2;
+    } else {
+        let mut b = 2.0 * (1.0 + x);
+        let mut d = 1f64 / b;
+        let mut h = d;
+        let mut delh = d;
+        let mut q1 = 0f64;
+        let mut q2 = 1f64;
+        let a1 = 0.25 - xmu2;
+        let mut q = a1;
+        let mut c = a1;
+        let mut a = -a1;
+        let mut s = 1.0 + q * delh;
+        let mut i = 1usize;
+        while i < MAXIT {
+            let i_f64 = i as f64;
+            a -= 2.0 * i_f64;
+            c = - a * c / (i_f64 + 1.0);
+            let q_new = (q1 - b * q2) / a;
+            q1 = q2;
+            q2 = q_new;
+            q += c * q_new;
+            b += 2.0;
+            d = 1.0 / (b + a * d);
+            delh = (b * d - 1.0) * delh;
+            h += delh;
+            let dels = q * delh;
+            s += dels;
+            if (dels / s).abs() <= EPS {
+                break;
+            }
+            i += 1;
+        }
+        if i >= MAXIT {
+            panic!("besselik: failure to converge in cf2");
+        }
+        h = a1 * h;
+        rkmu = (PI / (2.0 * x)).sqrt() * (-x).exp() / s;
+        rk1 = rkmu * (xmu + x + 0.5 - h) * xi;
+    }
+    let rkmup = xmu * xi * rkmu - rk1;
+    let rimu = xi / (f * rkmu - rkmup);
+    let io = (rimu * ril1) / ril;
+    let ipo = (rimu * rip1) / ril;
+    for i in 1 ..=nl {
+        let i_f64 = i as f64;
+        let rktemp = (xmu + i_f64) * xi2 * rk1 + rkmu;
+        rkmu = rk1;
+        rk1 = rktemp;
+    }
+    let ko = rkmu;
+    let kpo = nu * xi * rkmu - rk1;
+
+    (io, ko, ipo, kpo)
+}
+
+/// Cached modified Bessel functions for fractional order
+pub fn cached_besselik(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>) -> (f64, f64, f64, f64) {
+    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+        res
+    } else {
+        let res = besselik(nu, x);
+        cache.insert((nu.to_bits(), x.to_bits()), res);
+        res
+    }
+}
+
+/// Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// # Returns
+/// * `J_nu(x)` - Bessel function of the first kind
+/// * `Y_nu(x)` - Bessel function of the second kind
+#[allow(non_snake_case)]
+pub fn Jnu_Ynu(nu: f64, x: f64) -> (f64, f64) {
+    let (jo, yo, _, _) = besseljy(nu, x);
+    (jo, yo)
+}
+
+/// Cached Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+/// * `cache` - Cache for the Bessel functions (HashMap)
+///
+/// # Returns
+/// * `J_nu(x)` - Bessel function of the first kind
+/// * `Y_nu(x)` - Bessel function of the second kind
+#[allow(non_snake_case)]
+pub fn cached_Jnu_Ynu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64)>) -> (f64, f64) {
+    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+        res
+    } else {
+        let res = Jnu_Ynu(nu, x);
+        cache.insert((nu.to_bits(), x.to_bits()), res);
+        res
+    }
+}
+
+/// Modified Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// # Returns
+/// * `I_nu(x)` - Modified Bessel function of the first kind
+/// * `K_nu(x)` - Modified Bessel function of the second kind
+#[allow(non_snake_case)]
+pub fn Inu_Knu(nu: f64, x: f64) -> (f64, f64) {
+    let (io, ko, _, _) = besselik(nu, x);
+    (io, ko)
+}
+
+/// Cached modified Bessel functions for fractional order
+///
+/// # Arguments
+/// * `nu` - Order of the Bessel function (nu >= 0)
+/// * `x` - Argument of the Bessel function (x > 0)
+/// * `cache` - Cache for the Bessel functions (HashMap)
+///
+/// # Returns
+/// * `I_nu(x)` - Modified Bessel function of the first kind
+/// * `K_nu(x)` - Modified Bessel function of the second kind
+#[allow(non_snake_case)]
+pub fn cached_Inu_Knu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64)>) -> (f64, f64) {
+    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+        res
+    } else {
+        let res = Inu_Knu(nu, x);
+        cache.insert((nu.to_bits(), x.to_bits()), res);
+        res
+    }
+}
+
+
 
 const XJ00: f64 = 5.783185962946785;
 const XJ10: f64 = 3.047126234366209e1;
