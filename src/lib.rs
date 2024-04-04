@@ -335,10 +335,10 @@ pub fn inverfc(p: f64) -> f64 {
 
     let pp = if p < 1f64 { p } else { 2f64 - p };
     let t = (-2f64 * (pp / 2f64).ln()).sqrt();
-    let mut x = -0.70711 * ((2.30753 + t * 0.27061) / (1f64 + t * (0.99229 + t * 0.04481)) - t);
+    let mut x = -std::f64::consts::FRAC_1_SQRT_2 * ((2.30753 + t * 0.27061) / (1f64 + t * (0.99229 + t * 0.04481)) - t);
     for _j in 0 .. 2 {
         let err = erfc(x) - pp;
-        x += err / (1.12837916709551257 * (-x.powi(2)).exp() - x * err);
+        x += err / (std::f64::consts::FRAC_2_SQRT_PI * (-x.powi(2)).exp() - x * err);
     }
     if p < 1f64 {
         x
