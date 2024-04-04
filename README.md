@@ -38,7 +38,7 @@ There are no dependencies.
 * `Jnu_Ynu` : Bessel function of the first kind and second kind (fractional order)
 * `Inu_Knu` : Modified Bessel function of the first kind and second kind (fractional order)
 * `besseljy` : Bessel function of the first and second kinds (include derivatives)
-* `besseik` : Modified Bessel function of the second kind (include derivatives)
+* `besselik` : Modified Bessel function of the second kind (include derivatives)
 
 ## Reference
 
