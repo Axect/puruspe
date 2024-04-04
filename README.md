@@ -29,6 +29,17 @@ There are no dependencies.
 * `inverf` : Inverse error function
 * `inverfc` : Inverse complementary error function
 
+### Bessel functions
+
+* `Jn` : Bessel function of the first kind (integer order)
+* `Yn` : Bessel function of the second kind (integer order)
+* `In` : Modified Bessel function of the first kind (integer order)
+* `Kn` : Modified Bessel function of the second kind (integer order)
+* `Jnu_Ynu` : Bessel function of the first kind and second kind (fractional order)
+* `Inu_Knu` : Modified Bessel function of the first kind and second kind (fractional order)
+* `besseljy` : Bessel function of the first and second kinds (include derivatives)
+* `besseik` : Modified Bessel function of the second kind (include derivatives)
+
 ## Reference
 
 *  Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007. 

@@ -1,3 +1,17 @@
+# Ver 0.2.4 (2024-04-04)
+
+* Implement Bessel & Modified Bessel functions
+  * Integer order
+    * `Jn(n: usize, x: f64) -> f64`: Bessel function of the first kind
+    * `Yn(n: usize, x: f64) -> f64`: Bessel function of the second kind
+    * `In(n: usize, x: f64) -> f64`: Modified Bessel function of the first kind
+    * `Kn(n: usize, x: f64) -> f64`: Modified Bessel function of the second kind
+  * Fractional order
+    * `besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64)`: Bessel functions (include derivatives)
+    * `besselik(nu: f64, x: f64) -> (f64, f64, f64, f64)`: Modified Bessel functions (include derivatives)
+    * `Jnu_Ynu(nu: f64, x: f64) -> (f64, f64)`: Bessel functions
+    * `Inu_Knu(nu: f64, x: f64) -> (f64, f64)`: Modified Bessel functions
+
 # Ver 0.2.3 (2024-02-18)
 
 * Add `docs.rs` badge to README.md
