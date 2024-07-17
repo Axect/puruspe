@@ -40,6 +40,10 @@ There are no dependencies.
 * `besseljy` : Bessel function of the first and second kinds (include derivatives)
 * `besselik` : Modified Bessel function of the second kind (include derivatives)
 
+### Note on precision
+
+The precision is poor for huge arguments. E.g. Jn(1,1e10) gives only 6 correct digits, compared to 14 of typical double precision. Thus, it works similar to Python's `scipy.special.j1`, a fast variant of Bessel J function.
+
 ## Reference
 
 *  Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007. 
