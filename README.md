@@ -40,9 +40,15 @@ There are no dependencies.
 * `besseljy` : Bessel function of the first and second kinds (include derivatives)
 * `besselik` : Modified Bessel function of the second kind (include derivatives)
 
-### Note on precision
+### Dawson's integral
 
-The precision is poor for huge arguments. E.g. Jn(1,1e10) gives only 6 correct digits, compared to 14 of typical double precision. Thus, it works similar to Python's `scipy.special.j1`, a fast variant of Bessel J function.
+* `dawson`: Dawson's integral
+
+### Note on precision of Bessel functions
+
+Bessel functions exhibit poor precision for extremely large arguments.
+For instance, Jn(1,1e10) yields only 6 correct digits, in contrast to the typical 14 digits of double precision.
+This behavior is comparable to Python's scipy.special.j1, which is an optimized variant of the Bessel J function.
 
 ## Reference
 

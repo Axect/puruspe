@@ -1,3 +1,8 @@
+# Ver 0.2.5 (2024-08-03)
+
+* Implement Dawson's integral ([#9](https://github.com/Axect/puruspe/pull/9)) (Thanks to [ethanbarry](https://github.com/ethanbarry))
+  * `dawson(x: f64) -> f64`: Dawson's integral
+
 # Ver 0.2.4 (2024-04-04)
 
 * Implement Bessel & Modified Bessel functions
