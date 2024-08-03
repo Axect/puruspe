@@ -1,6 +1,6 @@
 [package]
 name = "puruspe"
-version = "0.2.4"
+version = "0.2.5"
 authors = ["Axect <axect@outlook.kr>"]
 description = "Pure Rust Special function library"
 edition = "2018"
@@ -19,4 +19,4 @@ rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 [dependencies]
 
 [dev-dependencies]
-peroxide = { version = "0.35", features = ["plot"] }
+peroxide = { version = "0.37", features = ["plot"] }
