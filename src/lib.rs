@@ -1889,6 +1889,8 @@ fn sign(a: f64, b: f64) -> f64 {
 /// 
 /// Returns [`NAN`](f64::NAN) if the argument is smaller than -1/e.
 /// 
+/// Accurate to 50 bits.
+/// 
 /// # References
 /// 
 /// - The [`lambert_w`](https://crates.io/crates/lambert_w) crate.
@@ -2267,6 +2269,8 @@ pub fn lambert_w0(z: f64) -> f64 {
 /// The secondary branch of the Lambert W function.
 /// 
 /// Returns [`NAN`](f64::NAN) if the argument is smaller than -1/e or larger than 0.
+/// 
+/// Accurate to 50 bits.
 /// 
 /// # References
 /// 
