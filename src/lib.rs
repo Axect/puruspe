@@ -85,6 +85,11 @@ const COF: [f64; 28] = [
 ];
 // Incomplete beta function
 const SWITCH: usize = 3000;
+// Lambert W functions
+/// -1/e
+const NEG_INV_E: f64 = -0.367_879_441_171_442_33;
+/// 1/sqrt(e)
+const INV_SQRT_E: f64 = 0.606_530_659_712_633_4;
 
 // =============================================================================
 // Incomplete Gamma function (regularized)
@@ -1891,7 +1896,7 @@ fn sign(a: f64, b: f64) -> f64 {
 // Formatting this function takes a lot of time, so I have ran `cargo fmt` on it once, and now no one else has to / Johanna.
 #[rustfmt::skip]
 pub fn lambert_w0(z: f64) -> f64 {
-    let zc = z + 1.0 / core::f64::consts::E;
+    let zc = z - NEG_INV_E;
     if zc < 0.0 {
         f64::NAN
     } else if zc <= 2.549_893_906_503_473_6 {
@@ -2259,12 +2264,6 @@ pub fn lambert_w0(z: f64) -> f64 {
     }
 }
 
-/// -1/e
-const NEG_INV_E: f64 = -0.367_879_441_171_442_33;
-
-/// 1/sqrt(e)
-const INV_SQRT_E: f64 = 0.606_530_659_712_633_4;
-
 /// The secondary branch of the Lambert W function.
 /// 
 /// Returns [`NAN`](f64::NAN) if the argument is smaller than -1/e or larger than 0.
@@ -2276,7 +2275,7 @@ const INV_SQRT_E: f64 = 0.606_530_659_712_633_4;
 // Formatting this function takes a lot of time, so I have ran `cargo fmt` on it once, and now no one else has to / Johanna.
 #[rustfmt::skip]
 pub fn lambert_wm1(z: f64) -> f64 {
-    let zc = z + 1.0 / core::f64::consts::E;
+    let zc = z - NEG_INV_E;
     if zc < 0.0 {
         f64::NAN
     } else if z <= -0.3542913309442164 {
