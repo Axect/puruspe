@@ -1887,7 +1887,7 @@ fn sign(a: f64, b: f64) -> f64 {
 
 /// The principal branch of the Lambert W function.
 /// 
-/// Returns [`NAN`](f64::NAN) if the argument is smaller than -1/e.
+/// Returns [`NAN`](f64::NAN) if the argument is smaller than -1/e (≈ -0.36787944117144233).
 /// 
 /// Accurate to 50 bits.
 /// 
@@ -2268,7 +2268,7 @@ pub fn lambert_w0(z: f64) -> f64 {
 
 /// The secondary branch of the Lambert W function.
 /// 
-/// Returns [`NAN`](f64::NAN) if the argument is smaller than -1/e or larger than 0.
+/// Returns [`NAN`](f64::NAN) if the argument is larger than 0 or smaller than -1/e (≈ -0.36787944117144233).
 /// 
 /// Accurate to 50 bits.
 /// 
