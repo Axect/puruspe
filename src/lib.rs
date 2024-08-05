@@ -4,8 +4,8 @@ use std::f64::consts::PI;
 // =============================================================================
 // Import from other crates
 // =============================================================================
-mod lambert_w;
-pub use lambert_w::{lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
+mod local_lambert_w;
+pub use local_lambert_w::{lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
 // =============================================================================
 // For testing
 // =============================================================================
