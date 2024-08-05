@@ -1,12 +1,11 @@
 use std::collections::HashMap;
 use std::f64::consts::PI;
-use std::f64::{EPSILON, MIN_POSITIVE};
 
 // =============================================================================
 // Constants
 // =============================================================================
-const EPS: f64 = EPSILON;
-const FPMIN: f64 = MIN_POSITIVE / EPS;
+const EPS: f64 = f64::EPSILON;
+const FPMIN: f64 = f64::MIN_POSITIVE / EPS;
 const G: f64 = 5f64;
 const N: usize = 7;
 const ASWITCH: usize = 100;
