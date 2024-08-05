@@ -1,3 +1,4 @@
+pub use lambert_w::{lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
 use std::collections::HashMap;
 use std::f64::consts::PI;
 
