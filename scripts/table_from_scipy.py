@@ -21,8 +21,8 @@ for x, y in table:
     print("    ({:.16e}, {:.16e}),".format(x, y))
 print("];")
 
-#                                                                 Also test massive input
-lambert_w0_table =[(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
+#                  Test close to the edge of the domain                                                 Also test massive input
+lambert_w0_table = [(-0.367_879_441_171_442_33, -1.0)] + [(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
 
 print("const LAMBERT_W0_TABLE: [(f64, f64); {}] = [".format(len(lambert_w0_table)))
 for x, y in lambert_w0_table:
