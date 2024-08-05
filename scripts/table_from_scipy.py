@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.special import gammaln
+from scipy.special import gammaln, lambertw
 
 # x values to test
 x_values = [
@@ -18,5 +18,13 @@ table = [(x, gammaln(x)) for x in x_values]
 # Print in Rust code format
 print("const LN_GAMMA_TABLE: [(f64, f64); {}] = [".format(len(table)))
 for x, y in table:
+    print("    ({:.16e}, {:.16e}),".format(x, y))
+print("];")
+
+#                                                                 Also test massive input
+lambert_w0_table =[(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
+
+print("const LAMBERT_W0_TABLE: [(f64, f64); {}] = [".format(len(lambert_w0_table)))
+for x, y in lambert_w0_table:
     print("    ({:.16e}, {:.16e}),".format(x, y))
 print("];")
