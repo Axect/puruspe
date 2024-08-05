@@ -21,3 +21,4 @@ lambert_w = "0.5.0"
 
 [dev-dependencies]
 peroxide = { version = "0.37", features = ["plot"] }
+approx = "0.5"
