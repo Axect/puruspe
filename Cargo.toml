@@ -17,7 +17,7 @@ readme = "README.md"
 rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]
-lambert_w = "0.5.0"
+lambert_w = { version = "0.5.1", default-features = false, features = ["24bits","50bits","std"] }
 
 [dev-dependencies]
 peroxide = { version = "0.37", features = ["plot"] }
