@@ -1,4 +1,3 @@
-
 // =============================================================================
 // Import from other crates
 // =============================================================================
@@ -11,19 +10,22 @@ pub use lambert_w::{lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
 pub mod utils;
 
 pub mod gamma;
-pub use gamma::{ln_gamma, gamma, gammp, gammq, invgammp};
+pub use gamma::{gamma, gammp, gammq, invgammp, ln_gamma};
 
 pub mod beta;
 pub use beta::{beta, betai, invbetai};
 
 pub mod error;
-pub use error::{erf, erfc, inverfc, inverf};
+pub use error::{erf, erfc, inverf, inverfc};
 
 pub mod dawson;
 pub use dawson::dawson;
 
 pub mod bessel;
-pub use bessel::{Jn, Yn, In, Kn, Jnu_Ynu, Inu_Knu, besseljy, besselik, cached_besseljy, cached_besselik, cached_Jnu_Ynu, cached_Inu_Knu};
+pub use bessel::{
+    besselik, besseljy, cached_Inu_Knu, cached_Jnu_Ynu, cached_besselik, cached_besseljy, In,
+    Inu_Knu, Jn, Jnu_Ynu, Kn, Yn,
+};
 
 // =============================================================================
 // Constants

@@ -1,7 +1,7 @@
 use peroxide::fuga::*;
-use puruspe::{Jn, Yn, In, Kn};
+use puruspe::{In, Jn, Kn, Yn};
 
-fn main () {
+fn main() {
     let x = linspace(1e-6, 10, 1000);
 
     let j0 = x.fmap(|t| Jn(0, t));
@@ -13,8 +13,7 @@ fn main () {
     let y2 = x.fmap(|t| Yn(2, t));
 
     let mut plt = Plot2D::new();
-    plt
-        .set_domain(x)
+    plt.set_domain(x)
         .insert_image(j0)
         .insert_image(j1)
         .insert_image(j2)
@@ -22,9 +21,7 @@ fn main () {
         .insert_image(y0)
         .insert_image(y1)
         .insert_image(y2)
-        .set_legend(vec![
-            "J0", "J1", "J2", "J3", "Y0", "Y1", "Y2"
-        ])
+        .set_legend(vec!["J0", "J1", "J2", "J3", "Y0", "Y1", "Y2"])
         .set_line_style(vec![
             (0, LineStyle::Solid),
             (1, LineStyle::Dashed),
@@ -32,7 +29,7 @@ fn main () {
             (3, LineStyle::DashDot),
             (4, LineStyle::Solid),
             (5, LineStyle::Dashed),
-            (6, LineStyle::Dotted)
+            (6, LineStyle::Dotted),
         ])
         .set_color(vec![
             (0, "darkblue"),
@@ -41,7 +38,7 @@ fn main () {
             (3, "darkblue"),
             (4, "olive"),
             (5, "olive"),
-            (6, "olive")
+            (6, "olive"),
         ])
         .set_xlabel(r"$x$")
         .set_ylabel("Bessel functions")
@@ -50,5 +47,6 @@ fn main () {
         .set_style(PlotStyle::Nature)
         .set_dpi(600)
         .set_path("examples/assets/bessel_integer_test.png")
-        .savefig().unwrap();
+        .savefig()
+        .unwrap();
 }

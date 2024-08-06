@@ -1,4 +1,4 @@
-use crate::{EPS, FPMIN, ln_gamma, Y, W};
+use crate::{ln_gamma, EPS, FPMIN, W, Y};
 const SWITCH: usize = 3000;
 
 // =============================================================================

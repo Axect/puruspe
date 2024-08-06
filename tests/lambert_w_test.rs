@@ -1,5 +1,5 @@
-use puruspe::*;
 use approx::assert_abs_diff_eq;
+use puruspe::*;
 
 const LAMBERT_W0_TABLE: [(f64, f64); 21] = [
     (-3.6787944117144233e-01, -1.0000000000000000e+00),
@@ -73,4 +73,3 @@ fn test_lambert_wm1() {
         assert_abs_diff_eq!(sp_lambert_wm1(x), y, epsilon = big_epsilon);
     }
 }
-

@@ -53,4 +53,3 @@ pub fn dawson(x: f64) -> f64 {
     }
     return ans;
 }
-
