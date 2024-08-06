@@ -1,3 +1,8 @@
+use approx::assert_abs_diff_eq;
+use puruspe::{
+    ln_gamma,
+};
+
 const LN_GAMMA_TABLE: [(f64, f64); 19] = [
     (1.0000000000000001e-01, 2.2527126517342060e+00),
     (2.0000000000000001e-01, 1.5240638224307845e+00),
@@ -19,3 +24,17 @@ const LN_GAMMA_TABLE: [(f64, f64); 19] = [
     (1.0000000000000000e+05, 1.0512877089736569e+06),
     (1.0000000000000000e+10, 2.2025850928881058e+11),
 ];
+
+#[test]
+fn test_ln_gamma() {
+    for (x, y) in LN_GAMMA_TABLE {
+        let eps = if x <= 1e-6 {
+            1e-6
+        } else if x >= 1e+3 {
+            x * 1e-13
+        } else {
+            1e-10
+        };
+        assert_abs_diff_eq!(ln_gamma(x), y, epsilon = eps);
+    }
+}
