@@ -1,6 +1,8 @@
-import numpy as np
 from scipy.special import gammaln
 
+# ┌──────────────────────────────────────────────────────────┐
+#  ln_gamma
+# └──────────────────────────────────────────────────────────┘
 # x values to test
 ln_gamma_x_values = [
     0.1, 0.2, 0.5,  # Values between 0 and 1
