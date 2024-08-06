@@ -22,9 +22,26 @@ for x, y in table:
 print("];")
 
 #                  Test close to the edge of the domain                                                 Also test massive input
-lambert_w0_table = [(-0.367_879_441_171_442_33, -1.0)] + [(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
+lambert_w0_table = [(-0.36787944117144233, -1.0)] + [(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
 
 print("const LAMBERT_W0_TABLE: [(f64, f64); {}] = [".format(len(lambert_w0_table)))
 for x, y in lambert_w0_table:
+    print("    ({:.16e}, {:.16e}),".format(x, y))
+print("];")
+
+lambert_wm1_x_values = [
+    # Random numbers between -1/e and 0
+    -0.1623304668493971, -0.0141318890794931, -0.1781317247582059,
+    -0.1038435920310578, -0.364876111085733 , -0.0546821782149597,
+    -0.3632700388723338, -0.010217109406601 , -0.2376990995256563,
+    -0.3037676546798408,
+    # Small values
+    -1e-3, -3.1e-5, -1e-100,
+]
+
+lambert_wm1_table = [(x, lambertw(x, -1)) for x in lambert_wm1_x_values]
+
+print("const LAMBERT_WM1_TABLE: [(f64, f64); {}] = [".format(len(lambert_wm1_table)))
+for x, y in lambert_wm1_table:
     print("    ({:.16e}, {:.16e}),".format(x, y))
 print("];")
