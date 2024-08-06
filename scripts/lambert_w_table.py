@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.special import gammaln, lambertw
+from scipy.special import lambertw
 
 # x values to test
 x_values = [
@@ -11,15 +11,6 @@ x_values = [
     1e-5, 1e-10,  # Values very close to 0
     1e5, 1e10  # Very large values
 ]
-
-# Generate table
-table = [(x, gammaln(x)) for x in x_values]
-
-# Print in Rust code format
-print("const LN_GAMMA_TABLE: [(f64, f64); {}] = [".format(len(table)))
-for x, y in table:
-    print("    ({:.16e}, {:.16e}),".format(x, y))
-print("];")
 
 #                  Test close to the edge of the domain                                                 Also test massive input
 lambert_w0_table = [(-0.36787944117144233, -1.0)] + [(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
