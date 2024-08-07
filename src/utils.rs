@@ -2,12 +2,26 @@
 // Utils
 // =============================================================================
 /// Just factorial
-pub fn factorial(n: usize) -> usize {
-    let mut p = 1usize;
-    for i in 1..(n + 1) {
-        p *= i;
+pub fn factorial(n: usize) -> f64 {
+    rising_factorial(1f64, n)
+}
+
+/// Rising factorial via rectangular splitting
+///
+/// $$ z(z+1) \cdots (z + n - 1) $$
+fn rising_factorial(z: f64, n: usize) -> f64 {
+    let m = (n as f64).sqrt().floor().min(60f64) as usize;
+
+    let mut k = 0usize;
+    let mut r = 1f64;
+
+    while k < n {
+        let l = m.min(n-k);
+        let t = (k .. k + l).fold(1f64, |acc, i| acc * (z + i as f64));
+        r *= t;
+        k += m;
     }
-    p
+    r
 }
 
 /// Pure Rust implementation of frexp
