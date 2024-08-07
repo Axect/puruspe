@@ -17,7 +17,7 @@ lambert_w0_table = [(-0.36787944117144233, -1.0)] + [(x, np.real(lambertw(x))) f
 
 print("const LAMBERT_W0_TABLE: [(f64, f64); {}] = [".format(len(lambert_w0_table)))
 for x, y in lambert_w0_table:
-    print("    ({:.16e}, {:.16e}),".format(x, y))
+    print("    ({:.14e}, {:.14e}),".format(x, y))
 print("];")
 
 lambert_wm1_x_values = [
@@ -34,5 +34,5 @@ lambert_wm1_table = [(x, lambertw(x, -1)) for x in lambert_wm1_x_values]
 
 print("const LAMBERT_WM1_TABLE: [(f64, f64); {}] = [".format(len(lambert_wm1_table)))
 for x, y in lambert_wm1_table:
-    print("    ({:.16e}, {:.16e}),".format(x, y))
+    print("    ({:.14e}, {:.14e}),".format(x, y))
 print("];")
