@@ -21,7 +21,7 @@ table = [(x, gammaln(x)) for x in ln_gamma_x_values]
 # Print in Rust code format
 print("const LN_GAMMA_TABLE: [(f64, f64); {}] = [".format(len(table)))
 for x, y in table:
-    print("    ({:.16e}, {:.16e}),".format(x, y))
+    print("    ({:.14e}, {:.14e}),".format(x, y))
 print("];")
 
 # ┌──────────────────────────────────────────────────────────┐
@@ -45,5 +45,5 @@ table = [(x, gamma(x)) for x in gamma_x_values if not np.iscomplex(gamma(x))]
 # Print in Rust code format
 print("const GAMMA_TABLE: [(f64, f64); {}] = [".format(len(table)))
 for x, y in table:
-    print(f"    ({x:.16e}, {y:.16e}),")
+    print(f"    ({x:.14e}, {y:.14e}),")
 print("];")
