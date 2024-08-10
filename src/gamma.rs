@@ -135,7 +135,7 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     }
 }
 
-/// Iunverse Incomplete Gamma function
+/// Inverse Incomplete Gamma function
 pub fn invgammp(p: f64, a: f64) -> f64 {
     let gln = ln_gamma(a);
     let a1 = a - 1f64;
