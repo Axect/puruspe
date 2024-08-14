@@ -8,7 +8,7 @@ fn test_factorial() {
         for j in 2..=i {
             fact *= j as f64;
         }
-        println!("{i}!");
+        
         assert_ulps_eq!(factorial(i), fact);
     }
 }
