@@ -130,7 +130,12 @@ If you're adding new functions or making significant changes, you may need to up
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is dual-licensed under either of
+
+* Apache License, Version 2.0, [LICENSE-APACHE](LICENSE-Apache2.0)
+* MIT license [LICENSE-MIT](LICENSE-MIT)
+
+at your option.
 
 ## Reference
 
