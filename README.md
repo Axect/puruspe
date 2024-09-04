@@ -4,52 +4,134 @@
 [![On docs.rs](https://docs.rs/puruspe/badge.svg)](https://docs.rs/puruspe)
 
 **PUR**e **RUS**t **SPE**cial function library.
-There are no dependencies.
 
-## Implemented Functions
+## Features
 
-### Gamma functions
+- Gamma functions
+- Beta functions
+- Error functions
+- Bessel functions
+- Lambert W functions
+- Dawson function
 
-* `ln_gamma` : Logarithmic gamma function
-* `gamma` : Gamma function
-* `gammp` : Regularized lower gamma function
-* `gammq` : Regularized upper gamma function
-* `invgammp` : Inverse regularized lower gamma function
+## Usage
 
-### Beta function
+Add this to your `Cargo.toml`:
 
-* `beta` : Beta function
-* `betai` : Regularized Incomplete beta function
-* `invbetai` : Inverse regularized incomplete beta function
+```toml
+[dependencies]
+puruspe = "0.3.0"
+```
 
-### Error functions
+## Example
 
-* `erf` : Error function
-* `erfc` : Complementary Error function
-* `inverf` : Inverse error function
-* `inverfc` : Inverse complementary error function
+```rust
+use puruspe::gamma;
 
-### Bessel functions
+fn main() {
+    let x = 5.0;
+    let result = gamma(x);
+    println!("Gamma({}) = {}", x, result);
+}
+```
 
-* `Jn` : Bessel function of the first kind (integer order)
-* `Yn` : Bessel function of the second kind (integer order)
-* `In` : Modified Bessel function of the first kind (integer order)
-* `Kn` : Modified Bessel function of the second kind (integer order)
-* `Jnu_Ynu` : Bessel function of the first kind and second kind (fractional order)
-* `Inu_Knu` : Modified Bessel function of the first kind and second kind (fractional order)
-* `besseljy` : Bessel function of the first and second kinds (include derivatives)
-* `besselik` : Modified Bessel function of the second kind (include derivatives)
+## Available Functions
 
-### Dawson's integral
+### Gamma Functions
+- `gamma(x)`: Gamma function
+- `ln_gamma(x)`: Natural logarithm of the gamma function
+- `gammp(a, x)`: Regularized lower incomplete gamma function P(a,x)
+- `gammq(a, x)`: Regularized upper incomplete gamma function Q(a,x)
+- `invgammp(p, a)`: Inverse of the regularized lower incomplete gamma function
 
-* `dawson`: Dawson's integral
+### Beta Functions
+- `beta(z, w)`: Beta function
+- `betai(a, b, x)`: Regularized incomplete beta function I_x(a,b)
+- `invbetai(p, a, b)`: Inverse of the regularized incomplete beta function
 
-### Note on precision of Bessel functions
+### Error Functions
+- `erf(x)`: Error function
+- `erfc(x)`: Complementary error function
+- `inverf(p)`: Inverse error function
+- `inverfc(p)`: Inverse complementary error function
 
-Bessel functions exhibit poor precision for extremely large arguments.
-For instance, Jn(1,1e10) yields only 6 correct digits, in contrast to the typical 14 digits of double precision.
-This behavior is comparable to Python's scipy.special.j1, which is an optimized variant of the Bessel J function.
+### Bessel Functions
+- `Jn(n, x)`: Bessel function of the first kind of integer order
+- `Yn(n, x)`: Bessel function of the second kind of integer order
+- `In(n, x)`: Modified Bessel function of the first kind of integer order
+- `Kn(n, x)`: Modified Bessel function of the second kind of integer order
+- `Jnu_Ynu(nu, x)`: Bessel functions of the first and second kind of fractional order
+- `Inu_Knu(nu, x)`: Modified Bessel functions of the first and second kind of fractional order
+- `besseljy(nu, x)`: Bessel functions of the first and second kind with derivatives
+- `besselik(nu, x)`: Modified Bessel functions of the first and second kind with derivatives
+
+### Lambert W Functions
+- `lambert_w0(x)`: The principal branch of the Lambert W function computed to 50 bits of accuracy.
+- `lambert_wm1(x)`: The secondary branch of the Lambert W function computed to 50 bits of accuracy.
+- `sp_lambert_w0(x)`: The principal branch of the Lambert W function computed to 24 bits of accuracy on `f64`s.
+- `sp_lambert_wm1(x)`: The secondary branch of the Lambert W function computed to 24 bits of accuracy on `f64`s.
+
+### Dawson Function
+- `dawson(x)`: Dawson's integral
+
+## Precision
+
+The precision of each function can vary depending on the input values and the complexity of the calculation.
+For detailed information about the precision of specific functions, please refer to the test files in the `tests/` directory.
+
+For example:
+- Gamma function precision: see `tests/gamma_test.rs`
+- Beta function precision: see `tests/beta_test.rs`
+- Bessel function precision: see `tests/bessel_test.rs`
+- Error function precision: see `tests/erf_test.rs`
+
+These test files contain comparisons between the results of our implementations and the corresponding functions in SciPy, a widely-used scientific computing library in Python.
+This comparison provides insights into the precision of each function across various input ranges.
+
+The test tables used for these comparisons are generated using SciPy, and the scripts for generating these tables can be found in the `scripts/` directory.
+This allows for transparent verification and updating of our test cases.
+
+Note that while we strive for high accuracy, the actual precision in your use case may differ slightly from the test cases.
+If you require guaranteed precision for a specific input range, we recommend additional testing for your particular use case.
+
+Also, please be aware that there might be small discrepancies between our implementation and SciPy's results due to differences in algorithms or internal precision.
+These discrepancies are generally within acceptable margins for most applications, but if you need exact agreement with SciPy or any other specific implementation, you should perform detailed comparisons.
+
+## Project Structure
+
+The project is organized as follows:
+
+- `src/lib.rs`: Main library file that re-exports all functions
+- `src/gamma.rs`: Gamma function implementations
+- `src/beta.rs`: Beta function implementations
+- `src/error.rs`: Error function implementations
+- `src/bessel.rs`: Bessel function implementations
+- `src/dawson.rs`: Dawson function implementation
+- `src/utils.rs`: Utility functions used across the library
+- `tests/`: Contains test files for each group of functions
+- `scripts/`: Python scripts for generating test tables (not included in the package)
+
+## Contributing
+
+Contributions are welcome! Here are some ways you can contribute to this project:
+
+1. Report bugs and request features by opening issues.
+2. Submit pull requests to fix bugs or add new features.
+3. Improve documentation or add examples.
+4. Add new special functions or optimize existing ones.
+
+When contributing code, please ensure that:
+
+1. Your code follows the existing style of the project.
+2. You add appropriate tests for your changes.
+3. All tests pass when you run `cargo test`.
+
+If you're adding new functions or making significant changes, you may need to update or create new test tables. You can use the Python scripts in the `scripts/` directory to generate these tables using SciPy.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Reference
 
-*  Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007. 
+- Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007. 
