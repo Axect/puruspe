@@ -1,4 +1,101 @@
-// Error functions
+/// Calculates the error function.
+///
+/// The error function is defined as:
+///
+/// $$ \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} dt $$
+///
+/// # Arguments
+///
+/// * `x` - The input value
+///
+/// # Returns
+///
+/// The value of the error function at `x`
+pub fn erf(x: f64) -> f64 {
+    if x >= 0f64 {
+        1.0 - erfccheb(x)
+    } else {
+        erfccheb(-x) - 1f64
+    }
+}
+
+/// Calculates the complementary error function.
+///
+/// The complementary error function is defined as:
+///
+/// $$ \text{erfc}(x) = 1 - \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_x^\infty e^{-t^2} dt $$
+///
+/// # Arguments
+///
+/// * `x` - The input value
+///
+/// # Returns
+///
+/// The value of the complementary error function at `x`
+pub fn erfc(x: f64) -> f64 {
+    if x >= 0f64 {
+        erfccheb(x)
+    } else {
+        2f64 - erfccheb(-x)
+    }
+}
+
+/// Calculates the inverse of the error function.
+///
+/// This function finds x such that:
+///
+/// $$ p = \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} dt $$
+///
+/// # Arguments
+///
+/// * `p` - The probability value (between -1 and 1)
+///
+/// # Returns
+///
+/// The value of $x$ for which $\text{erf}(x) = p$
+pub fn inverfc(p: f64) -> f64 {
+    // Return arbitrary large pos or neg value
+    if p >= 2f64 {
+        return -100f64;
+    } else if p <= 0f64 {
+        return 100f64;
+    }
+
+    let pp = if p < 1f64 { p } else { 2f64 - p };
+    let t = (-2f64 * (pp / 2f64).ln()).sqrt();
+    let mut x = -std::f64::consts::FRAC_1_SQRT_2
+        * ((2.30753 + t * 0.27061) / (1f64 + t * (0.99229 + t * 0.04481)) - t);
+    for _j in 0..2 {
+        let err = erfc(x) - pp;
+        x += err / (std::f64::consts::FRAC_2_SQRT_PI * (-x.powi(2)).exp() - x * err);
+    }
+    if p < 1f64 {
+        x
+    } else {
+        -x
+    }
+}
+
+/// Calculates the inverse of the complementary error function.
+///
+/// This function finds x such that:
+///
+/// $$ p = \text{erfc}(x) = 1 - \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_x^\infty e^{-t^2} dt $$
+///
+/// # Arguments
+///
+/// * `p` - The probability value (between 0 and 2)
+///
+/// # Returns
+///
+/// The value of $x$ for which $\text{erfc}(x) = p$
+pub fn inverf(p: f64) -> f64 {
+    inverfc(1f64 - p)
+}
+
+// =============================================================================
+// Chebyshev coefficients
+// =============================================================================
 const NCOEF: usize = 28;
 const COF: [f64; 28] = [
     -1.3026537197817094,
@@ -31,27 +128,6 @@ const COF: [f64; 28] = [
     -2.8e-17,
 ];
 
-// =============================================================================
-// Error functions
-// =============================================================================
-/// Error function
-pub fn erf(x: f64) -> f64 {
-    if x >= 0f64 {
-        1.0 - erfccheb(x)
-    } else {
-        erfccheb(-x) - 1f64
-    }
-}
-
-/// Complementary error function
-pub fn erfc(x: f64) -> f64 {
-    if x >= 0f64 {
-        erfccheb(x)
-    } else {
-        2f64 - erfccheb(-x)
-    }
-}
-
 /// Chebyshev coefficients
 fn erfccheb(z: f64) -> f64 {
     let mut d = 0f64;
@@ -68,30 +144,3 @@ fn erfccheb(z: f64) -> f64 {
     t * (-z.powi(2) + 0.5 * (COF[0] + ty * d) - dd).exp()
 }
 
-/// Inverse of complementary error function
-pub fn inverfc(p: f64) -> f64 {
-    // Return arbitrary large pos or neg value
-    if p >= 2f64 {
-        return -100f64;
-    } else if p <= 0f64 {
-        return 100f64;
-    }
-
-    let pp = if p < 1f64 { p } else { 2f64 - p };
-    let t = (-2f64 * (pp / 2f64).ln()).sqrt();
-    let mut x = -std::f64::consts::FRAC_1_SQRT_2
-        * ((2.30753 + t * 0.27061) / (1f64 + t * (0.99229 + t * 0.04481)) - t);
-    for _j in 0..2 {
-        let err = erfc(x) - pp;
-        x += err / (std::f64::consts::FRAC_2_SQRT_PI * (-x.powi(2)).exp() - x * err);
-    }
-    if p < 1f64 {
-        x
-    } else {
-        -x
-    }
-}
-
-pub fn inverf(p: f64) -> f64 {
-    inverfc(1f64 - p)
-}
