@@ -1,4 +1,4 @@
-from scipy.special import gammaln, gamma
+from scipy.special import gammaln, gamma, gammainc, gammaincc, gammaincinv
 import numpy as np
 
 # ┌──────────────────────────────────────────────────────────┐
@@ -46,4 +46,59 @@ table = [(x, gamma(x)) for x in gamma_x_values if not np.iscomplex(gamma(x))]
 print("const GAMMA_TABLE: [(f64, f64); {}] = [".format(len(table)))
 for x, y in table:
     print(f"    ({x:.14e}, {y:.14e}),")
+print("];")
+
+# a values to test for gammp, gammq, and invgammp
+a_values = [
+    0.1,  # Very small shape parameter, tests behavior near zero
+    0.5,  # Half-integer shape parameter, important in statistical applications
+    1.0,  # Exponential distribution case
+    2.0,  # Chi-squared distribution with 4 degrees of freedom
+    5.0,  # Medium-sized shape parameter
+    10.0  # Larger shape parameter, approaches normal distribution
+]
+
+# x values to test for gammp and gammq
+x_values = [
+    0.1,  # Very small x, tests behavior near zero
+    0.5,  # Tests behavior for x < 1
+    1.0,  # Important reference point, x = a for some cases
+    2.0,  # Tests behavior for x > 1
+    5.0,  # Larger x value
+    10.0, # Much larger x value
+    20.0  # Very large x value, tests tail behavior
+]
+
+# Generate tables for gammp and gammq
+gammp_table = [(a, x, gammainc(a, x)) for a in a_values for x in x_values]
+gammq_table = [(a, x, gammaincc(a, x)) for a in a_values for x in x_values]
+
+# p values to test for invgammp
+p_values = [
+    0.01,  # Very small probability, tests left tail
+    0.1,   # Small probability
+    0.25,  # Lower quartile
+    0.5,   # Median
+    0.75,  # Upper quartile
+    0.9,   # Large probability
+    0.99   # Very large probability, tests right tail
+]
+
+# Generate table for invgammp
+invgammp_table = [(a, p, gammaincinv(a, p)) for a in a_values for p in p_values]
+
+# Print tables in Rust code format
+print("const GAMMP_TABLE: [(f64, f64, f64); {}] = [".format(len(gammp_table)))
+for a, x, y in gammp_table:
+    print("    ({:.14e}, {:.14e}, {:.14e}),".format(a, x, y))
+print("];")
+
+print("\nconst GAMMQ_TABLE: [(f64, f64, f64); {}] = [".format(len(gammq_table)))
+for a, x, y in gammq_table:
+    print("    ({:.14e}, {:.14e}, {:.14e}),".format(a, x, y))
+print("];")
+
+print("\nconst INVGAMMP_TABLE: [(f64, f64, f64); {}] = [".format(len(invgammp_table)))
+for a, p, x in invgammp_table:
+    print("    ({:.14e}, {:.14e}, {:.14e}),".format(a, p, x))
 print("];")
