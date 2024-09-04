@@ -1,5 +1,5 @@
 use peroxide::fuga::*;
-use puruspe::{In, Jn, Kn, Yn};
+use puruspe::{Jn, Yn};
 
 fn main() {
     let x = linspace(1e-6, 10, 1000);
