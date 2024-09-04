@@ -4,7 +4,24 @@ const SWITCH: usize = 3000;
 // =============================================================================
 // Beta function
 // =============================================================================
-/// Beta function
+/// Calculates the beta function.
+///
+/// The beta function is defined as:
+///
+/// $$ B(z,w) = \int_0^1 t^{z-1} (1-t)^{w-1} dt $$
+///
+/// It can also be expressed in terms of gamma functions:
+///
+/// $$ B(z,w) = \frac{\Gamma(z)\Gamma(w)}{\Gamma(z+w)} $$
+///
+/// # Arguments
+///
+/// * `z` - First parameter
+/// * `w` - Second parameter
+///
+/// # Returns
+///
+/// The value of the beta function $B(z,w)$
 pub fn beta(z: f64, w: f64) -> f64 {
     (ln_gamma(z) + ln_gamma(w) - ln_gamma(z + w)).exp()
 }
@@ -12,6 +29,23 @@ pub fn beta(z: f64, w: f64) -> f64 {
 // =============================================================================
 // Incomplete Beta function
 // =============================================================================
+/// Calculates the regularized incomplete beta function.
+///
+/// The regularized incomplete beta function is defined as:
+///
+/// $$ I_x(a,b) = \frac{B(x;a,b)}{B(a,b)} = \frac{1}{B(a,b)} \int_0^x t^{a-1} (1-t)^{b-1} dt $$
+///
+/// where $B(a,b)$ is the beta function and $B(x;a,b)$ is the incomplete beta function.
+///
+/// # Arguments
+///
+/// * `a` - First shape parameter
+/// * `b` - Second shape parameter
+/// * `x` - Upper limit of integration (between 0 and 1)
+///
+/// # Returns
+///
+/// The value of the regularized incomplete beta function $I_x(a,b)$
 pub fn betai(a: f64, b: f64, x: f64) -> f64 {
     assert!(a > 0f64 && b > 0f64, "Bad a or b in routine betai");
     assert!(x >= 0f64 && x <= 1f64, "Bad x in routine betai");
@@ -109,6 +143,24 @@ fn betaiapprox(a: f64, b: f64, x: f64) -> f64 {
     }
 }
 
+// =============================================================================
+// Inverse of Incomplete Beta function
+// =============================================================================
+/// Calculates the inverse of the regularized incomplete beta function.
+///
+/// This function finds $x$ such that:
+///
+/// $$ p = I_x(a,b) = \frac{1}{B(a,b)} \int_0^x t^{a-1} (1-t)^{b-1} dt $$
+///
+/// # Arguments
+///
+/// * `p` - The probability value (between 0 and 1)
+/// * `a` - First shape parameter
+/// * `b` - Second shape parameter
+///
+/// # Returns
+///
+/// The value of $x$ for which $I_x(a,b) = p$
 pub fn invbetai(p: f64, a: f64, b: f64) -> f64 {
     let a1 = a - 1f64;
     let b1 = b - 1f64;
