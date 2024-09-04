@@ -1,131 +1,20 @@
 use crate::utils::{frexp, ldexp};
 use std::collections::HashMap;
 
-// =============================================================================
-// Bessel functions
-// =============================================================================
-/// Rational approximation
-fn rat(x: f64, r: &[f64], s: &[f64], n: usize) -> (f64, f64, f64) {
-    let y = x.powi(2);
-    let z = 64f64 - y;
-    let mut nump = r[n];
-    let mut denp = s[n];
-    for i in (0..n).rev() {
-        nump = r[i] + z * nump;
-        denp = s[i] + y * denp;
-    }
-    (y, nump, denp)
-}
-
-/// Asymptotic approximation
-fn asp(
-    ax: f64,
-    pn: &[f64],
-    pd: &[f64],
-    qn: &[f64],
-    qd: &[f64],
-    fac: f64,
-) -> (f64, f64, f64, f64, f64, f64) {
-    let z = 8f64 / ax;
-    let y = z.powi(2);
-    let xx = ax - fac * PIO4;
-    let mut nump = pn[4];
-    let mut denp = pd[4];
-    let mut numq = qn[4];
-    let mut denq = qd[4];
-    for i in (0..4).rev() {
-        nump = pn[i] + y * nump;
-        denp = pd[i] + y * denp;
-        numq = qn[i] + y * numq;
-        denq = qd[i] + y * denq;
-    }
-    (z, xx, nump, denp, numq, denq)
-}
-
-/// Bessel function of the first kind (n=0)
-fn j0(x: f64) -> f64 {
-    let ax = x.abs();
-    if ax < 8f64 {
-        let (y, nump, denp) = rat(x, &J0R, &J0S, 6);
-        nump * (y - XJ00) * (y - XJ10) / denp
-    } else {
-        let (z, xx, nump, denp, numq, denq) = asp(ax, &J0PN, &J0PD, &J0QN, &J0QD, 1f64);
-        (TWOOPI / ax).sqrt() * (xx.cos() * nump / denp - z * xx.sin() * numq / denq)
-    }
-}
-
-/// Bessel function of the first kind (n=1)
-fn j1(x: f64) -> f64 {
-    let ax = x.abs();
-    if ax < 8f64 {
-        let (y, nump, denp) = rat(x, &J1R, &J1S, 6);
-        x * nump * (y - XJ01) * (y - XJ11) / denp
-    } else {
-        let (z, xx, nump, denp, numq, denq) = asp(ax, &J1PN, &J1PD, &J1QN, &J1QD, 3f64);
-        let ans = (TWOOPI / ax).sqrt() * (xx.cos() * nump / denp - z * xx.sin() * numq / denq);
-        if x < 0f64 {
-            -ans
-        } else {
-            ans
-        }
-    }
-}
-
-/// Bessel function of the second kind (n=0)
-fn y0(x: f64) -> f64 {
-    if x < 8f64 {
-        let j0x = j0(x);
-        let (_, nump, denp) = rat(x, &Y0R, &Y0S, 8);
-        nump / denp + TWOOPI * j0x * x.ln()
-    } else {
-        let ax = x;
-        let (z, xx, nump, denp, numq, denq) = asp(ax, &Y0PN, &Y0PD, &Y0QN, &Y0QD, 1f64);
-        (TWOOPI / ax).sqrt() * (xx.sin() * nump / denp + z * xx.cos() * numq / denq)
-    }
-}
-
-/// Bessel function of the second kind (n=1)
-fn y1(x: f64) -> f64 {
-    if x < 8f64 {
-        let j1x = j1(x);
-        let (_, nump, denp) = rat(x, &Y1R, &Y1S, 7);
-        x * nump / denp + TWOOPI * (j1x * x.ln() - 1f64 / x)
-    } else {
-        let ax = x;
-        let (z, xx, nump, denp, numq, denq) = asp(ax, &Y1PN, &Y1PD, &Y1QN, &Y1QD, 3f64);
-        (TWOOPI / ax).sqrt() * (xx.sin() * nump / denp + z * xx.cos() * numq / denq)
-    }
-}
-
-/// Bessel function of the second kind (n>=0)
+/// Calculates the Bessel function of the first kind of order n.
+///
+/// The Bessel function of the first kind is defined as the solution to the differential equation:
+///
+/// $$ x^2 \frac{d^2y}{dx^2} + x \frac{dy}{dx} + (x^2 - n^2)y = 0 $$
 ///
 /// # Arguments
-/// * `n` - Order of Bessel function (non-negative integer)
-/// * `x` - Argument of Bessel function
-#[allow(non_snake_case)]
-pub fn Yn(n: usize, x: f64) -> f64 {
-    if n == 0 {
-        y0(x)
-    } else if n == 1 {
-        y1(x)
-    } else {
-        let tox = 2.0 / x;
-        let mut by = y1(x);
-        let mut bym = y0(x);
-        for j in 1..n {
-            let byp = j as f64 * tox * by - bym;
-            bym = by;
-            by = byp;
-        }
-        by
-    }
-}
-
-/// Bessel function of the first kind (n>=0)
 ///
-/// # Arguments
-/// * `n` - Order of Bessel function (non-negative integer)
-/// * `x` - Argument of Bessel function
+/// * `n` - The order of the Bessel function (non-negative integer)
+/// * `x` - The input value (non-negative real number)
+///
+/// # Returns
+///
+/// The value of $J_n(x)$
 #[allow(non_snake_case)]
 pub fn Jn(n: usize, x: f64) -> f64 {
     let n_f64 = n as f64;
@@ -188,96 +77,57 @@ pub fn Jn(n: usize, x: f64) -> f64 {
     }
 }
 
-fn poly(x: f64, coef: &[f64], n: usize) -> f64 {
-    let mut ans = coef[n];
-    for i in (0..n).rev() {
-        ans = ans * x + coef[i];
-    }
-    ans
-}
-
-/// Modified Bessel function of the first kind (n=0)
-fn i0(x: f64) -> f64 {
-    let ax = x.abs();
-    if ax < 15f64 {
-        let y = x.powi(2);
-        poly(y, &I0P, 13) / poly(225f64 - y, &I0Q, 4)
-    } else {
-        let z = 1f64 - 15f64 / ax;
-        ax.exp() * poly(z, &I0PP, 4) / (ax.sqrt() * poly(z, &I0QQ, 5))
-    }
-}
-
-/// Modified Bessel function of the first kind (n=1)
-fn i1(x: f64) -> f64 {
-    let ax = x.abs();
-    if ax < 15f64 {
-        let y = x.powi(2);
-        x * poly(y, &I1P, 13) / poly(225f64 - y, &I1Q, 4)
-    } else {
-        let z = 1f64 - 15f64 / ax;
-        let ans = x.exp() * poly(z, &I1PP, 4) / (ax.sqrt() * poly(z, &I1QQ, 5));
-        if x < 0f64 {
-            -ans
-        } else {
-            ans
-        }
-    }
-}
-
-/// Modified Bessel function of the second kind (n=0)
-fn k0(x: f64) -> f64 {
-    if x <= 1f64 {
-        let z = x.powi(2);
-        let term = poly(z, &K0PI, 4) * x.ln() / poly(1f64 - z, &K0QI, 2);
-        poly(z, &K0P, 4) / poly(1f64 - z, &K0Q, 2) - term
-    } else {
-        let z = 1f64 / x;
-        (-x).exp() * poly(z, &K0PP, 7) / (x.sqrt() * poly(z, &K0QQ, 7))
-    }
-}
-
-/// Modified Bessel function of the second kind (n=1)
-fn k1(x: f64) -> f64 {
-    if x <= 1f64 {
-        let z = x.powi(2);
-        let term = poly(z, &K1PI, 4) * x.ln() / poly(1f64 - z, &K1QI, 2);
-        x * (poly(z, &K1P, 4) / poly(1f64 - z, &K1Q, 2) + term) + 1f64 / x
-    } else {
-        let z = 1f64 / x;
-        (-x).exp() * poly(z, &K1PP, 7) / (x.sqrt() * poly(z, &K1QQ, 7))
-    }
-}
-
-/// Modified Bessel function of the second kind (n>=0)
+/// Calculates the Bessel function of the second kind of order n.
+///
+/// The Bessel function of the second kind is another solution to the Bessel differential equation:
+///
+/// $$ x^2 \frac{d^2y}{dx^2} + x \frac{dy}{dx} + (x^2 - n^2)y = 0 $$
+///
+/// It is also known as the Neumann function.
 ///
 /// # Arguments
-/// * `n` - Order of the Bessel function (non-negative integer)
-/// * `x` - Argument of the Bessel function
+///
+/// * `n` - The order of the Bessel function (non-negative integer)
+/// * `x` - The input value (positive real number)
+///
+/// # Returns
+///
+/// The value of $Y_n(x)$
 #[allow(non_snake_case)]
-pub fn Kn(n: usize, x: f64) -> f64 {
+pub fn Yn(n: usize, x: f64) -> f64 {
     if n == 0 {
-        k0(x)
+        y0(x)
     } else if n == 1 {
-        k1(x)
+        y1(x)
     } else {
         let tox = 2.0 / x;
-        let mut bkm = k0(x);
-        let mut bk = k1(x);
+        let mut by = y1(x);
+        let mut bym = y0(x);
         for j in 1..n {
-            let bkp = j as f64 * tox * bk + bkm;
-            bkm = bk;
-            bk = bkp;
+            let byp = j as f64 * tox * by - bym;
+            bym = by;
+            by = byp;
         }
-        bk
+        by
     }
 }
 
-/// Modified Bessel function of the first kind (n>=0)
+/// Calculates the modified Bessel function of the first kind of order n.
+///
+/// The modified Bessel function of the first kind is defined as:
+///
+/// $$ I_n(x) = i^{-n} J_n(ix) $$
+///
+/// where J_n is the Bessel function of the first kind.
 ///
 /// # Arguments
-/// * `n` - Order of the Bessel function (non-negative integer)
-/// * `x` - Argument of the Bessel function
+///
+/// * `n` - The order of the Bessel function (non-negative integer)
+/// * `x` - The input value (non-negative real number)
+///
+/// # Returns
+///
+/// The value of I_n(x)
 #[allow(non_snake_case)]
 pub fn In(n: usize, x: f64) -> f64 {
     let acc = 200f64;
@@ -317,49 +167,54 @@ pub fn In(n: usize, x: f64) -> f64 {
     }
 }
 
-fn chebev(x: f64, c: &[f64], m: usize) -> f64 {
-    let mut d = 0f64;
-    let mut dd = 0f64;
-    for j in (1..m).rev() {
-        let sv = d;
-        d = 2f64 * x * d - dd + c[j];
-        dd = sv;
-    }
-    x * d - dd + 0.5 * c[0]
-}
-
-const C1: [f64; 7] = [
-    -1.142022680371168e0,
-    6.5165112670737e-3,
-    3.087090173086e-4,
-    -3.4706269649e-6,
-    6.9437664e-9,
-    3.67795e-11,
-    -1.356e-13,
-];
-
-const C2: [f64; 8] = [
-    1.843740587300905e0,
-    -7.68528408447867e-2,
-    1.2719271366546e-3,
-    -4.9717367042e-6,
-    -3.31261198e-8,
-    2.423096e-10,
-    -1.702e-13,
-    -1.49e-15,
-];
-
-/// Bessel functions for fractional order
+/// Calculates the modified Bessel function of the second kind of order n.
+///
+/// The modified Bessel function of the second kind is defined as:
+///
+/// $$ K_n(x) = \frac{\pi}{2} \frac{I_{-n}(x) - I_n(x)}{\sin(n\pi)} $$
+///
+/// where I_n is the modified Bessel function of the first kind.
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// * `n` - The order of the Bessel function (non-negative integer)
+/// * `x` - The input value (positive real number)
 ///
 /// # Returns
-/// * `J_nu(x)` - Bessel function of the first kind
-/// * `Y_nu(x)` - Bessel function of the second kind
-/// * `J_nu'(x)` - Derivative of the Bessel function of the first kind
-/// * `Y_nu'(x)` - Derivative of the Bessel function of the second kind
+///
+/// The value of $K_n(x)$
+#[allow(non_snake_case)]
+pub fn Kn(n: usize, x: f64) -> f64 {
+    if n == 0 {
+        k0(x)
+    } else if n == 1 {
+        k1(x)
+    } else {
+        let tox = 2.0 / x;
+        let mut bkm = k0(x);
+        let mut bk = k1(x);
+        for j in 1..n {
+            let bkp = j as f64 * tox * bk + bkm;
+            bkm = bk;
+            bk = bkp;
+        }
+        bk
+    }
+}
+
+/// Calculates the Bessel functions of the first and second kind for non-integer order
+///
+/// # Arguments
+///
+/// - `nu` - The order of the Bessel function (non-negative real number)
+/// - `x` - The input value (positive real number)
+///
+/// # Returns
+///
+/// - `J_nu(x)` - Bessel function of the first kind
+/// - `Y_nu(x)` - Bessel function of the second kind
+/// - `J_nu'(x)` - Derivative of the Bessel function of the first kind
+/// - `Y_nu'(x)` - Derivative of the Bessel function of the second kind
 pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     const MAXIT: usize = 10000;
     const EPS: f64 = f64::EPSILON;
@@ -558,18 +413,20 @@ pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     (jo, yo, jpo, ypo)
 }
 
-/// Cached Bessel functions for fractional order
+/// Cached Bessel functions of the first and second kind for non-integer order
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
-/// * `cache` - Cache for the Bessel functions (HashMap)
+///
+/// - `nu` - The order of the Bessel function (non-negative real number)
+/// - `x` - The input value (positive real number)
+/// - `cache` - The cache to store the results (HashMap)
 ///
 /// # Returns
-/// * `J_nu(x)` - Bessel function of the first kind
-/// * `Y_nu(x)` - Bessel function of the second kind
-/// * `J_nu'(x)` - Derivative of the Bessel function of the first kind
-/// * `Y_nu'(x)` - Derivative of the Bessel function of the second kind
+///
+/// - `J_nu(x)` - Bessel function of the first kind
+/// - `Y_nu(x)` - Bessel function of the second kind
+/// - `J_nu'(x)` - Derivative of the Bessel function of the first kind
+/// - `Y_nu'(x)` - Derivative of the Bessel function of the second kind
 pub fn cached_besseljy(
     nu: f64,
     x: f64,
@@ -584,13 +441,15 @@ pub fn cached_besseljy(
     }
 }
 
-/// Modified Bessel functions for fractional order
+/// Calculate the modified Bessel functions of the first and second kind for non-integer order
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// * `nu` - The order of the Bessel function (non-negative real number)
+/// * `x` - The input value (positive real number)
 ///
 /// # Returns
+///
 /// * `I_nu(x)` - Modified Bessel function of the first kind
 /// * `K_nu(x)` - Modified Bessel function of the second kind
 /// * `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
@@ -747,7 +606,20 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     (io, ko, ipo, kpo)
 }
 
-/// Cached modified Bessel functions for fractional order
+/// Calculates the Bessel functions of the first and second kind for non-integer order with cached results.
+///
+/// # Arguments
+///
+/// - `nu` - The order of the Bessel function (non-negative real number)
+/// - `x` - The input value (positive real number)
+/// - `cache` - The cache to store the results (HashMap)
+///
+/// # Returns
+///
+/// - `I_nu(x)` - Modified Bessel function of the first kind
+/// - `K_nu(x)` - Modified Bessel function of the second kind
+/// - `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
+/// - `K_nu'(x)` - Derivative of the modified Bessel function of the second kind
 pub fn cached_besselik(
     nu: f64,
     x: f64,
@@ -762,31 +634,34 @@ pub fn cached_besselik(
     }
 }
 
-/// Bessel functions for fractional order
+/// Calculates the Bessel functions of the first and second kind for non-integer order.
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// - `nu` - The order of the Bessel function (non-negative real number)
+/// - `x` - The input value (positive real number)
 ///
 /// # Returns
-/// * `J_nu(x)` - Bessel function of the first kind
-/// * `Y_nu(x)` - Bessel function of the second kind
+///
+/// A tuple (J_nu(x), Y_nu(x)) containing the values of the Bessel functions of the first and second kind
 #[allow(non_snake_case)]
 pub fn Jnu_Ynu(nu: f64, x: f64) -> (f64, f64) {
     let (jo, yo, _, _) = besseljy(nu, x);
     (jo, yo)
 }
 
-/// Cached Bessel functions for fractional order
+/// Cached Bessel functions for non-integer order
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
-/// * `cache` - Cache for the Bessel functions (HashMap)
+/// 
+/// - `nu` - Order of the Bessel function (nu >= 0)
+/// - `x` - Argument of the Bessel function (x > 0)
+/// - `cache` - Cache for the Bessel functions (HashMap)
 ///
 /// # Returns
-/// * `J_nu(x)` - Bessel function of the first kind
-/// * `Y_nu(x)` - Bessel function of the second kind
+///
+/// - `J_nu(x)` - Bessel function of the first kind
+/// - `Y_nu(x)` - Bessel function of the second kind
 #[allow(non_snake_case)]
 pub fn cached_Jnu_Ynu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64)>) -> (f64, f64) {
     if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
@@ -798,31 +673,34 @@ pub fn cached_Jnu_Ynu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64
     }
 }
 
-/// Modified Bessel functions for fractional order
+/// Calculates the modified Bessel functions of the first and second kind for non-integer order.
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
+///
+/// - `nu` - The order of the Bessel function (non-negative real number)
+/// - `x` - The input value (positive real number)
 ///
 /// # Returns
-/// * `I_nu(x)` - Modified Bessel function of the first kind
-/// * `K_nu(x)` - Modified Bessel function of the second kind
+///
+/// A tuple (I_nu(x), K_nu(x)) containing the values of the modified Bessel functions of the first and second kind
 #[allow(non_snake_case)]
 pub fn Inu_Knu(nu: f64, x: f64) -> (f64, f64) {
     let (io, ko, _, _) = besselik(nu, x);
     (io, ko)
 }
 
-/// Cached modified Bessel functions for fractional order
+/// Cached modified Bessel functions for non-integer order
 ///
 /// # Arguments
-/// * `nu` - Order of the Bessel function (nu >= 0)
-/// * `x` - Argument of the Bessel function (x > 0)
-/// * `cache` - Cache for the Bessel functions (HashMap)
+///
+/// - `nu` - Order of the Bessel function (nu >= 0)
+/// - `x` - Argument of the Bessel function (x > 0)
+/// - `cache` - Cache for the Bessel functions (HashMap)
 ///
 /// # Returns
-/// * `I_nu(x)` - Modified Bessel function of the first kind
-/// * `K_nu(x)` - Modified Bessel function of the second kind
+///
+/// - `I_nu(x)` - Modified Bessel function of the first kind
+/// - `K_nu(x)` - Modified Bessel function of the second kind
 #[allow(non_snake_case)]
 pub fn cached_Inu_Knu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64)>) -> (f64, f64) {
     if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
@@ -833,6 +711,196 @@ pub fn cached_Inu_Knu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64
         res
     }
 }
+
+
+// =============================================================================
+// Building Blocks
+// =============================================================================
+/// Rational approximation
+fn rat(x: f64, r: &[f64], s: &[f64], n: usize) -> (f64, f64, f64) {
+    let y = x.powi(2);
+    let z = 64f64 - y;
+    let mut nump = r[n];
+    let mut denp = s[n];
+    for i in (0..n).rev() {
+        nump = r[i] + z * nump;
+        denp = s[i] + y * denp;
+    }
+    (y, nump, denp)
+}
+
+/// Asymptotic approximation
+fn asp(
+    ax: f64,
+    pn: &[f64],
+    pd: &[f64],
+    qn: &[f64],
+    qd: &[f64],
+    fac: f64,
+) -> (f64, f64, f64, f64, f64, f64) {
+    let z = 8f64 / ax;
+    let y = z.powi(2);
+    let xx = ax - fac * PIO4;
+    let mut nump = pn[4];
+    let mut denp = pd[4];
+    let mut numq = qn[4];
+    let mut denq = qd[4];
+    for i in (0..4).rev() {
+        nump = pn[i] + y * nump;
+        denp = pd[i] + y * denp;
+        numq = qn[i] + y * numq;
+        denq = qd[i] + y * denq;
+    }
+    (z, xx, nump, denp, numq, denq)
+}
+
+/// Bessel function of the first kind (n=0)
+fn j0(x: f64) -> f64 {
+    let ax = x.abs();
+    if ax < 8f64 {
+        let (y, nump, denp) = rat(x, &J0R, &J0S, 6);
+        nump * (y - XJ00) * (y - XJ10) / denp
+    } else {
+        let (z, xx, nump, denp, numq, denq) = asp(ax, &J0PN, &J0PD, &J0QN, &J0QD, 1f64);
+        (TWOOPI / ax).sqrt() * (xx.cos() * nump / denp - z * xx.sin() * numq / denq)
+    }
+}
+
+/// Bessel function of the first kind (n=1)
+fn j1(x: f64) -> f64 {
+    let ax = x.abs();
+    if ax < 8f64 {
+        let (y, nump, denp) = rat(x, &J1R, &J1S, 6);
+        x * nump * (y - XJ01) * (y - XJ11) / denp
+    } else {
+        let (z, xx, nump, denp, numq, denq) = asp(ax, &J1PN, &J1PD, &J1QN, &J1QD, 3f64);
+        let ans = (TWOOPI / ax).sqrt() * (xx.cos() * nump / denp - z * xx.sin() * numq / denq);
+        if x < 0f64 {
+            -ans
+        } else {
+            ans
+        }
+    }
+}
+
+/// Bessel function of the second kind (n=0)
+fn y0(x: f64) -> f64 {
+    if x < 8f64 {
+        let j0x = j0(x);
+        let (_, nump, denp) = rat(x, &Y0R, &Y0S, 8);
+        nump / denp + TWOOPI * j0x * x.ln()
+    } else {
+        let ax = x;
+        let (z, xx, nump, denp, numq, denq) = asp(ax, &Y0PN, &Y0PD, &Y0QN, &Y0QD, 1f64);
+        (TWOOPI / ax).sqrt() * (xx.sin() * nump / denp + z * xx.cos() * numq / denq)
+    }
+}
+
+/// Bessel function of the second kind (n=1)
+fn y1(x: f64) -> f64 {
+    if x < 8f64 {
+        let j1x = j1(x);
+        let (_, nump, denp) = rat(x, &Y1R, &Y1S, 7);
+        x * nump / denp + TWOOPI * (j1x * x.ln() - 1f64 / x)
+    } else {
+        let ax = x;
+        let (z, xx, nump, denp, numq, denq) = asp(ax, &Y1PN, &Y1PD, &Y1QN, &Y1QD, 3f64);
+        (TWOOPI / ax).sqrt() * (xx.sin() * nump / denp + z * xx.cos() * numq / denq)
+    }
+}
+
+fn poly(x: f64, coef: &[f64], n: usize) -> f64 {
+    let mut ans = coef[n];
+    for i in (0..n).rev() {
+        ans = ans * x + coef[i];
+    }
+    ans
+}
+
+/// Modified Bessel function of the first kind (n=0)
+fn i0(x: f64) -> f64 {
+    let ax = x.abs();
+    if ax < 15f64 {
+        let y = x.powi(2);
+        poly(y, &I0P, 13) / poly(225f64 - y, &I0Q, 4)
+    } else {
+        let z = 1f64 - 15f64 / ax;
+        ax.exp() * poly(z, &I0PP, 4) / (ax.sqrt() * poly(z, &I0QQ, 5))
+    }
+}
+
+/// Modified Bessel function of the first kind (n=1)
+fn i1(x: f64) -> f64 {
+    let ax = x.abs();
+    if ax < 15f64 {
+        let y = x.powi(2);
+        x * poly(y, &I1P, 13) / poly(225f64 - y, &I1Q, 4)
+    } else {
+        let z = 1f64 - 15f64 / ax;
+        let ans = x.exp() * poly(z, &I1PP, 4) / (ax.sqrt() * poly(z, &I1QQ, 5));
+        if x < 0f64 {
+            -ans
+        } else {
+            ans
+        }
+    }
+}
+
+/// Modified Bessel function of the second kind (n=0)
+fn k0(x: f64) -> f64 {
+    if x <= 1f64 {
+        let z = x.powi(2);
+        let term = poly(z, &K0PI, 4) * x.ln() / poly(1f64 - z, &K0QI, 2);
+        poly(z, &K0P, 4) / poly(1f64 - z, &K0Q, 2) - term
+    } else {
+        let z = 1f64 / x;
+        (-x).exp() * poly(z, &K0PP, 7) / (x.sqrt() * poly(z, &K0QQ, 7))
+    }
+}
+
+/// Modified Bessel function of the second kind (n=1)
+fn k1(x: f64) -> f64 {
+    if x <= 1f64 {
+        let z = x.powi(2);
+        let term = poly(z, &K1PI, 4) * x.ln() / poly(1f64 - z, &K1QI, 2);
+        x * (poly(z, &K1P, 4) / poly(1f64 - z, &K1Q, 2) + term) + 1f64 / x
+    } else {
+        let z = 1f64 / x;
+        (-x).exp() * poly(z, &K1PP, 7) / (x.sqrt() * poly(z, &K1QQ, 7))
+    }
+}
+
+fn chebev(x: f64, c: &[f64], m: usize) -> f64 {
+    let mut d = 0f64;
+    let mut dd = 0f64;
+    for j in (1..m).rev() {
+        let sv = d;
+        d = 2f64 * x * d - dd + c[j];
+        dd = sv;
+    }
+    x * d - dd + 0.5 * c[0]
+}
+
+const C1: [f64; 7] = [
+    -1.142022680371168e0,
+    6.5165112670737e-3,
+    3.087090173086e-4,
+    -3.4706269649e-6,
+    6.9437664e-9,
+    3.67795e-11,
+    -1.356e-13,
+];
+
+const C2: [f64; 8] = [
+    1.843740587300905e0,
+    -7.68528408447867e-2,
+    1.2719271366546e-3,
+    -4.9717367042e-6,
+    -3.31261198e-8,
+    2.423096e-10,
+    -1.702e-13,
+    -1.49e-15,
+];
 
 const XJ00: f64 = 5.783185962946785;
 const XJ10: f64 = 3.047126234366209e1;
