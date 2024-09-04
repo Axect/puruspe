@@ -1,3 +1,13 @@
+//! This module provides implementations of Bessel functions and related functions.
+//! 
+//! It includes the following main functions:
+//! - `Jn`: Calculates the Bessel function of the first kind of integer order.
+//! - `Yn`: Calculates the Bessel function of the second kind of integer order.
+//! - `In`: Calculates the modified Bessel function of the first kind of integer order.
+//! - `Kn`: Calculates the modified Bessel function of the second kind of integer order.
+//! - `Jnu_Ynu`: Calculates Bessel functions of the first and second kind for non-integer order.
+//! - `Inu_Knu`: Calculates modified Bessel functions of the first and second kind for non-integer order.
+
 use crate::utils::{frexp, ldexp};
 use std::collections::HashMap;
 

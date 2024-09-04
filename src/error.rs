@@ -1,3 +1,11 @@
+//! This module provides implementations of the error function and related functions.
+//! 
+//! It includes the following main functions:
+//! - `erf`: Calculates the error function.
+//! - `erfc`: Calculates the complementary error function.
+//! - `inverf`: Calculates the inverse of the error function.
+//! - `inverfc`: Calculates the inverse of the complementary error function.
+
 /// Calculates the error function.
 ///
 /// The error function is defined as:

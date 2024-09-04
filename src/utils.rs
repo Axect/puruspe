@@ -1,7 +1,16 @@
-// =============================================================================
-// Utils
-// =============================================================================
-/// Just factorial
+//! This module provides utility functions used throughout the library.
+//!
+//! It includes the following main functions:
+//! - `factorial`: Calculates the factorial of a non-negative integer.
+//! - `rising_factorial`: Computes the rising factorial (also known as Pochhammer function).
+//! - `frexp`: Decomposes a floating-point number into its mantissa and exponent.
+//! - `ldexp`: Multiplies a floating-point number by a power of two.
+//! - `sign`: Returns a value with the magnitude of one argument and the sign of another.
+//!
+//! These utility functions are primarily used internally by other functions in the library,
+//! but they may also be useful for users who need to perform similar calculations.
+
+/// Precise implementation of factorial
 pub fn factorial(n: usize) -> f64 {
     rising_factorial(1f64, n)
 }

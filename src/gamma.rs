@@ -1,3 +1,12 @@
+//! This module provides implementations of the gamma function and related functions.
+//! 
+//! It includes the following main functions:
+//! - `ln_gamma`: Calculates the natural logarithm of the gamma function.
+//! - `gamma`: Calculates the gamma function.
+//! - `gammp`: Calculates the regularized lower incomplete gamma function.
+//! - `gammq`: Calculates the regularized upper incomplete gamma function.
+//! - `invgammp`: Calculates the inverse of the regularized lower incomplete gamma function.
+
 use crate::utils::factorial;
 use crate::{EPS, FPMIN, W, Y};
 use std::f64::consts::PI;

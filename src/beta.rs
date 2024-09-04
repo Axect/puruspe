@@ -1,9 +1,13 @@
+//! This module provides implementations of the beta function and related functions.
+//! 
+//! It includes the following main functions:
+//! - `beta`: Calculates the beta function.
+//! - `betai`: Calculates the regularized incomplete beta function.
+//! - `invbetai`: Calculates the inverse of the regularized incomplete beta function.
+
 use crate::{ln_gamma, EPS, FPMIN, W, Y};
 const SWITCH: usize = 3000;
 
-// =============================================================================
-// Beta function
-// =============================================================================
 /// Calculates the beta function.
 ///
 /// The beta function is defined as:
