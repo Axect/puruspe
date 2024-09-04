@@ -6,12 +6,77 @@ const NGAU: usize = 18;
 const G: f64 = 5f64;
 const N: usize = 7;
 
+/// Calculates the natural logarithm of the gamma function.
+///
+/// The gamma function is defined as:
+///
+/// $$ \Gamma(z) = \int_0^\infty t^{z-1} e^{-t} dt $$
+///
+/// This function computes $\ln(\Gamma(z))$.
+///
+/// # Arguments
+///
+/// * `z` - The input value
+///
+/// # Returns
+///
+/// The natural logarithm of the gamma function at `z`
+pub fn ln_gamma(z: f64) -> f64 {
+    let z = z - 1f64;
+    let base = z + G + 0.5;
+    let mut s = 0f64;
+    for i in 1..N {
+        s += LG5N7[i] / (z + i as f64);
+    }
+    s += LG5N7[0];
+    (2f64 * PI).sqrt().ln() + s.ln() - base + base.ln() * (z + 0.5)
+}
+
+/// Calculates the gamma function.
+///
+/// The gamma function is defined as:
+///
+/// $$ \Gamma(z) = \int_0^\infty t^{z-1} e^{-t} dt $$
+///
+/// # Arguments
+///
+/// * `z` - The input value
+///
+/// # Returns
+///
+/// The value of the gamma function at `z`
+pub fn gamma(z: f64) -> f64 {
+    if z > 1f64 {
+        let z_int = z as usize;
+        if (z - (z_int as f64)).abs() < EPS {
+            return factorial(z_int - 1);
+        }
+    }
+
+    if z < 0.5 {
+        PI / ((PI * z).sin() * gamma(1f64 - z))
+    } else {
+        ln_gamma(z).exp()
+    }
+}
+
 // =============================================================================
 // Incomplete Gamma function (regularized)
 // =============================================================================
-/// Incomplete Gamma function P(a,x)
+/// Calculates the regularized lower incomplete gamma function P(a,x).
 ///
-/// $$P(a,x) = \frac{1}{\Gamma(a)} \int_0^x t^{a-1} e^{-t} dt$$
+/// The regularized lower incomplete gamma function is defined as:
+///
+/// $$ P(a,x) = \frac{\gamma(a,x)}{\Gamma(a)} = \frac{1}{\Gamma(a)} \int_0^x t^{a-1} e^{-t} dt $$
+///
+/// # Arguments
+///
+/// * `a` - The shape parameter
+/// * `x` - The upper limit of integration
+///
+/// # Returns
+///
+/// The value of P(a,x)
 pub fn gammp(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {
@@ -28,9 +93,22 @@ pub fn gammp(a: f64, x: f64) -> f64 {
     }
 }
 
-/// Incomplete Gamma function Q(a,x)
+/// Calculates the regularized upper incomplete gamma function Q(a,x).
 ///
-/// $$Q(a,x) = 1 - P(a,x)$$
+/// The regularized upper incomplete gamma function is defined as:
+///
+/// $$ Q(a,x) = \frac{\Gamma(a,x)}{\Gamma(a)} = \frac{1}{\Gamma(a)} \int_x^\infty t^{a-1} e^{-t} dt $$
+///
+/// Note that $Q(a,x) = 1 - P(a,x)$.
+///
+/// # Arguments
+///
+/// * `a` - The shape parameter
+/// * `x` - The lower limit of integration
+///
+/// # Returns
+///
+/// The value of Q(a,x)
 pub fn gammq(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
     if x == 0f64 {
@@ -135,7 +213,20 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     }
 }
 
-/// Inverse Incomplete Gamma function
+/// Calculates the inverse of the regularized lower incomplete gamma function.
+///
+/// This function finds x such that:
+///
+/// $$ p = P(a,x) = \frac{1}{\Gamma(a)} \int_0^x t^{a-1} e^{-t} dt $$
+///
+/// # Arguments
+///
+/// * `p` - The probability value (between 0 and 1)
+/// * `a` - The shape parameter
+///
+/// # Returns
+///
+/// The value of x for which P(a,x) = p
 pub fn invgammp(p: f64, a: f64) -> f64 {
     let gln = ln_gamma(a);
     let a1 = a - 1f64;
@@ -208,31 +299,3 @@ const LG5N7: [f64; 7] = [
     0.0012086577526594748,
     -0.00000539702438713199,
 ];
-
-/// Logarithm Gamma
-pub fn ln_gamma(z: f64) -> f64 {
-    let z = z - 1f64;
-    let base = z + G + 0.5;
-    let mut s = 0f64;
-    for i in 1..N {
-        s += LG5N7[i] / (z + i as f64);
-    }
-    s += LG5N7[0];
-    (2f64 * PI).sqrt().ln() + s.ln() - base + base.ln() * (z + 0.5)
-}
-
-/// Gamma function
-pub fn gamma(z: f64) -> f64 {
-    if z > 1f64 {
-        let z_int = z as usize;
-        if (z - (z_int as f64)).abs() < EPS {
-            return factorial(z_int - 1);
-        }
-    }
-
-    if z < 0.5 {
-        PI / ((PI * z).sin() * gamma(1f64 - z))
-    } else {
-        ln_gamma(z).exp()
-    }
-}
