@@ -436,6 +436,16 @@ impl CachedBesselJY {
         Self(HashMap::new())
     }
 
+    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
+    /// 
+    /// The cache will be able to hold at least `capacity` elements without reallocating. 
+    /// This method is allowed to allocate for more elements than `capacity`. 
+    /// If `capacity` is 0, the cache will not allocate.
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(HashMap::with_capacity(capacity))
+    }
+
     /// Get the values and derivatives of the Bessel functions of the first and second kind for non-integer order.
     /// 
     /// If the values are in the cache they are just returned, otherwise they are calculated and
@@ -679,6 +689,16 @@ impl CachedBesselIK {
         Self(HashMap::new())
     }
 
+    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
+    /// 
+    /// The cache will be able to hold at least `capacity` elements without reallocating. 
+    /// This method is allowed to allocate for more elements than `capacity`. 
+    /// If `capacity` is 0, the cache will not allocate.
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(HashMap::with_capacity(capacity))
+    }
+
     /// Calculates the values and derivatives of the modified Bessel functions of the first and second kind 
     /// for non-integer order with cached results.
     ///
@@ -776,6 +796,16 @@ impl CachedJnuYnu {
         Self(HashMap::new())
     }
 
+    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
+    /// 
+    /// The cache will be able to hold at least `capacity` elements without reallocating. 
+    /// This method is allowed to allocate for more elements than `capacity`. 
+    /// If `capacity` is 0, the cache will not allocate.
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(HashMap::with_capacity(capacity))
+    }
+
     /// Calculates the values of the Bessel functions of the first and second kind for non-integer order.
     ///
     /// If the values are in the cache they are just returned, otherwise they are calculated and
@@ -867,6 +897,16 @@ impl CachedInuKnu {
     #[inline]
     pub fn new() -> Self {
         Self(HashMap::new())
+    }
+
+    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
+    /// 
+    /// The cache will be able to hold at least `capacity` elements without reallocating. 
+    /// This method is allowed to allocate for more elements than `capacity`. 
+    /// If `capacity` is 0, the cache will not allocate.
+    #[inline]
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self(HashMap::with_capacity(capacity))
     }
 
     /// Cached modified Bessel functions of the first and second kind for non-integer order
