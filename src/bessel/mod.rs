@@ -10,6 +10,14 @@
 
 use crate::utils::{frexp, ldexp};
 use std::collections::HashMap;
+pub mod cache_iterators;
+
+use cache_iterators::{
+    CachedJnuYnuArguments, CachedJnuYnuIter, CachedJnuYnuValues,
+    CachedInuKnuArguments, CachedInuKnuIter, CachedInuKnuValues,
+    CachedBesselIKArguments, CachedBesselIKIter, CachedBesselIKValues,
+    CachedBesselJYArguments, CachedBesselJYIter, CachedBesselJYValues
+};
 
 /// Calculates the Bessel function of the first kind of order n.
 ///
@@ -448,7 +456,7 @@ impl CachedBesselJY {
 
     /// Get the values and derivatives of the Bessel functions of the first and second kind for non-integer order.
     /// 
-    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// If the values corresponding to the *exact* input are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
     /// 
     ///  # Arguments
@@ -508,6 +516,32 @@ impl CachedBesselJY {
     #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    /// Returns an iterator that visits each argument-function value pair in the cache in arbitrary order.
+    #[inline]
+    pub fn iter(&self) -> CachedBesselJYIter<'_> {
+        CachedBesselJYIter::new(
+            self.0.iter()
+        )
+    }
+
+    /// Returns an iterator that visits all the cached function inputs (`nu` and `x` values) in arbitrary order.
+    #[inline]
+    pub fn arguments(&self) -> CachedBesselJYArguments<'_> {
+        CachedBesselJYArguments::new(self.0.keys())
+    }
+
+    /// Returns an iterator that visits all the cached function values in arbirary order.
+    #[inline]
+    pub fn values(&self) -> CachedBesselJYValues<'_> {
+        CachedBesselJYValues::new(self.0.values())
+    }
+
+    /// Removes a function argument from the cache, returning the function values that correspond to it.
+    #[inline]
+    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64, f64, f64)> {
+        self.0.remove(&(nu.to_bits(), x.to_bits()))
     }
 }
 
@@ -702,7 +736,7 @@ impl CachedBesselIK {
     /// Calculates the values and derivatives of the modified Bessel functions of the first and second kind 
     /// for non-integer order with cached results.
     ///
-    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// If the values corresponding to the *exact* input are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
     /// 
     /// # Arguments
@@ -767,6 +801,32 @@ impl CachedBesselIK {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+
+    /// Returns an iterator that visits each argument-function value pair in the cache in arbitrary order.
+    #[inline]
+    pub fn iter(&self) -> CachedBesselIKIter<'_> {
+        CachedBesselIKIter::new(
+            self.0.iter()
+        )
+    }
+
+    /// Returns an iterator that visits all the cached function inputs (`nu` and `x` values) in arbitrary order.
+    #[inline]
+    pub fn arguments(&self) -> CachedBesselIKArguments<'_> {
+        CachedBesselIKArguments::new(self.0.keys())
+    }
+
+    /// Returns an iterator that visits all the cached function values in arbirary order.
+    #[inline]
+    pub fn values(&self) -> CachedBesselIKValues<'_> {
+        CachedBesselIKValues::new(self.0.values())
+    }
+
+    /// Removes a function argument from the cache, returning the function values that correspond to it.
+    #[inline]
+    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64, f64, f64)> {
+        self.0.remove(&(nu.to_bits(), x.to_bits()))
+    }
 }
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
@@ -808,7 +868,7 @@ impl CachedJnuYnu {
 
     /// Calculates the values of the Bessel functions of the first and second kind for non-integer order.
     ///
-    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// If the values corresponding to the *exact* input are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
     /// 
     /// # Arguments
@@ -868,6 +928,32 @@ impl CachedJnuYnu {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+
+    /// Returns an iterator that visits each argument-function value pair in the cache in arbitrary order.
+    #[inline]
+    pub fn iter(&self) -> CachedJnuYnuIter<'_> {
+        CachedJnuYnuIter::new(
+            self.0.iter()
+        )
+    }
+
+    /// Returns an iterator that visits all the cached function inputs (`nu` and `x` values) in arbitrary order.
+    #[inline]
+    pub fn arguments(&self) -> CachedJnuYnuArguments<'_> {
+        CachedJnuYnuArguments::new(self.0.keys())
+    }
+
+    /// Returns an iterator that visits all the cached function values in arbirary order.
+    #[inline]
+    pub fn values(&self) -> CachedJnuYnuValues<'_> {
+        CachedJnuYnuValues::new(self.0.values())
+    }
+
+    /// Removes a function argument from the cache, returning the function values that correspond to it.
+    #[inline]
+    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64)> {
+        self.0.remove(&(nu.to_bits(), x.to_bits()))
+    }
 }
 
 /// Calculates the modified Bessel functions of the first and second kind for non-integer order.
@@ -911,7 +997,7 @@ impl CachedInuKnu {
 
     /// Cached modified Bessel functions of the first and second kind for non-integer order
     ///
-    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// If the values corresponding to the *exact* input are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
     /// 
     /// # Arguments
@@ -968,6 +1054,32 @@ impl CachedInuKnu {
     #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    /// Returns an iterator that visits each argument-function value pair in the cache in arbitrary order.
+    #[inline]
+    pub fn iter(&self) -> CachedInuKnuIter<'_> {
+        CachedInuKnuIter::new(
+            self.0.iter()
+        )
+    }
+
+    /// Returns an iterator that visits all the cached function inputs (`nu` and `x` values) in arbitrary order.
+    #[inline]
+    pub fn arguments(&self) -> CachedInuKnuArguments<'_> {
+        CachedInuKnuArguments::new(self.0.keys())
+    }
+
+    /// Returns an iterator that visits all the cached function values in arbirary order.
+    #[inline]
+    pub fn values(&self) -> CachedInuKnuValues<'_> {
+        CachedInuKnuValues::new(self.0.values())
+    }
+
+    /// Removes a function argument from the cache, returning the function values that correspond to it.
+    #[inline]
+    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64)> {
+        self.0.remove(&(nu.to_bits(), x.to_bits()))
     }
 }
 
