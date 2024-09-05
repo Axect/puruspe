@@ -469,6 +469,12 @@ impl CachedBesselJY {
         }
     }
 
+    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
+    #[inline]
+    pub fn contains(&self, nu: f64, x: f64) -> bool {
+        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
+    }
+
     /// Returns the number of elements in the cache.
     #[inline]
     pub fn len(&self) -> usize {
@@ -691,6 +697,18 @@ impl CachedBesselIK {
             res
         }
     }
+
+    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
+    #[inline]
+    pub fn contains(&self, nu: f64, x: f64) -> bool {
+        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
+    }
+
+    /// Returns the number of elements in the cache.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.0.len()
+    }
 }
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
@@ -750,6 +768,12 @@ impl CachedJnuYnu {
             self.0.insert((nu.to_bits(), x.to_bits()), res);
             res
         }
+    }
+
+    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
+    #[inline]
+    pub fn contains(&self, nu: f64, x: f64) -> bool {
+        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
     /// Returns the number of elements in the cache.
@@ -816,6 +840,12 @@ impl CachedInuKnu {
             self.0.insert((nu.to_bits(), x.to_bits()), res);
             res
         }
+    }
+
+    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
+    #[inline]
+    pub fn contains(&self, nu: f64, x: f64) -> bool {
+        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
     /// Returns the number of elements in the cache.
