@@ -25,6 +25,8 @@ mod cached_jnu_ynu {
             self.0.next()
         }
 
+        // We override the provided implementations because the underlying iterators from the hash map have faster implementations of these operations.
+
         #[inline]
         fn size_hint(&self) -> (usize, Option<usize>) {
             self.0.size_hint()
