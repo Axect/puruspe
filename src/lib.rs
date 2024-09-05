@@ -23,7 +23,7 @@ pub use dawson::dawson;
 
 pub mod bessel;
 pub use bessel::{
-    besselik, besseljy, CachedInuKnu, CachedJnuYnu, CachedBesselIK, CachedBesselJY, In,
+    besselik, besseljy, CachedBesselIK, CachedBesselJY, CachedBesselIKIpKp, CachedBesselJYJpYp, In,
     Inu_Knu, Jn, Jnu_Ynu, Kn, Yn,
 };
 

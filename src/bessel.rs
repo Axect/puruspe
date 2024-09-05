@@ -426,9 +426,9 @@ pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
 /// A cache of the values and derivaties of the Bessel functions
 /// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct CachedBesselJY(HashMap<(u64, u64), (f64, f64, f64, f64)>);
+pub struct CachedBesselJYJpYp(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
-impl CachedBesselJY {
+impl CachedBesselJYJpYp {
     /// Create a new cache of the values and derivaties of the Bessel functions
     /// of the first and second kind for non-integer order.
     #[inline]
@@ -459,7 +459,7 @@ impl CachedBesselJY {
     /// 
     /// Panics if `x` is less than or equal to 0 or if `nu` is less than 0.
     /// Also panics if `x` is too large or the implementation fails to converge.
-    pub fn besseljy(&mut self, nu: f64, x: f64) -> (f64, f64, f64, f64) {
+    pub fn bessel_jy_jpyp(&mut self, nu: f64, x: f64) -> (f64, f64, f64, f64) {
         if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
             res
         } else {
@@ -644,9 +644,9 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
 /// A cache of the values and derivaties of the modified Bessel functions
 /// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct CachedBesselIK(HashMap<(u64, u64), (f64, f64, f64, f64)>);
+pub struct CachedBesselIKIpKp(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
-impl CachedBesselIK {
+impl CachedBesselIKIpKp {
 
     /// Create a new cache of the values and derivaties of the modified Bessel functions
     /// of the first and second kind for non-integer order.
@@ -678,7 +678,7 @@ impl CachedBesselIK {
     /// 
     /// Panics if `x` is less than or equal to 0, or if `nu` is less than zero.
     /// Also panics `x` is too large or the implementation fails to converge.
-    pub fn besselik(
+    pub fn bessel_ik_ipkp(
         nu: f64,
         x: f64,
         cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>,
@@ -711,9 +711,9 @@ pub fn Jnu_Ynu(nu: f64, x: f64) -> (f64, f64) {
 
 /// A cache of the values of the Bessel functions of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct CachedJnuYnu(HashMap<(u64, u64), (f64, f64)>);
+pub struct CachedBesselJY(HashMap<(u64, u64), (f64, f64)>);
 
-impl CachedJnuYnu {
+impl CachedBesselJY {
     /// Create a new cache of the values of the Bessel functions of the first and second kind for non-integer order.
     #[inline]
     pub fn new() -> Self {
@@ -741,8 +741,7 @@ impl CachedJnuYnu {
     /// 
     /// Panics if `x` is less than or equal to zero or if `nu` is less than zero.
     /// Also panics if `x` is too large or the implementation fails to converge.
-    #[allow(non_snake_case)]
-    pub fn Jnu_Ynu(&mut self, nu: f64, x: f64) -> (f64, f64) {
+    pub fn bessel_jy(&mut self, nu: f64, x: f64) -> (f64, f64) {
         if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
             res
         } else {
@@ -778,9 +777,9 @@ pub fn Inu_Knu(nu: f64, x: f64) -> (f64, f64) {
 /// A cache of the values of the modified Bessel functions 
 /// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
-pub struct CachedInuKnu(HashMap<(u64, u64), (f64, f64)>);
+pub struct CachedBesselIK(HashMap<(u64, u64), (f64, f64)>);
 
-impl CachedInuKnu {
+impl CachedBesselIK {
     /// Create a new cache of the values of the modified Bessel functions
     /// of the first and second kind for non-integer order.
     #[inline]
@@ -807,8 +806,7 @@ impl CachedInuKnu {
     /// 
     /// Panics if `x` is smaller than or equal to zero, or if `nu` is smaller than 0.
     /// Also panics if `x` is too large or if the implementation fails to converge.
-    #[allow(non_snake_case)]
-    pub fn Inu_Knu(&mut self, nu: f64, x: f64) -> (f64, f64) {
+    pub fn bessel_ik(&mut self, nu: f64, x: f64) -> (f64, f64) {
         if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
             res
         } else {
