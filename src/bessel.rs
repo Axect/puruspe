@@ -424,19 +424,19 @@ pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
 }
 
 /// A cache of the values and derivaties of the Bessel functions
-/// of the first and second kind.
+/// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CachedBesselJY(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
 impl CachedBesselJY {
     /// Create a new cache of the values and derivaties of the Bessel functions
-    /// of the first and second kind.
+    /// of the first and second kind for non-integer order.
     #[inline]
     pub fn new() -> Self {
         Self(HashMap::new())
     }
 
-    /// Get the values and derivatives of the Bessel functions of the first and second kind.
+    /// Get the values and derivatives of the Bessel functions of the first and second kind for non-integer order.
     /// 
     /// If the values are in the cache they are just returned, otherwise they are calculated and
     /// inserted in the cache.
@@ -641,22 +641,25 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     (io, ko, ipo, kpo)
 }
 
-/// A cache of the values and derivaties of the Bessel functions
+/// A cache of the values and derivaties of the modified Bessel functions
 /// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CachedBesselIK(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
 impl CachedBesselIK {
 
-    /// Create a new cache of the values and derivaties of the Bessel functions
+    /// Create a new cache of the values and derivaties of the modified Bessel functions
     /// of the first and second kind for non-integer order.
     pub fn new() -> Self {
         Self(HashMap::new())
     }
 
-    /// Calculates the values and derivatives of the Bessel functions of the first and second kind 
+    /// Calculates the values and derivatives of the modified Bessel functions of the first and second kind 
     /// for non-integer order with cached results.
     ///
+    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// inserted in the cache.
+    /// 
     /// # Arguments
     ///
     /// - `nu` - The order of the Bessel function (non-negative real number)
@@ -706,19 +709,22 @@ pub fn Jnu_Ynu(nu: f64, x: f64) -> (f64, f64) {
     (jo, yo)
 }
 
-/// A cache of the values of the Bessel functions for non-integer order.
+/// A cache of the values of the Bessel functions of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CachedJnuYnu(HashMap<(u64, u64), (f64, f64)>);
 
 impl CachedJnuYnu {
-    /// Create a new cache of the values of the Bessel functions for non-integer order.
+    /// Create a new cache of the values of the Bessel functions of the first and second kind for non-integer order.
     #[inline]
     pub fn new() -> Self {
         Self(HashMap::new())
     }
 
-    /// Calculates the Bessel functions of the first and second kind for non-integer order with cached results.
+    /// Calculates the values of the Bessel functions of the first and second kind for non-integer order.
     ///
+    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// inserted in the cache.
+    /// 
     /// # Arguments
     /// 
     /// - `nu` - Order of the Bessel function (nu >= 0)
@@ -782,8 +788,11 @@ impl CachedInuKnu {
         Self(HashMap::new())
     }
 
-    /// Cached modified Bessel functions for non-integer order
+    /// Cached modified Bessel functions of the first and second kind for non-integer order
     ///
+    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// inserted in the cache.
+    /// 
     /// # Arguments
     ///
     /// - `nu` - Order of the Bessel function (nu >= 0)
