@@ -26,7 +26,7 @@ use std::collections::HashMap;
 ///
 /// The value of $J_n(x)$
 #[allow(non_snake_case)]
-pub fn Jn(n: u64, x: f64) -> f64 {
+pub fn Jn(n: u32, x: f64) -> f64 {
     let n_f64 = n as f64;
     let acc = 160f64;
     let iexp = f64::MAX_EXP / 2;
@@ -104,7 +104,7 @@ pub fn Jn(n: u64, x: f64) -> f64 {
 ///
 /// The value of $Y_n(x)$
 #[allow(non_snake_case)]
-pub fn Yn(n: u64, x: f64) -> f64 {
+pub fn Yn(n: u32, x: f64) -> f64 {
     if n == 0 {
         y0(x)
     } else if n == 1 {
@@ -139,7 +139,7 @@ pub fn Yn(n: u64, x: f64) -> f64 {
 ///
 /// The value of I_n(x)
 #[allow(non_snake_case)]
-pub fn In(n: u64, x: f64) -> f64 {
+pub fn In(n: u32, x: f64) -> f64 {
     let acc = 200f64;
     let iexp = f64::MAX_EXP / 2;
     let n_f64 = n as f64;
@@ -194,7 +194,7 @@ pub fn In(n: u64, x: f64) -> f64 {
 ///
 /// The value of $K_n(x)$
 #[allow(non_snake_case)]
-pub fn Kn(n: u64, x: f64) -> f64 {
+pub fn Kn(n: u32, x: f64) -> f64 {
     if n == 0 {
         k0(x)
     } else if n == 1 {
