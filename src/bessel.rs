@@ -475,6 +475,12 @@ impl CachedBesselJY {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
+    /// Clears the contents of the cache.
+    #[inline]
+    pub fn clear(&mut self) {
+        self.0.clear()
+    }
+
     /// Returns the number of elements in the cache.
     #[inline]
     pub fn len(&self) -> usize {
@@ -704,6 +710,12 @@ impl CachedBesselIK {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
+    /// Clears the contents of the cache.
+    #[inline]
+    pub fn clear(&mut self) {
+        self.0.clear()
+    }
+
     /// Returns the number of elements in the cache.
     #[inline]
     pub fn len(&self) -> usize {
@@ -776,6 +788,12 @@ impl CachedJnuYnu {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
+    /// Clears the contents of the cache.
+    #[inline]
+    pub fn clear(&mut self) {
+        self.0.clear()
+    }
+
     /// Returns the number of elements in the cache.
     #[inline]
     pub fn len(&self) -> usize {
@@ -846,6 +864,12 @@ impl CachedInuKnu {
     #[inline]
     pub fn contains(&self, nu: f64, x: f64) -> bool {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
+    }
+
+    /// Clears the contents of the cache.
+    #[inline]
+    pub fn clear(&mut self) {
+        self.0.clear()
     }
 
     /// Returns the number of elements in the cache.
