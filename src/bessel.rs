@@ -26,7 +26,7 @@ use std::collections::HashMap;
 ///
 /// The value of $J_n(x)$
 #[allow(non_snake_case)]
-pub fn Jn(n: usize, x: f64) -> f64 {
+pub fn Jn(n: u64, x: f64) -> f64 {
     let n_f64 = n as f64;
     let acc = 160f64;
     let iexp = f64::MAX_EXP / 2;
@@ -52,7 +52,7 @@ pub fn Jn(n: usize, x: f64) -> f64 {
             ans = bj;
         } else {
             let tox = 2.0 / ax;
-            let m = 2 * ((n + (acc * n_f64).sqrt() as usize) / 2);
+            let m = 2 * ((n + (acc * n_f64).sqrt() as u64) / 2);
             let mut jsum = false;
             let mut bjp = 0f64;
             let mut sum = 0f64;
@@ -104,7 +104,7 @@ pub fn Jn(n: usize, x: f64) -> f64 {
 ///
 /// The value of $Y_n(x)$
 #[allow(non_snake_case)]
-pub fn Yn(n: usize, x: f64) -> f64 {
+pub fn Yn(n: u64, x: f64) -> f64 {
     if n == 0 {
         y0(x)
     } else if n == 1 {
@@ -139,7 +139,7 @@ pub fn Yn(n: usize, x: f64) -> f64 {
 ///
 /// The value of I_n(x)
 #[allow(non_snake_case)]
-pub fn In(n: usize, x: f64) -> f64 {
+pub fn In(n: u64, x: f64) -> f64 {
     let acc = 200f64;
     let iexp = f64::MAX_EXP / 2;
     let n_f64 = n as f64;
@@ -154,7 +154,7 @@ pub fn In(n: usize, x: f64) -> f64 {
         let mut bip = 0f64;
         let mut ans = 0f64;
         let mut bi = 1f64;
-        for j in (1..2 * (n + (acc * n_f64).sqrt() as usize)).rev() {
+        for j in (1..2 * (n + (acc * n_f64).sqrt() as u64)).rev() {
             let bim = j as f64 * tox * bi + bip;
             bip = bi;
             bi = bim;
@@ -194,7 +194,7 @@ pub fn In(n: usize, x: f64) -> f64 {
 ///
 /// The value of $K_n(x)$
 #[allow(non_snake_case)]
-pub fn Kn(n: usize, x: f64) -> f64 {
+pub fn Kn(n: u64, x: f64) -> f64 {
     if n == 0 {
         k0(x)
     } else if n == 1 {
