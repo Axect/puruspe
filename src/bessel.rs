@@ -510,7 +510,7 @@ impl CachedBesselJY {
         self.0.len()
     }
 
-    /// Shrink the cache as much as possible.
+    /// Shrink the cache as much as possible without removing elements.
     #[inline]
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
@@ -773,7 +773,7 @@ impl CachedBesselIK {
         self.0.len()
     }
 
-    /// Shrink the cache as much as possible.
+    /// Shrink the cache as much as possible without removing elements.
     #[inline]
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
@@ -880,7 +880,7 @@ impl CachedJnuYnu {
         self.0.len()
     }
 
-    /// Shrink the cache as much as possible.
+    /// Shrink the cache as much as possible without removing elements.
     #[inline]
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
@@ -989,7 +989,7 @@ impl CachedInuKnu {
         self.0.len()
     }
 
-    /// Shrink the cache as much as possible.
+    /// Shrink the cache as much as possible without removing elements.
     #[inline]
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
