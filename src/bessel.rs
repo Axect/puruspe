@@ -475,10 +475,17 @@ impl CachedBesselJY {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
-    /// Clears the contents of the cache.
+    /// Clears the cache. Keeps the allocated memory for reuse.
     #[inline]
     pub fn clear(&mut self) {
         self.0.clear()
+    }
+
+    /// If the given `nu` and `x` values have function values associated with them in the cache,
+    /// this function returns them.
+    #[inline]
+    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64, f64, f64)> {
+        self.0.get(&(nu.to_bits(), x.to_bits()))
     }
 
     /// Returns the number of elements in the cache.
@@ -710,10 +717,17 @@ impl CachedBesselIK {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
-    /// Clears the contents of the cache.
+    /// Clears the cache. Keeps the allocated memory for reuse.
     #[inline]
     pub fn clear(&mut self) {
         self.0.clear()
+    }
+
+    /// If the given `nu` and `x` values have function values associated with them in the cache,
+    /// this function returns them.
+    #[inline]
+    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64, f64, f64)> {
+        self.0.get(&(nu.to_bits(), x.to_bits()))
     }
 
     /// Returns the number of elements in the cache.
@@ -788,10 +802,17 @@ impl CachedJnuYnu {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
-    /// Clears the contents of the cache.
+    /// Clears the cache. Keeps the allocated memory for reuse.
     #[inline]
     pub fn clear(&mut self) {
         self.0.clear()
+    }
+
+    /// If the given `nu` and `x` values have function values associated with them in the cache,
+    /// this function returns them.
+    #[inline]
+    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64)> {
+        self.0.get(&(nu.to_bits(), x.to_bits()))
     }
 
     /// Returns the number of elements in the cache.
@@ -866,10 +887,17 @@ impl CachedInuKnu {
         self.0.contains_key(&(nu.to_bits(), x.to_bits()))
     }
 
-    /// Clears the contents of the cache.
+    /// Clears the cache. Keeps the allocated memory for reuse.
     #[inline]
     pub fn clear(&mut self) {
         self.0.clear()
+    }
+
+    /// If the given `nu` and `x` values have function values associated with them in the cache,
+    /// this function returns them.
+    #[inline]
+    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64)> {
+        self.0.get(&(nu.to_bits(), x.to_bits()))
     }
 
     /// Returns the number of elements in the cache.
