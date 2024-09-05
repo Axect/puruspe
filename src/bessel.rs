@@ -439,7 +439,7 @@ impl CachedBesselJYJpYp {
     /// Get the values and derivatives of the Bessel functions of the first and second kind for non-integer order.
     /// 
     /// If the values are in the cache they are just returned, otherwise they are calculated and
-    /// inserted in the cache.
+    /// inserted into the cache.
     /// 
     ///  # Arguments
     ///
@@ -658,7 +658,7 @@ impl CachedBesselIKIpKp {
     /// for non-integer order with cached results.
     ///
     /// If the values are in the cache they are just returned, otherwise they are calculated and
-    /// inserted in the cache.
+    /// inserted into the cache.
     /// 
     /// # Arguments
     ///
@@ -723,7 +723,7 @@ impl CachedBesselJY {
     /// Calculates the values of the Bessel functions of the first and second kind for non-integer order.
     ///
     /// If the values are in the cache they are just returned, otherwise they are calculated and
-    /// inserted in the cache.
+    /// inserted into the cache.
     /// 
     /// # Arguments
     /// 
@@ -790,7 +790,7 @@ impl CachedBesselIK {
     /// Cached modified Bessel functions of the first and second kind for non-integer order
     ///
     /// If the values are in the cache they are just returned, otherwise they are calculated and
-    /// inserted in the cache.
+    /// inserted into the cache.
     /// 
     /// # Arguments
     ///
