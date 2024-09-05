@@ -423,31 +423,56 @@ pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     (jo, yo, jpo, ypo)
 }
 
-/// Cached Bessel functions of the first and second kind for non-integer order
-///
-/// # Arguments
-///
-/// - `nu` - The order of the Bessel function (non-negative real number)
-/// - `x` - The input value (positive real number)
-/// - `cache` - The cache to store the results (HashMap)
-///
-/// # Returns
-///
-/// - `J_nu(x)` - Bessel function of the first kind
-/// - `Y_nu(x)` - Bessel function of the second kind
-/// - `J_nu'(x)` - Derivative of the Bessel function of the first kind
-/// - `Y_nu'(x)` - Derivative of the Bessel function of the second kind
-pub fn cached_besseljy(
-    nu: f64,
-    x: f64,
-    cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>,
-) -> (f64, f64, f64, f64) {
-    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
-        res
-    } else {
-        let res = besseljy(nu, x);
-        cache.insert((nu.to_bits(), x.to_bits()), res);
-        res
+/// A cache of the values and derivaties of the Bessel functions
+/// of the first and second kind.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct CachedBesselJY(HashMap<(u64, u64), (f64, f64, f64, f64)>);
+
+impl CachedBesselJY {
+    /// Create a new cache of the values and derivaties of the Bessel functions
+    /// of the first and second kind.
+    #[inline]
+    pub fn new() -> Self {
+        Self(HashMap::new())
+    }
+
+    /// Get the values and derivatives of the Bessel functions of the first and second kind.
+    /// 
+    /// If the values are in the cache they are just returned, otherwise they are calculated and
+    /// inserted in the cache.
+    /// 
+    ///  # Arguments
+    ///
+    /// - `nu` - The order of the Bessel function (non-negative real number)
+    /// - `x` - The input value (positive real number)
+    ///
+    /// # Returns
+    ///
+    /// `(J_nu(x), Y_nu(x), J_nu'(x), Y_nu'(x))` where:
+    /// 
+    /// - `J_nu(x)` - Bessel function of the first kind
+    /// - `Y_nu(x)` - Bessel function of the second kind
+    /// - `J_nu'(x)` - Derivative of the Bessel function of the first kind
+    /// - `Y_nu'(x)` - Derivative of the Bessel function of the second kind
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if `x` is less than or equal to 0 or if `nu` is less than 0.
+    /// Also panics if `x` is too large or the implementation fails to converge.
+    pub fn besseljy(&mut self, nu: f64, x: f64) -> (f64, f64, f64, f64) {
+        if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
+            res
+        } else {
+            let res = besseljy(nu, x);
+            self.0.insert((nu.to_bits(), x.to_bits()), res);
+            res
+        }
+    }
+
+    /// Returns the number of elements in the cache.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 }
 
@@ -616,31 +641,52 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     (io, ko, ipo, kpo)
 }
 
-/// Calculates the Bessel functions of the first and second kind for non-integer order with cached results.
-///
-/// # Arguments
-///
-/// - `nu` - The order of the Bessel function (non-negative real number)
-/// - `x` - The input value (positive real number)
-/// - `cache` - The cache to store the results (HashMap)
-///
-/// # Returns
-///
-/// - `I_nu(x)` - Modified Bessel function of the first kind
-/// - `K_nu(x)` - Modified Bessel function of the second kind
-/// - `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
-/// - `K_nu'(x)` - Derivative of the modified Bessel function of the second kind
-pub fn cached_besselik(
-    nu: f64,
-    x: f64,
-    cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>,
-) -> (f64, f64, f64, f64) {
-    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
-        res
-    } else {
-        let res = besselik(nu, x);
-        cache.insert((nu.to_bits(), x.to_bits()), res);
-        res
+/// A cache of the values and derivaties of the Bessel functions
+/// of the first and second kind for non-integer order.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct CachedBesselIK(HashMap<(u64, u64), (f64, f64, f64, f64)>);
+
+impl CachedBesselIK {
+
+    /// Create a new cache of the values and derivaties of the Bessel functions
+    /// of the first and second kind for non-integer order.
+    pub fn new() -> Self {
+        Self(HashMap::new())
+    }
+
+    /// Calculates the values and derivatives of the Bessel functions of the first and second kind 
+    /// for non-integer order with cached results.
+    ///
+    /// # Arguments
+    ///
+    /// - `nu` - The order of the Bessel function (non-negative real number)
+    /// - `x` - The input value (positive real number)
+    ///
+    /// # Returns
+    ///
+    /// `(I_nu(x), K_nu(x), I_nu'(x), K_nu'(x))` where:
+    /// 
+    /// - `I_nu(x)` - Modified Bessel function of the first kind
+    /// - `K_nu(x)` - Modified Bessel function of the second kind
+    /// - `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
+    /// - `K_nu'(x)` - Derivative of the modified Bessel function of the second kind
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if `x` is less than or equal to 0, or if `nu` is less than zero.
+    /// Also panics `x` is too large or the implementation fails to converge.
+    pub fn besselik(
+        nu: f64,
+        x: f64,
+        cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>,
+    ) -> (f64, f64, f64, f64) {
+        if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+            res
+        } else {
+            let res = besselik(nu, x);
+            cache.insert((nu.to_bits(), x.to_bits()), res);
+            res
+        }
     }
 }
 
@@ -660,26 +706,50 @@ pub fn Jnu_Ynu(nu: f64, x: f64) -> (f64, f64) {
     (jo, yo)
 }
 
-/// Cached Bessel functions for non-integer order
-///
-/// # Arguments
-/// 
-/// - `nu` - Order of the Bessel function (nu >= 0)
-/// - `x` - Argument of the Bessel function (x > 0)
-/// - `cache` - Cache for the Bessel functions (HashMap)
-///
-/// # Returns
-///
-/// - `J_nu(x)` - Bessel function of the first kind
-/// - `Y_nu(x)` - Bessel function of the second kind
-#[allow(non_snake_case)]
-pub fn cached_Jnu_Ynu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64)>) -> (f64, f64) {
-    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
-        res
-    } else {
-        let res = Jnu_Ynu(nu, x);
-        cache.insert((nu.to_bits(), x.to_bits()), res);
-        res
+/// A cache of the values of the Bessel functions for non-integer order.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct CachedJnuYnu(HashMap<(u64, u64), (f64, f64)>);
+
+impl CachedJnuYnu {
+    /// Create a new cache of the values of the Bessel functions for non-integer order.
+    #[inline]
+    pub fn new() -> Self {
+        Self(HashMap::new())
+    }
+
+    /// Calculates the Bessel functions of the first and second kind for non-integer order with cached results.
+    ///
+    /// # Arguments
+    /// 
+    /// - `nu` - Order of the Bessel function (nu >= 0)
+    /// - `x` - Argument of the Bessel function (x > 0)
+    ///
+    /// # Returns
+    ///
+    /// `(J_nu(x), Y_nu(x))`
+    /// 
+    /// - `J_nu(x)` - Bessel function of the first kind
+    /// - `Y_nu(x)` - Bessel function of the second kind
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if `x` is less than or equal to zero or if `nu` is less than zero.
+    /// Also panics if `x` is too large or the implementation fails to converge.
+    #[allow(non_snake_case)]
+    pub fn Jnu_Ynu(&mut self, nu: f64, x: f64) -> (f64, f64) {
+        if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
+            res
+        } else {
+            let res = Jnu_Ynu(nu, x);
+            self.0.insert((nu.to_bits(), x.to_bits()), res);
+            res
+        }
+    }
+
+    /// Returns the number of elements in the cache.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 }
 
@@ -699,29 +769,52 @@ pub fn Inu_Knu(nu: f64, x: f64) -> (f64, f64) {
     (io, ko)
 }
 
-/// Cached modified Bessel functions for non-integer order
-///
-/// # Arguments
-///
-/// - `nu` - Order of the Bessel function (nu >= 0)
-/// - `x` - Argument of the Bessel function (x > 0)
-/// - `cache` - Cache for the Bessel functions (HashMap)
-///
-/// # Returns
-///
-/// - `I_nu(x)` - Modified Bessel function of the first kind
-/// - `K_nu(x)` - Modified Bessel function of the second kind
-#[allow(non_snake_case)]
-pub fn cached_Inu_Knu(nu: f64, x: f64, cache: &mut HashMap<(u64, u64), (f64, f64)>) -> (f64, f64) {
-    if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
-        res
-    } else {
-        let res = Inu_Knu(nu, x);
-        cache.insert((nu.to_bits(), x.to_bits()), res);
-        res
+/// A cache of the values of the modified Bessel functions 
+/// of the first and second kind for non-integer order.
+#[derive(Debug, Clone, PartialEq, Default)]
+pub struct CachedInuKnu(HashMap<(u64, u64), (f64, f64)>);
+
+impl CachedInuKnu {
+    /// Create a new cache of the values of the modified Bessel functions
+    /// of the first and second kind for non-integer order.
+    #[inline]
+    pub fn new() -> Self {
+        Self(HashMap::new())
+    }
+
+    /// Cached modified Bessel functions for non-integer order
+    ///
+    /// # Arguments
+    ///
+    /// - `nu` - Order of the Bessel function (nu >= 0)
+    /// - `x` - Argument of the Bessel function (x > 0)
+    ///
+    /// # Returns
+    ///
+    /// - `I_nu(x)` - Modified Bessel function of the first kind
+    /// - `K_nu(x)` - Modified Bessel function of the second kind
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if `x` is smaller than or equal to zero, or if `nu` is smaller than 0.
+    /// Also panics if `x` is too large or if the implementation fails to converge.
+    #[allow(non_snake_case)]
+    pub fn Inu_Knu(&mut self, nu: f64, x: f64) -> (f64, f64) {
+        if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
+            res
+        } else {
+            let res = Inu_Knu(nu, x);
+            self.0.insert((nu.to_bits(), x.to_bits()), res);
+            res
+        }
+    }
+
+    /// Returns the number of elements inthe cache.
+    #[inline]
+    pub fn len(&self) -> usize {
+        self.0.len()
     }
 }
-
 
 // =============================================================================
 // Building Blocks
