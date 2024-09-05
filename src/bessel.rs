@@ -509,6 +509,12 @@ impl CachedBesselJY {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+
+    /// Shrink the cache as much as possible.
+    #[inline]
+    pub fn shrink_to_fit(&mut self) {
+        self.0.shrink_to_fit()
+    }
 }
 
 /// Calculate the modified Bessel functions of the first and second kind for non-integer order
@@ -766,6 +772,12 @@ impl CachedBesselIK {
     pub fn len(&self) -> usize {
         self.0.len()
     }
+
+    /// Shrink the cache as much as possible.
+    #[inline]
+    pub fn shrink_to_fit(&mut self) {
+        self.0.shrink_to_fit()
+    }
 }
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
@@ -866,6 +878,12 @@ impl CachedJnuYnu {
     #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    /// Shrink the cache as much as possible.
+    #[inline]
+    pub fn shrink_to_fit(&mut self) {
+        self.0.shrink_to_fit()
     }
 }
 
@@ -969,6 +987,12 @@ impl CachedInuKnu {
     #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
+    }
+
+    /// Shrink the cache as much as possible.
+    #[inline]
+    pub fn shrink_to_fit(&mut self) {
+        self.0.shrink_to_fit()
     }
 }
 
