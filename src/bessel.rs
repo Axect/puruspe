@@ -492,7 +492,7 @@ impl CachedBesselJY {
     }
 
     /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns them.
+    /// this function returns a reference to them.
     #[inline]
     pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64, f64, f64)> {
         self.0.get(&(nu.to_bits(), x.to_bits()))
@@ -749,7 +749,7 @@ impl CachedBesselIK {
     }
 
     /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns them.
+    /// this function returns a reference to them.
     #[inline]
     pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64, f64, f64)> {
         self.0.get(&(nu.to_bits(), x.to_bits()))
@@ -850,7 +850,7 @@ impl CachedJnuYnu {
     }
 
     /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns them.
+    /// this function returns a reference to them.
     #[inline]
     pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64)> {
         self.0.get(&(nu.to_bits(), x.to_bits()))
@@ -953,7 +953,7 @@ impl CachedInuKnu {
     }
 
     /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns them.
+    /// this function returns a reference to them.
     #[inline]
     pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64)> {
         self.0.get(&(nu.to_bits(), x.to_bits()))
