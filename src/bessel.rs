@@ -509,13 +509,6 @@ impl CachedBesselJY {
     pub fn len(&self) -> usize {
         self.0.len()
     }
-
-    /// Removes the given arguments from the cache if they are present.
-    /// If so, returns the corresponding function values.
-    #[inline]
-    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64, f64, f64)> {
-        self.0.remove(&(nu.to_bits(), x.to_bits()))
-    }
 }
 
 /// Calculate the modified Bessel functions of the first and second kind for non-integer order
@@ -774,13 +767,6 @@ impl CachedBesselIK {
     pub fn len(&self) -> usize {
         self.0.len()
     }
-
-    /// Removes the given arguments from the cache if they are present.
-    /// If so, returns the corresponding function values.
-    #[inline]
-    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64, f64, f64)> {
-        self.0.remove(&(nu.to_bits(), x.to_bits()))
-    }
 }
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
@@ -882,13 +868,6 @@ impl CachedJnuYnu {
     pub fn len(&self) -> usize {
         self.0.len()
     }
-
-    /// Removes the given arguments from the cache if they are present.
-    /// If so, returns the corresponding function values.
-    #[inline]
-    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64)> {
-        self.0.remove(&(nu.to_bits(), x.to_bits()))
-    }
 }
 
 /// Calculates the modified Bessel functions of the first and second kind for non-integer order.
@@ -989,13 +968,6 @@ impl CachedInuKnu {
     #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
-    }
-
-    /// Removes the given arguments from the cache if they are present.
-    /// If so, returns the corresponding function values.
-    #[inline]
-    pub fn remove(&mut self, nu: f64, x: f64) -> Option<(f64, f64)> {
-        self.0.remove(&(nu.to_bits(), x.to_bits()))
     }
 }
 
