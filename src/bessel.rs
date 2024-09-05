@@ -816,7 +816,7 @@ impl CachedBesselIK {
         }
     }
 
-    /// Returns the number of elements inthe cache.
+    /// Returns the number of elements in the cache.
     #[inline]
     pub fn len(&self) -> usize {
         self.0.len()
