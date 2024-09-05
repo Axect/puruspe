@@ -1,5 +1,5 @@
 //! This module provides implementations of Bessel functions and related functions.
-//! 
+//!
 //! It includes the following main functions:
 //! - `Jn`: Calculates the Bessel function of the first kind of integer order.
 //! - `Yn`: Calculates the Bessel function of the second kind of integer order.
@@ -437,9 +437,9 @@ impl CachedBesselJY {
     }
 
     /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    /// 
-    /// The cache will be able to hold at least `capacity` elements without reallocating. 
-    /// This method is allowed to allocate for more elements than `capacity`. 
+    ///
+    /// The cache will be able to hold at least `capacity` elements without reallocating.
+    /// This method is allowed to allocate for more elements than `capacity`.
     /// If `capacity` is 0, the cache will not allocate.
     #[inline]
     pub fn with_capacity(capacity: usize) -> Self {
@@ -447,10 +447,10 @@ impl CachedBesselJY {
     }
 
     /// Get the values and derivatives of the Bessel functions of the first and second kind for non-integer order.
-    /// 
+    ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
-    /// 
+    ///
     ///  # Arguments
     ///
     /// - `nu` - The order of the Bessel function (non-negative real number)
@@ -459,14 +459,14 @@ impl CachedBesselJY {
     /// # Returns
     ///
     /// `(J_nu(x), Y_nu(x), J_nu'(x), Y_nu'(x))` where:
-    /// 
+    ///
     /// - `J_nu(x)` - Bessel function of the first kind
     /// - `Y_nu(x)` - Bessel function of the second kind
     /// - `J_nu'(x)` - Derivative of the Bessel function of the first kind
     /// - `Y_nu'(x)` - Derivative of the Bessel function of the second kind
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if `x` is less than or equal to 0 or if `nu` is less than 0.
     /// Also panics if `x` is too large or the implementation fails to converge.
     pub fn besseljy(&mut self, nu: f64, x: f64) -> (f64, f64, f64, f64) {
@@ -682,7 +682,6 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
 pub struct CachedBesselIK(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
 impl CachedBesselIK {
-
     /// Create a new cache of the values and derivaties of the modified Bessel functions
     /// of the first and second kind for non-integer order.
     pub fn new() -> Self {
@@ -690,21 +689,21 @@ impl CachedBesselIK {
     }
 
     /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    /// 
-    /// The cache will be able to hold at least `capacity` elements without reallocating. 
-    /// This method is allowed to allocate for more elements than `capacity`. 
+    ///
+    /// The cache will be able to hold at least `capacity` elements without reallocating.
+    /// This method is allowed to allocate for more elements than `capacity`.
     /// If `capacity` is 0, the cache will not allocate.
     #[inline]
     pub fn with_capacity(capacity: usize) -> Self {
         Self(HashMap::with_capacity(capacity))
     }
 
-    /// Calculates the values and derivatives of the modified Bessel functions of the first and second kind 
+    /// Calculates the values and derivatives of the modified Bessel functions of the first and second kind
     /// for non-integer order with cached results.
     ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
-    /// 
+    ///
     /// # Arguments
     ///
     /// - `nu` - The order of the Bessel function (non-negative real number)
@@ -713,14 +712,14 @@ impl CachedBesselIK {
     /// # Returns
     ///
     /// `(I_nu(x), K_nu(x), I_nu'(x), K_nu'(x))` where:
-    /// 
+    ///
     /// - `I_nu(x)` - Modified Bessel function of the first kind
     /// - `K_nu(x)` - Modified Bessel function of the second kind
     /// - `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
     /// - `K_nu'(x)` - Derivative of the modified Bessel function of the second kind
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if `x` is less than or equal to 0, or if `nu` is less than zero.
     /// Also panics `x` is too large or the implementation fails to converge.
     pub fn besselik(
@@ -797,9 +796,9 @@ impl CachedJnuYnu {
     }
 
     /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    /// 
-    /// The cache will be able to hold at least `capacity` elements without reallocating. 
-    /// This method is allowed to allocate for more elements than `capacity`. 
+    ///
+    /// The cache will be able to hold at least `capacity` elements without reallocating.
+    /// This method is allowed to allocate for more elements than `capacity`.
     /// If `capacity` is 0, the cache will not allocate.
     #[inline]
     pub fn with_capacity(capacity: usize) -> Self {
@@ -810,21 +809,21 @@ impl CachedJnuYnu {
     ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// - `nu` - Order of the Bessel function (nu >= 0)
     /// - `x` - Argument of the Bessel function (x > 0)
     ///
     /// # Returns
     ///
     /// `(J_nu(x), Y_nu(x))`
-    /// 
+    ///
     /// - `J_nu(x)` - Bessel function of the first kind
     /// - `Y_nu(x)` - Bessel function of the second kind
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if `x` is less than or equal to zero or if `nu` is less than zero.
     /// Also panics if `x` is too large or the implementation fails to converge.
     #[allow(non_snake_case)]
@@ -886,7 +885,7 @@ pub fn Inu_Knu(nu: f64, x: f64) -> (f64, f64) {
     (io, ko)
 }
 
-/// A cache of the values of the modified Bessel functions 
+/// A cache of the values of the modified Bessel functions
 /// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CachedInuKnu(HashMap<(u64, u64), (f64, f64)>);
@@ -900,9 +899,9 @@ impl CachedInuKnu {
     }
 
     /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    /// 
-    /// The cache will be able to hold at least `capacity` elements without reallocating. 
-    /// This method is allowed to allocate for more elements than `capacity`. 
+    ///
+    /// The cache will be able to hold at least `capacity` elements without reallocating.
+    /// This method is allowed to allocate for more elements than `capacity`.
     /// If `capacity` is 0, the cache will not allocate.
     #[inline]
     pub fn with_capacity(capacity: usize) -> Self {
@@ -913,7 +912,7 @@ impl CachedInuKnu {
     ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
     /// inserted into the cache.
-    /// 
+    ///
     /// # Arguments
     ///
     /// - `nu` - Order of the Bessel function (nu >= 0)
@@ -921,11 +920,13 @@ impl CachedInuKnu {
     ///
     /// # Returns
     ///
+    /// `(I_nu(x), K_nu(x))`
+    ///
     /// - `I_nu(x)` - Modified Bessel function of the first kind
     /// - `K_nu(x)` - Modified Bessel function of the second kind
-    /// 
+    ///
     /// # Panics
-    /// 
+    ///
     /// Panics if `x` is smaller than or equal to zero, or if `nu` is smaller than 0.
     /// Also panics if `x` is too large or if the implementation fails to converge.
     #[allow(non_snake_case)]
