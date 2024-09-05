@@ -515,6 +515,19 @@ impl CachedBesselJY {
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
     }
+
+    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
+    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
+    /// `capacity` will be greater than or equal to `self.len() + additional`.
+    /// Does nothing if capacity is already sufficient.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if the new allocation size overflows `usize`.
+    #[inline]
+    pub fn reserve(&mut self, additional: usize) {
+        self.0.reserve(additional)
+    }
 }
 
 /// Calculate the modified Bessel functions of the first and second kind for non-integer order
@@ -778,6 +791,19 @@ impl CachedBesselIK {
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
     }
+
+    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
+    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
+    /// `capacity` will be greater than or equal to `self.len() + additional`.
+    /// Does nothing if capacity is already sufficient.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if the new allocation size overflows `usize`.
+    #[inline]
+    pub fn reserve(&mut self, additional: usize) {
+        self.0.reserve(additional)
+    }
 }
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
@@ -884,6 +910,19 @@ impl CachedJnuYnu {
     #[inline]
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
+    }
+
+    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
+    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
+    /// `capacity` will be greater than or equal to `self.len() + additional`.
+    /// Does nothing if capacity is already sufficient.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if the new allocation size overflows `usize`.
+    #[inline]
+    pub fn reserve(&mut self, additional: usize) {
+        self.0.reserve(additional)
     }
 }
 
@@ -993,6 +1032,19 @@ impl CachedInuKnu {
     #[inline]
     pub fn shrink_to_fit(&mut self) {
         self.0.shrink_to_fit()
+    }
+
+    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
+    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
+    /// `capacity` will be greater than or equal to `self.len() + additional`.
+    /// Does nothing if capacity is already sufficient.
+    /// 
+    /// # Panics
+    /// 
+    /// Panics if the new allocation size overflows `usize`.
+    #[inline]
+    pub fn reserve(&mut self, additional: usize) {
+        self.0.reserve(additional)
     }
 }
 
