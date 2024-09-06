@@ -531,7 +531,7 @@ impl CachedBesselJY {
 
     /// Retains only the argument-function value pairs specified by the predicate.
     /// 
-    /// This removes all elements from the cache for which `f` returns false. 
+    /// This removes all elements from the cache for which `f((nu, x), (J_nu(x), Y_nu(x), J_nu'(x), Y_nu'(x)))` returns false. 
     /// The elements are visited in unspecified order.
     #[inline]
     pub fn retain<F>(&mut self, mut f: F)
@@ -819,7 +819,7 @@ impl CachedBesselIK {
 
     /// Retains only the argument-function value pairs specified by the predicate.
     /// 
-    /// This removes all elements from the cache for which `f` returns false. 
+    /// This removes all elements from the cache for which `f((nu, x), (I_nu(x), K_nu(x), I_nu'(x), K_nu'(x)))` returns false. 
     /// The elements are visited in unspecified order.
     #[inline]
     pub fn retain<F>(&mut self, mut f: F)
@@ -951,7 +951,7 @@ impl CachedJnuYnu {
 
     /// Retains only the argument-function value pairs specified by the predicate.
     /// 
-    /// This removes all elements from the cache for which `f` returns false. 
+    /// This removes all elements from the cache for which `f((nu, x), (J_nu(x), Y_nu(x)))` returns false. 
     /// The elements are visited in unspecified order.
     #[inline]
     pub fn retain<F>(&mut self, mut f: F)
@@ -1085,7 +1085,7 @@ impl CachedInuKnu {
 
     /// Retains only the argument-function value pairs specified by the predicate.
     /// 
-    /// This removes all elements from the cache for which `f` returns false. 
+    /// This removes all elements from the cache for which `f((nu, x), (I_nu(x), K_nu(x)))` returns false. 
     /// The elements are visited in unspecified order.
     #[inline]
     pub fn retain<F>(&mut self, mut f: F)
