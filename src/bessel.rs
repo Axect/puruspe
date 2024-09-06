@@ -528,6 +528,18 @@ impl CachedBesselJY {
     pub fn reserve(&mut self, additional: usize) {
         self.0.reserve(additional)
     }
+
+    /// Retains only the argument-function value pairs specified by the predicate.
+    /// 
+    /// This removes all elements from the cache for which `f` returns false. 
+    /// The elements are visited in unspecified order.
+    #[inline]
+    pub fn retain<F>(&mut self, mut f: F)
+    where 
+        F:FnMut((f64, f64), (f64, f64, f64, f64)) -> bool,
+    {
+        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
+    }
 }
 
 /// Calculate the modified Bessel functions of the first and second kind for non-integer order
@@ -804,6 +816,18 @@ impl CachedBesselIK {
     pub fn reserve(&mut self, additional: usize) {
         self.0.reserve(additional)
     }
+
+    /// Retains only the argument-function value pairs specified by the predicate.
+    /// 
+    /// This removes all elements from the cache for which `f` returns false. 
+    /// The elements are visited in unspecified order.
+    #[inline]
+    pub fn retain<F>(&mut self, mut f: F)
+    where 
+        F:FnMut((f64, f64), (f64, f64, f64, f64)) -> bool,
+    {
+        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
+    }
 }
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
@@ -923,6 +947,18 @@ impl CachedJnuYnu {
     #[inline]
     pub fn reserve(&mut self, additional: usize) {
         self.0.reserve(additional)
+    }
+
+    /// Retains only the argument-function value pairs specified by the predicate.
+    /// 
+    /// This removes all elements from the cache for which `f` returns false. 
+    /// The elements are visited in unspecified order.
+    #[inline]
+    pub fn retain<F>(&mut self, mut f: F)
+    where 
+        F:FnMut((f64, f64), (f64, f64)) -> bool,
+    {
+        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
     }
 }
 
@@ -1045,6 +1081,18 @@ impl CachedInuKnu {
     #[inline]
     pub fn reserve(&mut self, additional: usize) {
         self.0.reserve(additional)
+    }
+
+    /// Retains only the argument-function value pairs specified by the predicate.
+    /// 
+    /// This removes all elements from the cache for which `f` returns false. 
+    /// The elements are visited in unspecified order.
+    #[inline]
+    pub fn retain<F>(&mut self, mut f: F)
+    where 
+        F:FnMut((f64, f64), (f64, f64)) -> bool,
+    {
+        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
     }
 }
 
