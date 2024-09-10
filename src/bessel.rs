@@ -423,29 +423,99 @@ pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     (jo, yo, jpo, ypo)
 }
 
+/// This macro implements the convenience functions that are all the same among the cached Bessel functions.
+/// It takes in the name of the cache struct as well as the type of that cache's values.
+macro_rules! impl_cached_bessel_convenience_functions {
+    ($name:ty, $val:ty) => {
+        impl $name {
+            /// Create a new cache.
+            #[inline]
+            pub fn new() -> Self {
+                Self(HashMap::new())
+            }
+
+            /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
+            ///
+            /// The cache will be able to hold at least `capacity` elements without reallocating.
+            /// This method is allowed to allocate for more elements than `capacity`.
+            /// If `capacity` is 0, the cache will not allocate.
+            #[inline]
+            pub fn with_capacity(capacity: usize) -> Self {
+                Self(HashMap::with_capacity(capacity))
+            }
+
+            /// Returns true if the cache contains function values for the arguments `nu` and `x`.
+            #[inline]
+            pub fn contains(&self, nu: f64, x: f64) -> bool {
+                self.0.contains_key(&(nu.to_bits(), x.to_bits()))
+            }
+
+            /// Clears the cache. Keeps the allocated memory for reuse.
+            #[inline]
+            pub fn clear(&mut self) {
+                self.0.clear();
+            }
+
+            /// If the given `nu` and `x` values have function values associated with them in the cache,
+            /// this function returns a reference to them.
+            #[inline]
+            pub fn get(&self, nu: f64, x: f64) -> Option<&$val> {
+                self.0.get(&(nu.to_bits(), x.to_bits()))
+            }
+
+            /// Returns true if the cache is empty.
+            #[inline]
+            pub fn is_empty(&self) -> bool {
+                self.0.is_empty()
+            }
+
+            /// Returns the number of elements in the cache.
+            #[inline]
+            pub fn len(&self) -> usize {
+                self.0.len()
+            }
+
+            /// Shrink the cache as much as possible without removing elements.
+            #[inline]
+            pub fn shrink_to_fit(&mut self) {
+                self.0.shrink_to_fit();
+            }
+
+            /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
+            /// The collection may reserve more space to speculatively avoid frequent reallocations. 
+            /// `capacity` will be greater than or equal to `self.len() + additional`.
+            /// Does nothing if capacity is already sufficient.
+            /// 
+            /// # Panics
+            /// 
+            /// Panics if the new allocation size overflows `usize`.
+            #[inline]
+            pub fn reserve(&mut self, additional: usize) {
+                self.0.reserve(additional)
+            }
+
+
+            /// Retains only the argument-function value pairs specified by the predicate.
+            /// 
+            /// This removes all elements from the cache for which `f` returns false. 
+            /// The elements are visited in unspecified order.
+            #[inline]
+            pub fn retain<F>(&mut self, mut f: F)
+            where 
+                F:FnMut((f64, f64), $val) -> bool,
+            {
+                self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
+            }
+        }
+    };
+}
+
 /// A cache of the values and derivaties of the Bessel functions
 /// of the first and second kind for non-integer order.
 #[derive(Debug, Clone, PartialEq, Default)]
 pub struct CachedBesselJY(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
 impl CachedBesselJY {
-    /// Create a new cache of the values and derivaties of the Bessel functions
-    /// of the first and second kind for non-integer order.
-    #[inline]
-    pub fn new() -> Self {
-        Self(HashMap::new())
-    }
-
-    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    ///
-    /// The cache will be able to hold at least `capacity` elements without reallocating.
-    /// This method is allowed to allocate for more elements than `capacity`.
-    /// If `capacity` is 0, the cache will not allocate.
-    #[inline]
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self(HashMap::with_capacity(capacity))
-    }
-
     /// Get the values and derivatives of the Bessel functions of the first and second kind for non-integer order.
     ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
@@ -478,69 +548,9 @@ impl CachedBesselJY {
             res
         }
     }
-
-    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
-    #[inline]
-    pub fn contains(&self, nu: f64, x: f64) -> bool {
-        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Clears the cache. Keeps the allocated memory for reuse.
-    #[inline]
-    pub fn clear(&mut self) {
-        self.0.clear()
-    }
-
-    /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns a reference to them.
-    #[inline]
-    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64, f64, f64)> {
-        self.0.get(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Returns true if the cache is empty.
-    #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// Returns the number of elements in the cache.
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    /// Shrink the cache as much as possible without removing elements.
-    #[inline]
-    pub fn shrink_to_fit(&mut self) {
-        self.0.shrink_to_fit()
-    }
-
-    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
-    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
-    /// `capacity` will be greater than or equal to `self.len() + additional`.
-    /// Does nothing if capacity is already sufficient.
-    /// 
-    /// # Panics
-    /// 
-    /// Panics if the new allocation size overflows `usize`.
-    #[inline]
-    pub fn reserve(&mut self, additional: usize) {
-        self.0.reserve(additional)
-    }
-
-    /// Retains only the argument-function value pairs specified by the predicate.
-    /// 
-    /// This removes all elements from the cache for which `f((nu, x), (J_nu(x), Y_nu(x), J_nu'(x), Y_nu'(x)))` returns false. 
-    /// The elements are visited in unspecified order.
-    #[inline]
-    pub fn retain<F>(&mut self, mut f: F)
-    where 
-        F:FnMut((f64, f64), (f64, f64, f64, f64)) -> bool,
-    {
-        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
-    }
 }
+
+impl_cached_bessel_convenience_functions!(CachedBesselJY, (f64, f64, f64, f64));
 
 /// Calculate the modified Bessel functions of the first and second kind for non-integer order
 ///
@@ -713,22 +723,6 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
 pub struct CachedBesselIK(HashMap<(u64, u64), (f64, f64, f64, f64)>);
 
 impl CachedBesselIK {
-    /// Create a new cache of the values and derivaties of the modified Bessel functions
-    /// of the first and second kind for non-integer order.
-    pub fn new() -> Self {
-        Self(HashMap::new())
-    }
-
-    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    ///
-    /// The cache will be able to hold at least `capacity` elements without reallocating.
-    /// This method is allowed to allocate for more elements than `capacity`.
-    /// If `capacity` is 0, the cache will not allocate.
-    #[inline]
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self(HashMap::with_capacity(capacity))
-    }
-
     /// Calculates the values and derivatives of the modified Bessel functions of the first and second kind
     /// for non-integer order with cached results.
     ///
@@ -766,69 +760,9 @@ impl CachedBesselIK {
             res
         }
     }
-
-    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
-    #[inline]
-    pub fn contains(&self, nu: f64, x: f64) -> bool {
-        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Clears the cache. Keeps the allocated memory for reuse.
-    #[inline]
-    pub fn clear(&mut self) {
-        self.0.clear()
-    }
-
-    /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns a reference to them.
-    #[inline]
-    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64, f64, f64)> {
-        self.0.get(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Returns true if the cache is empty.
-    #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// Returns the number of elements in the cache.
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    /// Shrink the cache as much as possible without removing elements.
-    #[inline]
-    pub fn shrink_to_fit(&mut self) {
-        self.0.shrink_to_fit()
-    }
-
-    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
-    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
-    /// `capacity` will be greater than or equal to `self.len() + additional`.
-    /// Does nothing if capacity is already sufficient.
-    /// 
-    /// # Panics
-    /// 
-    /// Panics if the new allocation size overflows `usize`.
-    #[inline]
-    pub fn reserve(&mut self, additional: usize) {
-        self.0.reserve(additional)
-    }
-
-    /// Retains only the argument-function value pairs specified by the predicate.
-    /// 
-    /// This removes all elements from the cache for which `f((nu, x), (I_nu(x), K_nu(x), I_nu'(x), K_nu'(x)))` returns false. 
-    /// The elements are visited in unspecified order.
-    #[inline]
-    pub fn retain<F>(&mut self, mut f: F)
-    where 
-        F:FnMut((f64, f64), (f64, f64, f64, f64)) -> bool,
-    {
-        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
-    }
 }
+
+impl_cached_bessel_convenience_functions!(CachedBesselIK, (f64, f64, f64, f64));
 
 /// Calculates the Bessel functions of the first and second kind for non-integer order.
 ///
@@ -851,22 +785,6 @@ pub fn Jnu_Ynu(nu: f64, x: f64) -> (f64, f64) {
 pub struct CachedJnuYnu(HashMap<(u64, u64), (f64, f64)>);
 
 impl CachedJnuYnu {
-    /// Create a new cache of the values of the Bessel functions of the first and second kind for non-integer order.
-    #[inline]
-    pub fn new() -> Self {
-        Self(HashMap::new())
-    }
-
-    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    ///
-    /// The cache will be able to hold at least `capacity` elements without reallocating.
-    /// This method is allowed to allocate for more elements than `capacity`.
-    /// If `capacity` is 0, the cache will not allocate.
-    #[inline]
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self(HashMap::with_capacity(capacity))
-    }
-
     /// Calculates the values of the Bessel functions of the first and second kind for non-integer order.
     ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
@@ -898,69 +816,9 @@ impl CachedJnuYnu {
             res
         }
     }
-
-    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
-    #[inline]
-    pub fn contains(&self, nu: f64, x: f64) -> bool {
-        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Clears the cache. Keeps the allocated memory for reuse.
-    #[inline]
-    pub fn clear(&mut self) {
-        self.0.clear()
-    }
-
-    /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns a reference to them.
-    #[inline]
-    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64)> {
-        self.0.get(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Returns true if the cache is empty.
-    #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// Returns the number of elements in the cache.
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    /// Shrink the cache as much as possible without removing elements.
-    #[inline]
-    pub fn shrink_to_fit(&mut self) {
-        self.0.shrink_to_fit()
-    }
-
-    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
-    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
-    /// `capacity` will be greater than or equal to `self.len() + additional`.
-    /// Does nothing if capacity is already sufficient.
-    /// 
-    /// # Panics
-    /// 
-    /// Panics if the new allocation size overflows `usize`.
-    #[inline]
-    pub fn reserve(&mut self, additional: usize) {
-        self.0.reserve(additional)
-    }
-
-    /// Retains only the argument-function value pairs specified by the predicate.
-    /// 
-    /// This removes all elements from the cache for which `f((nu, x), (J_nu(x), Y_nu(x)))` returns false. 
-    /// The elements are visited in unspecified order.
-    #[inline]
-    pub fn retain<F>(&mut self, mut f: F)
-    where 
-        F:FnMut((f64, f64), (f64, f64)) -> bool,
-    {
-        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
-    }
 }
+
+impl_cached_bessel_convenience_functions!(CachedJnuYnu, (f64, f64));
 
 /// Calculates the modified Bessel functions of the first and second kind for non-integer order.
 ///
@@ -984,23 +842,6 @@ pub fn Inu_Knu(nu: f64, x: f64) -> (f64, f64) {
 pub struct CachedInuKnu(HashMap<(u64, u64), (f64, f64)>);
 
 impl CachedInuKnu {
-    /// Create a new cache of the values of the modified Bessel functions
-    /// of the first and second kind for non-integer order.
-    #[inline]
-    pub fn new() -> Self {
-        Self(HashMap::new())
-    }
-
-    /// Creates an empty cache, like [`new`](Self::new), but with at least the specified capacity.
-    ///
-    /// The cache will be able to hold at least `capacity` elements without reallocating.
-    /// This method is allowed to allocate for more elements than `capacity`.
-    /// If `capacity` is 0, the cache will not allocate.
-    #[inline]
-    pub fn with_capacity(capacity: usize) -> Self {
-        Self(HashMap::with_capacity(capacity))
-    }
-
     /// Cached modified Bessel functions of the first and second kind for non-integer order
     ///
     /// If the values corresponding to the *exact* inputs are in the cache they are just returned, otherwise they are calculated and
@@ -1032,69 +873,9 @@ impl CachedInuKnu {
             res
         }
     }
-
-    /// Returns true if the cache contains function values for the arguments `nu` and `x`.
-    #[inline]
-    pub fn contains(&self, nu: f64, x: f64) -> bool {
-        self.0.contains_key(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Clears the cache. Keeps the allocated memory for reuse.
-    #[inline]
-    pub fn clear(&mut self) {
-        self.0.clear()
-    }
-
-    /// If the given `nu` and `x` values have function values associated with them in the cache,
-    /// this function returns a reference to them.
-    #[inline]
-    pub fn get(&self, nu: f64, x: f64) -> Option<&(f64, f64)> {
-        self.0.get(&(nu.to_bits(), x.to_bits()))
-    }
-
-    /// Returns true if the cache is empty.
-    #[inline]
-    pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
-    }
-
-    /// Returns the number of elements in the cache.
-    #[inline]
-    pub fn len(&self) -> usize {
-        self.0.len()
-    }
-
-    /// Shrink the cache as much as possible without removing elements.
-    #[inline]
-    pub fn shrink_to_fit(&mut self) {
-        self.0.shrink_to_fit()
-    }
-
-    /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
-    /// The collection may reserve more space to speculatively avoid frequent reallocations. 
-    /// `capacity` will be greater than or equal to `self.len() + additional`.
-    /// Does nothing if capacity is already sufficient.
-    /// 
-    /// # Panics
-    /// 
-    /// Panics if the new allocation size overflows `usize`.
-    #[inline]
-    pub fn reserve(&mut self, additional: usize) {
-        self.0.reserve(additional)
-    }
-
-    /// Retains only the argument-function value pairs specified by the predicate.
-    /// 
-    /// This removes all elements from the cache for which `f((nu, x), (I_nu(x), K_nu(x)))` returns false. 
-    /// The elements are visited in unspecified order.
-    #[inline]
-    pub fn retain<F>(&mut self, mut f: F)
-    where 
-        F:FnMut((f64, f64), (f64, f64)) -> bool,
-    {
-        self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
-    }
 }
+
+impl_cached_bessel_convenience_functions!(CachedInuKnu, (f64, f64));
 
 // =============================================================================
 // Building Blocks
