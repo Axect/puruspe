@@ -1,4 +1,4 @@
-from scipy.special import jv, yn, kn, iv
+from scipy.special import yn, kn, jv, iv, yv, kv
 
 # x values to test
 x_values = [
@@ -70,4 +70,37 @@ i5_table = [(x, iv(5, x)) for x in x_values]
 print("const I5_TABLE: [(f64, f64); {}] = [".format(len(i5_table)))
 for x, y in i5_table:
     print("    ({:.14e}, {:.14e}),".format(x, y))
+print("];")
+
+
+# nu values to test
+nu_values = [0.5, 1.5, 2.5, 5.5, 10.5]
+# Explanation: We choose these nu values to test:
+# - Fractional orders (0.5, 1.5, 2.5) to check behavior between integer orders
+# - A medium-large value (5.5) to test performance for larger orders
+# - A large value (10.5) to test asymptotic behavior for high orders
+
+# x values to test
+x_values = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0]
+# Explanation: We choose these x values to test:
+# - Small values (0.1, 0.5) to check behavior near x = 0
+# - Medium values (1.0, 2.0, 5.0) to test typical use cases
+# - Large values (10.0, 20.0, 50.0) to test asymptotic behavior for large x
+# This range covers most practical applications and helps identify any issues 
+# in different regimes of the functions.
+
+print("const JNU_YNU_TABLE: [(f64, f64, f64, f64); {}] = [".format(len(nu_values) * len(x_values)))
+for nu in nu_values:
+    for x in x_values:
+        jnu = jv(nu, x)
+        ynu = yv(nu, x)
+        print(f"    ({nu:.1f}, {x:.1f}, {jnu:.14e}, {ynu:.14e}),")
+print("];")
+
+print("\nconst INU_KNU_TABLE: [(f64, f64, f64, f64); {}] = [".format(len(nu_values) * len(x_values)))
+for nu in nu_values:
+    for x in x_values:
+        inu = iv(nu, x)
+        knu = kv(nu, x)
+        print(f"    ({nu:.1f}, {x:.1f}, {inu:.14e}, {knu:.14e}),")
 print("];")
