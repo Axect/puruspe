@@ -89,7 +89,7 @@ x_values = [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0]
 # This range covers most practical applications and helps identify any issues 
 # in different regimes of the functions.
 
-print("const JNU_YNU_TABLE: [(f64, f64, f64, f64); {}] = [".format(len(nu_values) * len(x_values)))
+print("\nconst JNU_YNU_TABLE: [(f64, f64, f64, f64); {}] = [".format(len(nu_values) * len(x_values)))
 for nu in nu_values:
     for x in x_values:
         jnu = jv(nu, x)
@@ -103,4 +103,24 @@ for nu in nu_values:
         inu = iv(nu, x)
         knu = kv(nu, x)
         print(f"    ({nu:.1f}, {x:.1f}, {inu:.14e}, {knu:.14e}),")
+print("];")
+
+print("\nconst BESSELJY_TABLE: [(f64, f64, f64, f64, f64, f64); {}] = [".format(len(nu_values) * len(x_values)))
+for nu in nu_values:
+    for x in x_values:
+        j = jv(nu, x)
+        y = yv(nu, x)
+        jp = jv(nu-1, x) - nu/x * jv(nu, x)  # Derivative of J_nu(x)
+        yp = yv(nu-1, x) - nu/x * yv(nu, x)  # Derivative of Y_nu(x)
+        print(f"    ({nu:.1f}, {x:.1f}, {j:.14e}, {y:.14e}, {jp:.14e}, {yp:.14e}),")
+print("];")
+
+print("\nconst BESSELIK_TABLE: [(f64, f64, f64, f64, f64, f64); {}] = [".format(len(nu_values) * len(x_values)))
+for nu in nu_values:
+    for x in x_values:
+        i = iv(nu, x)
+        k = kv(nu, x)
+        ip = iv(nu-1, x) - nu/x * iv(nu, x)  # Derivative of I_nu(x)
+        kp = -kv(nu-1, x) - nu/x * kv(nu, x)  # Derivative of K_nu(x)
+        print(f"    ({nu:.1f}, {x:.1f}, {i:.14e}, {k:.14e}, {ip:.14e}, {kp:.14e}),")
 print("];")
