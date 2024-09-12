@@ -482,29 +482,29 @@ macro_rules! impl_cached_bessel_convenience_functions {
             }
 
             /// Reserves capacity for at least `additional` more elements to be inserted in the cache.
-            /// The collection may reserve more space to speculatively avoid frequent reallocations. 
+            /// The collection may reserve more space to speculatively avoid frequent reallocations.
             /// `capacity` will be greater than or equal to `self.len() + additional`.
             /// Does nothing if capacity is already sufficient.
-            /// 
+            ///
             /// # Panics
-            /// 
+            ///
             /// Panics if the new allocation size overflows `usize`.
             #[inline]
             pub fn reserve(&mut self, additional: usize) {
                 self.0.reserve(additional)
             }
 
-
             /// Retains only the argument-function value pairs specified by the predicate.
-            /// 
-            /// This removes all elements from the cache for which `f` returns false. 
+            ///
+            /// This removes all elements from the cache for which `f` returns false.
             /// The elements are visited in unspecified order.
             #[inline]
             pub fn retain<F>(&mut self, mut f: F)
-            where 
-                F:FnMut((f64, f64), $val) -> bool,
+            where
+                F: FnMut((f64, f64), $val) -> bool,
             {
-                self.0.retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
+                self.0
+                    .retain(|k, v| f((f64::from_bits(k.0), f64::from_bits(k.1)), *v))
             }
         }
     };

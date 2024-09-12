@@ -1,5 +1,5 @@
 //! This module provides implementations of the gamma function and related functions.
-//! 
+//!
 //! It includes the following main functions:
 //! - `ln_gamma`: Calculates the natural logarithm of the gamma function.
 //! - `gamma`: Calculates the gamma function.

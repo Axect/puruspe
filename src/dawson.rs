@@ -1,5 +1,5 @@
 //! This module provides an implementation of Dawson's integral.
-//! 
+//!
 //! It includes the following main function:
 //! - `dawson`: Calculates Dawson's integral for real values.
 

@@ -1,5 +1,5 @@
 //! This module provides implementations of the beta function and related functions.
-//! 
+//!
 //! It includes the following main functions:
 //! - `beta`: Calculates the beta function.
 //! - `betai`: Calculates the regularized incomplete beta function.

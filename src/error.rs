@@ -1,5 +1,5 @@
 //! This module provides implementations of the error function and related functions.
-//! 
+//!
 //! It includes the following main functions:
 //! - `erf`: Calculates the error function.
 //! - `erfc`: Calculates the complementary error function.
@@ -151,4 +151,3 @@ fn erfccheb(z: f64) -> f64 {
     }
     t * (-z.powi(2) + 0.5 * (COF[0] + ty * d) - dd).exp()
 }
-

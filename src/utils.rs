@@ -25,8 +25,8 @@ fn rising_factorial(z: f64, n: usize) -> f64 {
     let mut r = 1f64;
 
     while k < n {
-        let l = m.min(n-k);
-        let t = (k .. k + l).fold(1f64, |acc, i| acc * (z + i as f64));
+        let l = m.min(n - k);
+        let t = (k..k + l).fold(1f64, |acc, i| acc * (z + i as f64));
         r *= t;
         k += m;
     }

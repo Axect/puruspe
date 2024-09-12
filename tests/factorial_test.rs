@@ -1,13 +1,10 @@
-use puruspe::utils::factorial;
 use approx::assert_ulps_eq;
+use puruspe::utils::factorial;
 
 #[test]
 fn test_factorial() {
     for i in 0..90 {
-        assert_ulps_eq!(
-            factorial(i),
-            (2..=i).map(|j| j as f64).product()
-        );
+        assert_ulps_eq!(factorial(i), (2..=i).map(|j| j as f64).product());
     }
 
     // Largest factorial that fits in a f64.
