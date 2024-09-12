@@ -1,12 +1,13 @@
-use approx::assert_abs_diff_eq;
+use approx::assert_relative_eq;
 use puruspe::{beta, betai, invbetai};
 
 #[test]
 fn test_beta() {
     for &(a, b, expected) in BETA_TABLE.iter() {
         let result = beta(a, b);
-        let epsilon = f64::EPSILON + 1e-10 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-10;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
@@ -14,8 +15,9 @@ fn test_beta() {
 fn test_betai() {
     for &(a, b, x, expected) in BETAI_TABLE.iter() {
         let result = betai(a, b, x);
-        let epsilon = f64::EPSILON + 1e-10 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-10;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
@@ -23,8 +25,9 @@ fn test_betai() {
 fn test_invbetai() {
     for &(a, b, p, expected) in INVBETAI_TABLE.iter() {
         let result = invbetai(p, a, b);
-        let epsilon = f64::EPSILON + 1e-9 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-9;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
