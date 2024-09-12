@@ -52,7 +52,7 @@ pub fn Jn(n: u32, x: f64) -> f64 {
             ans = bj;
         } else {
             let tox = 2.0 / ax;
-            let m = 2 * ((n + (acc * n_f64).sqrt() as u64) / 2);
+            let m = 2 * ((n + (acc * n_f64).sqrt() as u32) / 2);
             let mut jsum = false;
             let mut bjp = 0f64;
             let mut sum = 0f64;
@@ -154,7 +154,7 @@ pub fn In(n: u32, x: f64) -> f64 {
         let mut bip = 0f64;
         let mut ans = 0f64;
         let mut bi = 1f64;
-        for j in (1..2 * (n + (acc * n_f64).sqrt() as u64)).rev() {
+        for j in (1..2 * (n + (acc * n_f64).sqrt() as u32)).rev() {
             let bim = j as f64 * tox * bi + bip;
             bip = bi;
             bi = bim;
