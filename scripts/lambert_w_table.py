@@ -12,8 +12,8 @@ x_values = [
     1e5, 1e10  # Very large values
 ]
 
-#                  Test close to the edge of the domain                                                 Also test massive input
-lambert_w0_table = [(-0.36787944117144233, -1.0)] + [(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
+#                                                                   Also test massive input
+lambert_w0_table = [(x, np.real(lambertw(x))) for x in x_values] + [(1e308, np.real(lambertw(1e308)))]
 
 print("const LAMBERT_W0_TABLE: [(f64, f64); {}] = [".format(len(lambert_w0_table)))
 for x, y in lambert_w0_table:
@@ -36,3 +36,6 @@ print("const LAMBERT_WM1_TABLE: [(f64, f64); {}] = [".format(len(lambert_wm1_tab
 for x, y in lambert_wm1_table:
     print("    ({:.14e}, {:.14e}),".format(x, y))
 print("];")
+
+# Test close to the edge of the domain
+print("const DOMAIN_EDGE: (f64, f64) = (-0.36787944117144233, -1.0);")
