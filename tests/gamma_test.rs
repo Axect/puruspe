@@ -1,25 +1,23 @@
-use approx::assert_abs_diff_eq;
+use approx::assert_relative_eq;
 use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma};
 
 #[test]
 fn test_ln_gamma() {
     for (x, y) in LN_GAMMA_TABLE {
-        let eps = 1e-10 + 1e-8 * ln_gamma(x).max(y).abs();
-        if (ln_gamma(x) - y).abs() > eps {
-            dbg!(x, ln_gamma(x), y);
-        }
-        assert_abs_diff_eq!(ln_gamma(x), y, epsilon = eps);
+        let result = ln_gamma(x);
+        let abs_eps = 1e-10;
+        let rel_eps = 1e-8;
+        assert_relative_eq!(result, y, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
 #[test]
 fn test_gamma() {
     for (x, y) in GAMMA_TABLE {
-        let eps = f64::EPSILON + 1e-10 * gamma(x).max(y).abs();
-        if (gamma(x) - y).abs() > eps {
-            dbg!(x, gamma(x), y);
-        }
-        assert_abs_diff_eq!(gamma(x), y, epsilon = eps);
+        let result = gamma(x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-10;
+        assert_relative_eq!(result, y, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
@@ -27,8 +25,9 @@ fn test_gamma() {
 fn test_gammp() {
     for &(a, x, expected) in GAMMP_TABLE.iter() {
         let result = gammp(a, x);
-        let eps = f64::EPSILON + 1e-10 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = eps);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-10;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
@@ -36,11 +35,9 @@ fn test_gammp() {
 fn test_gammq() {
     for &(a, x, expected) in GAMMQ_TABLE.iter() {
         let result = gammq(a, x);
-        let epsilon = f64::EPSILON + 1e-9 * result.abs();
-        if (result - expected).abs() > epsilon {
-            dbg!(a, x, result, expected);
-        }
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-9;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
@@ -48,8 +45,9 @@ fn test_gammq() {
 fn test_invgammp() {
     for &(a, p, expected) in INVGAMMP_TABLE.iter() {
         let result = invgammp(p, a);
-        let epsilon = f64::EPSILON + 1e-9 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-9;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
 
