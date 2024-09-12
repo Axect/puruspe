@@ -60,6 +60,8 @@ fn test_lambert_w0() {
 fn test_lambert_wm1() {
     assert!(lambert_wm1(-1.0).is_nan());
     assert!(sp_lambert_wm1(-1.0).is_nan());
+    assert_abs_diff_eq!(lambert_wm1(DOMAIN_EDGE.0), DOMAIN_EDGE.1, epsilon = 1e-7);
+    assert_abs_diff_eq!(sp_lambert_wm1(DOMAIN_EDGE.0), DOMAIN_EDGE.1, epsilon = 1e-7);
     for (x, y) in LAMBERT_WM1_TABLE {
         let epsilon = f64::EPSILON + 1e-14 * lambert_wm1(x).abs().min(y.abs());
         let sp_epsilon = f64::EPSILON + 1e-7 * sp_lambert_wm1(x).abs().min(y.abs());
