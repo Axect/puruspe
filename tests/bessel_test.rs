@@ -1,6 +1,102 @@
 use approx::assert_relative_eq;
-use puruspe::{In, Inu_Knu, Jn, Jnu_Ynu, Kn, Yn};
+use puruspe::{In, Inu_Knu, Jn, Jnu_Ynu, Kn, Yn, besseljy, besselik};
 
+
+// epsilon in the assertion has been set to the smallest magnitude for which the tests pass.
+
+#[test]
+fn jn_test() {
+    for (n, x, ans) in J_TABLE {
+        let result = Jn(n, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-14;
+        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn yn_test() {
+    for (n, x, ans) in Y_TABLE {
+        let result = Yn(n, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-13;
+        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn kn_test() {
+    for (n, x, ans) in K_TABLE {
+        let result = Kn(n, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-14;
+        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn in_test() {
+    for (n, x, ans) in I_TABLE {
+        let result = In(n, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-14;
+        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn test_jnu_ynu() {
+    for &(nu, x, expected_jnu, expected_ynu) in JNU_YNU_TABLE.iter() {
+        let (jnu, ynu) = Jnu_Ynu(nu, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-12;
+
+        assert_relative_eq!(jnu, expected_jnu, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(ynu, expected_ynu, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn test_inu_knu() {
+    for &(nu, x, expected_inu, expected_knu) in INU_KNU_TABLE.iter() {
+        let (inu, knu) = Inu_Knu(nu, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-13;
+
+        assert_relative_eq!(inu, expected_inu, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(knu, expected_knu, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn test_besseljy() {
+    for &(nu, x, expected_j, expected_y, expected_jp, expected_yp) in BESSELJY_TABLE.iter() {
+        let (j, y, jp, yp) = besseljy(nu, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-12;
+        assert_relative_eq!(j, expected_j, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(y, expected_y, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(jp, expected_jp, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(yp, expected_yp, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn test_besselik() {
+    for &(nu, x, expected_i, expected_k, expected_ip, expected_kp) in BESSELIK_TABLE.iter() {
+        let (i, k, ip, kp) = besselik(nu, x);
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-13;
+        assert_relative_eq!(i, expected_i, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(k, expected_k, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(ip, expected_ip, epsilon = abs_eps, max_relative = rel_eps);
+        assert_relative_eq!(kp, expected_kp, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+// ┌─────────────────────────────────────────────────────────┐
+//  Tables from scripts/bessel_test.py
+// └─────────────────────────────────────────────────────────┘
 const J_TABLE: [(u32, f64, f64); 42] = [
     (0, 1.00000000000000e-01, 9.97501562066040e-01),
     (0, 2.00000000000000e-01, 9.90024972239576e-01),
@@ -865,69 +961,3 @@ const BESSELIK_TABLE: [(f64, f64, f64, f64, f64, f64); 40] = [
         -1.04391615737081e-22,
     ),
 ];
-
-// epsilon in the assertion has been set to the smallest magnitude for which the tests pass.
-
-#[test]
-fn jn_test() {
-    for (n, x, ans) in J_TABLE {
-        let result = Jn(n, x);
-        let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-14;
-        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
-    }
-}
-
-#[test]
-fn yn_test() {
-    for (n, x, ans) in Y_TABLE {
-        let result = Yn(n, x);
-        let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-13;
-        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
-    }
-}
-
-#[test]
-fn kn_test() {
-    for (n, x, ans) in K_TABLE {
-        let result = Kn(n, x);
-        let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-14;
-        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
-    }
-}
-
-#[test]
-fn in_test() {
-    for (n, x, ans) in I_TABLE {
-        let result = In(n, x);
-        let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-14;
-        assert_relative_eq!(result, ans, epsilon = abs_eps, max_relative = rel_eps);
-    }
-}
-
-#[test]
-fn test_jnu_ynu() {
-    for &(nu, x, expected_jnu, expected_ynu) in JNU_YNU_TABLE.iter() {
-        let (jnu, ynu) = Jnu_Ynu(nu, x);
-        let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-12;
-
-        assert_relative_eq!(jnu, expected_jnu, epsilon = abs_eps, max_relative = rel_eps);
-        assert_relative_eq!(ynu, expected_ynu, epsilon = abs_eps, max_relative = rel_eps);
-    }
-}
-
-#[test]
-fn test_inu_knu() {
-    for &(nu, x, expected_inu, expected_knu) in INU_KNU_TABLE.iter() {
-        let (inu, knu) = Inu_Knu(nu, x);
-        let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-13;
-
-        assert_relative_eq!(inu, expected_inu, epsilon = abs_eps, max_relative = rel_eps);
-        assert_relative_eq!(knu, expected_knu, epsilon = abs_eps, max_relative = rel_eps);
-    }
-}
