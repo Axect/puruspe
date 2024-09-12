@@ -47,6 +47,7 @@ fn test_lambert_w0() {
     assert!(lambert_w0(-1.0).is_nan());
     assert!(sp_lambert_w0(-1.0).is_nan());
     assert_abs_diff_eq!(lambert_w0(DOMAIN_EDGE.0), DOMAIN_EDGE.1, epsilon = 1e-7);
+    assert_abs_diff_eq!(sp_lambert_w0(DOMAIN_EDGE.0), DOMAIN_EDGE.1, epsilon = 1e-7);
     for (x, y) in LAMBERT_W0_TABLE {
         let epsilon = f64::EPSILON + 1e-14 * lambert_w0(x).abs().min(y.abs());
         let sp_epsilon = f64::EPSILON + 1e-6 * sp_lambert_w0(x).abs().min(y.abs());
