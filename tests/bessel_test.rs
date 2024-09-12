@@ -1,6 +1,5 @@
 use approx::assert_relative_eq;
-use puruspe::{In, Inu_Knu, Jn, Jnu_Ynu, Kn, Yn, besseljy, besselik};
-
+use puruspe::{besselik, besseljy, In, Inu_Knu, Jn, Jnu_Ynu, Kn, Yn};
 
 // epsilon in the assertion has been set to the smallest magnitude for which the tests pass.
 

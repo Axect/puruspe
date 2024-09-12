@@ -1,6 +1,61 @@
 use approx::assert_abs_diff_eq;
 use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma};
 
+#[test]
+fn test_ln_gamma() {
+    for (x, y) in LN_GAMMA_TABLE {
+        let eps = 1e-10 + 1e-8 * ln_gamma(x).max(y).abs();
+        if (ln_gamma(x) - y).abs() > eps {
+            dbg!(x, ln_gamma(x), y);
+        }
+        assert_abs_diff_eq!(ln_gamma(x), y, epsilon = eps);
+    }
+}
+
+#[test]
+fn test_gamma() {
+    for (x, y) in GAMMA_TABLE {
+        let eps = f64::EPSILON + 1e-10 * gamma(x).max(y).abs();
+        if (gamma(x) - y).abs() > eps {
+            dbg!(x, gamma(x), y);
+        }
+        assert_abs_diff_eq!(gamma(x), y, epsilon = eps);
+    }
+}
+
+#[test]
+fn test_gammp() {
+    for &(a, x, expected) in GAMMP_TABLE.iter() {
+        let result = gammp(a, x);
+        let eps = f64::EPSILON + 1e-10 * result.abs();
+        assert_abs_diff_eq!(result, expected, epsilon = eps);
+    }
+}
+
+#[test]
+fn test_gammq() {
+    for &(a, x, expected) in GAMMQ_TABLE.iter() {
+        let result = gammq(a, x);
+        let epsilon = f64::EPSILON + 1e-9 * result.abs();
+        if (result - expected).abs() > epsilon {
+            dbg!(a, x, result, expected);
+        }
+        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+    }
+}
+
+#[test]
+fn test_invgammp() {
+    for &(a, p, expected) in INVGAMMP_TABLE.iter() {
+        let result = invgammp(p, a);
+        let epsilon = f64::EPSILON + 1e-9 * result.abs();
+        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
+    }
+}
+
+// ┌─────────────────────────────────────────────────────────┐
+//  Tables from scripts/gamma_table.py
+// └─────────────────────────────────────────────────────────┘
 const LN_GAMMA_TABLE: [(f64, f64); 19] = [
     (1.00000000000000e-01, 2.25271265173421e+00),
     (2.00000000000000e-01, 1.52406382243078e+00),
@@ -22,17 +77,6 @@ const LN_GAMMA_TABLE: [(f64, f64); 19] = [
     (1.00000000000000e+05, 1.05128770897366e+06),
     (1.00000000000000e+10, 2.20258509288811e+11),
 ];
-
-#[test]
-fn test_ln_gamma() {
-    for (x, y) in LN_GAMMA_TABLE {
-        let eps = 1e-10 + 1e-8 * ln_gamma(x).max(y).abs();
-        if (ln_gamma(x) - y).abs() > eps {
-            dbg!(x, ln_gamma(x), y);
-        }
-        assert_abs_diff_eq!(ln_gamma(x), y, epsilon = eps);
-    }
-}
 
 const GAMMA_TABLE: [(f64, f64); 21] = [
     (-1.50000000000000e+00, 2.36327180120735e+00),
@@ -57,17 +101,6 @@ const GAMMA_TABLE: [(f64, f64); 21] = [
     (1.00000000000000e+02, 9.33262154439442e+155),
     (1.70000000000000e+02, 4.26906800900471e+304),
 ];
-
-#[test]
-fn test_gamma() {
-    for (x, y) in GAMMA_TABLE {
-        let eps = f64::EPSILON + 1e-10 * gamma(x).max(y).abs();
-        if (gamma(x) - y).abs() > eps {
-            dbg!(x, gamma(x), y);
-        }
-        assert_abs_diff_eq!(gamma(x), y, epsilon = eps);
-    }
-}
 
 const GAMMP_TABLE: [(f64, f64, f64); 42] = [
     (
@@ -282,15 +315,6 @@ const GAMMP_TABLE: [(f64, f64, f64); 42] = [
     ),
 ];
 
-#[test]
-fn test_gammp() {
-    for &(a, x, expected) in GAMMP_TABLE.iter() {
-        let result = gammp(a, x);
-        let eps = f64::EPSILON + 1e-10 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = eps);
-    }
-}
-
 const GAMMQ_TABLE: [(f64, f64, f64); 42] = [
     (
         1.00000000000000e-01,
@@ -504,18 +528,6 @@ const GAMMQ_TABLE: [(f64, f64, f64); 42] = [
     ),
 ];
 
-#[test]
-fn test_gammq() {
-    for &(a, x, expected) in GAMMQ_TABLE.iter() {
-        let result = gammq(a, x);
-        let epsilon = f64::EPSILON + 1e-9 * result.abs();
-        if (result - expected).abs() > epsilon {
-            dbg!(a, x, result, expected);
-        }
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
-    }
-}
-
 const INVGAMMP_TABLE: [(f64, f64, f64); 42] = [
     (
         1.00000000000000e-01,
@@ -728,12 +740,3 @@ const INVGAMMP_TABLE: [(f64, f64, f64); 42] = [
         1.87831173933125e+01,
     ),
 ];
-
-#[test]
-fn test_invgammp() {
-    for &(a, p, expected) in INVGAMMP_TABLE.iter() {
-        let result = invgammp(p, a);
-        let epsilon = f64::EPSILON + 1e-9 * result.abs();
-        assert_abs_diff_eq!(result, expected, epsilon = epsilon);
-    }
-}
