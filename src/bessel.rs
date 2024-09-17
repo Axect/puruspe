@@ -748,15 +748,15 @@ impl CachedBesselIK {
     /// Panics if `x` is less than or equal to 0, or if `nu` is less than zero.
     /// Also panics `x` is too large or the implementation fails to converge.
     pub fn besselik(
+        &mut self,
         nu: f64,
-        x: f64,
-        cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>,
+        x: f64
     ) -> (f64, f64, f64, f64) {
-        if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+        if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
             res
         } else {
             let res = besselik(nu, x);
-            cache.insert((nu.to_bits(), x.to_bits()), res);
+            self.0.insert((nu.to_bits(), x.to_bits()), res);
             res
         }
     }
