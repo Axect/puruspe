@@ -11,6 +11,10 @@ exclude = ["src/bin/", "examples/", "scripts/"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 
+[features]
+default = ["cmplx"]
+cmplx = ["dep:num-complex"]
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [package.metadata.docs.rs]
@@ -18,6 +22,7 @@ rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]
 lambert_w = { version = "0.5.2", default-features = false, features = ["24bits", "50bits", "std"] }
+num-complex = { version = "0.4", optional = true }
 
 [dev-dependencies]
 peroxide = { version = "0.37", features = ["plot"] }
