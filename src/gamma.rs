@@ -86,9 +86,9 @@ pub fn gamma(z: f64) -> f64 {
 /// # Returns
 ///
 /// The value of P(a,x)
-/// 
+///
 /// # Panics
-/// 
+///
 /// Panics if `x` < 0 or if `a` ≤ 0.
 pub fn gammp(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
@@ -122,9 +122,9 @@ pub fn gammp(a: f64, x: f64) -> f64 {
 /// # Returns
 ///
 /// The value of Q(a,x)
-/// 
+///
 /// # Panics
-/// 
+///
 /// Panics if `x` < 0 or if `a` ≤ 0
 pub fn gammq(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
@@ -244,9 +244,9 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
 /// # Returns
 ///
 /// The value of x for which P(a,x) = p
-/// 
+///
 /// # Panics
-/// 
+///
 /// Panics if `a` ≤ 0.
 pub fn invgammp(p: f64, a: f64) -> f64 {
     let gln = ln_gamma(a);

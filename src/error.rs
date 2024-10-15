@@ -137,9 +137,9 @@ const COF: [f64; 28] = [
 ];
 
 /// Chebyshev coefficients
-/// 
+///
 /// # Panics
-/// 
+///
 /// Panics if `z` < 0.
 fn erfccheb(z: f64) -> f64 {
     let mut d = 0f64;

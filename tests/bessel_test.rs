@@ -1,5 +1,8 @@
 use approx::assert_relative_eq;
-use puruspe::{besselik, besseljy, CachedBesselIK, CachedBesselJY, CachedInuKnu, CachedJnuYnu, In, Inu_Knu, Jn, Jnu_Ynu, Kn, Yn};
+use puruspe::{
+    besselik, besseljy, CachedBesselIK, CachedBesselJY, CachedInuKnu, CachedJnuYnu, In, Inu_Knu,
+    Jn, Jnu_Ynu, Kn, Yn,
+};
 
 // epsilon in the assertion has been set to the smallest magnitude for which the tests pass.
 
@@ -63,7 +66,7 @@ fn cached_jnuynu_test() {
     let mut cache = CachedJnuYnu::with_capacity(JNU_YNU_TABLE.len());
     for (nu, x, expected_jnu, expected_ynu) in JNU_YNU_TABLE {
         let (jnu, ynu) = cache.Jnu_Ynu(nu, x);
-        
+
         assert_relative_eq!(jnu, expected_jnu, epsilon = ABS_EPS, max_relative = REL_EPS);
         assert_relative_eq!(ynu, expected_ynu, epsilon = ABS_EPS, max_relative = REL_EPS);
 
@@ -95,7 +98,7 @@ fn cached_inuknu_test() {
     let mut cache = CachedInuKnu::with_capacity(INU_KNU_TABLE.len());
     for (nu, x, expected_inu, expected_knu) in INU_KNU_TABLE {
         let (inu, knu) = cache.Inu_Knu(nu, x);
-        
+
         assert_relative_eq!(inu, expected_inu, epsilon = ABS_EPS, max_relative = REL_EPS);
         assert_relative_eq!(knu, expected_knu, epsilon = ABS_EPS, max_relative = REL_EPS);
 
@@ -126,10 +129,10 @@ fn test_cached_besseljy() {
     const REL_EPS: f64 = 1e-12;
 
     let mut cache = CachedBesselJY::with_capacity(BESSELJY_TABLE.len());
-    
+
     for &(nu, x, expected_j, expected_y, expected_jp, expected_yp) in BESSELJY_TABLE.iter() {
         let (j, y, jp, yp) = cache.besseljy(nu, x);
-        
+
         assert_relative_eq!(j, expected_j, epsilon = ABS_EPS, max_relative = REL_EPS);
         assert_relative_eq!(y, expected_y, epsilon = ABS_EPS, max_relative = REL_EPS);
         assert_relative_eq!(jp, expected_jp, epsilon = ABS_EPS, max_relative = REL_EPS);
