@@ -79,11 +79,12 @@ fn main() {
 The precision of each function can vary depending on the input values and the complexity of the calculation.
 For detailed information about the precision of specific functions, please refer to the test files in the `tests/` directory.
 
-For example:
 - Gamma function precision: see `tests/gamma_test.rs`
 - Beta function precision: see `tests/beta_test.rs`
 - Bessel function precision: see `tests/bessel_test.rs`
 - Error function precision: see `tests/erf_test.rs`
+- Lambert W function precision: see `tests/lambert_w_test.rs`
+- Dawson function precision: see `tests/dawson_test.rs`
 
 These test files contain comparisons between the results of our implementations and the corresponding functions in SciPy, a widely-used scientific computing library in Python.
 This comparison provides insights into the precision of each function across various input ranges.
@@ -96,20 +97,6 @@ If you require guaranteed precision for a specific input range, we recommend add
 
 Also, please be aware that there might be small discrepancies between our implementation and SciPy's results due to differences in algorithms or internal precision.
 These discrepancies are generally within acceptable margins for most applications, but if you need exact agreement with SciPy or any other specific implementation, you should perform detailed comparisons.
-
-## Project Structure
-
-The project is organized as follows:
-
-- `src/lib.rs`: Main library file that re-exports all functions
-- `src/gamma.rs`: Gamma function implementations
-- `src/beta.rs`: Beta function implementations
-- `src/error.rs`: Error function implementations
-- `src/bessel.rs`: Bessel function implementations
-- `src/dawson.rs`: Dawson function implementation
-- `src/utils.rs`: Utility functions used across the library
-- `tests/`: Contains test files for each group of functions
-- `scripts/`: Python scripts for generating test tables (not included in the package)
 
 ## Contributing
 
