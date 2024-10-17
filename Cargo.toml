@@ -7,7 +7,7 @@ edition = "2018"
 repository = "https://github.com/Axect/puruspe"
 categories = ["science"]
 keywords = ["gamma", "special", "beta", "erf"]
-exclude = ["src/bin/", "examples/"]
+exclude = ["src/bin/", "examples/", "scripts/"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 
@@ -17,6 +17,8 @@ readme = "README.md"
 rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]
+lambert_w = { version = "1.0.0", default-features = false, features = ["std"] }
 
 [dev-dependencies]
 peroxide = { version = "0.37", features = ["plot"] }
+approx = "0.5"
