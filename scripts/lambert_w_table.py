@@ -9,7 +9,7 @@ x_values = [
     10.0, 20.0, 50.0,  # Larger values
     0.25, 0.75,  # 1/4 and 3/4 points
     1e-5, 1e-10,  # Values very close to 0
-    1e5, 1e10,  # Very large values
+    1e5, 1e10  # Very large values
 ]
 
 #                                                                   Also test massive input
@@ -27,7 +27,7 @@ lambert_wm1_x_values = [
     -0.3632700388723338, -0.010217109406601 , -0.2376990995256563,
     -0.3037676546798408,
     # Small values
-    -1e-3, -3.1e-5, -1e-100,
+    -1e-3, -3.1e-5, -1e-100
     
 ]
 
