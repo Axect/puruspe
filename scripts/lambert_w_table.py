@@ -28,7 +28,6 @@ lambert_wm1_x_values = [
     -0.3037676546798408,
     # Small values
     -1e-3, -3.1e-5, -1e-100,
-    
 ]
 
 lambert_wm1_table = [(x, np.real(lambertw(x, -1))) for x in lambert_wm1_x_values]
