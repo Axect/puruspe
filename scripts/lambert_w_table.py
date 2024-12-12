@@ -38,4 +38,4 @@ for x, y in lambert_wm1_table:
 print("];")
 
 # Test close to the edge of the domain
-print("const DOMAIN_EDGE: (f64, f64) = (-0.36787944117144233, -1.0);")
+print("const DOMAIN_EDGE: (f64, f64) = (-0.36787944117144232, -1.0);")
