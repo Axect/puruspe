@@ -1,8 +1,7 @@
 use approx::assert_abs_diff_eq;
 use puruspe::*;
 
-const LAMBERT_W0_TABLE: [(f64, f64); 21] = [
-    (-0.36787944117144232, -1.0),
+const LAMBERT_W0_TABLE: [(f64, f64); 20] = [
     (1.00000000000000e-01, 9.12765271608623e-02),
     (2.00000000000000e-01, 1.68915973499110e-01),
     (5.00000000000000e-01, 3.51733711249196e-01),
@@ -24,9 +23,7 @@ const LAMBERT_W0_TABLE: [(f64, f64); 21] = [
     (1.00000000000000e+10, 2.00286854133050e+01),
     (1.00000000000000e+308, 7.02641362034107e+02),
 ];
-
-const LAMBERT_WM1_TABLE: [(f64, f64); 14] = [
-    (-0.36787944117144232, -1.0),
+const LAMBERT_WM1_TABLE: [(f64, f64); 13] = [
     (-1.62330466849397e-01, -2.87373297576420e+00),
     (-1.41318890794931e-02, -6.06123496778854e+00),
     (-1.78131724758206e-01, -2.72926392333150e+00),
@@ -41,11 +38,13 @@ const LAMBERT_WM1_TABLE: [(f64, f64); 14] = [
     (-3.10000000000000e-05, -1.29420012897721e+01),
     (-1.00000000000000e-100, -2.35721158875685e+02),
 ];
+const BRANCH_POINT: (f64, f64) = (-0.36787944117144232, -1.0);
 
 #[test]
 fn test_lambert_w0() {
     assert!(lambert_w0(-1.0).is_nan());
     assert!(sp_lambert_w0(-1.0).is_nan());
+    assert_abs_diff_eq!(lambert_w0(BRANCH_POINT.0), BRANCH_POINT.1);
     for (x, y) in LAMBERT_W0_TABLE {
         let epsilon = f64::EPSILON + 1e-14 * lambert_w0(x).abs().min(y.abs());
         let sp_epsilon = f64::EPSILON + 1e-6 * sp_lambert_w0(x).abs().min(y.abs());
@@ -58,6 +57,7 @@ fn test_lambert_w0() {
 fn test_lambert_wm1() {
     assert!(lambert_wm1(-1.0).is_nan());
     assert!(sp_lambert_wm1(-1.0).is_nan());
+    assert_abs_diff_eq!(lambert_wm1(BRANCH_POINT.0), BRANCH_POINT.1);
     for (x, y) in LAMBERT_WM1_TABLE {
         let epsilon = f64::EPSILON + 1e-14 * lambert_wm1(x).abs().min(y.abs());
         let sp_epsilon = f64::EPSILON + 1e-7 * sp_lambert_wm1(x).abs().min(y.abs());
