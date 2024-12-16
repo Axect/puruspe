@@ -225,6 +225,11 @@ pub fn Kn(n: u32, x: f64) -> f64 {
 /// - `Y_nu(x)` - Bessel function of the second kind
 /// - `J_nu'(x)` - Derivative of the Bessel function of the first kind
 /// - `Y_nu'(x)` - Derivative of the Bessel function of the second kind
+///
+/// # Panics
+///
+/// Panics if `x` ≤ 0 or if `nu` < 0.
+/// Also panics if `x` is too large or if the function fails to converge.
 pub fn besseljy(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     const MAXIT: usize = 10000;
     const EPS: f64 = f64::EPSILON;
@@ -565,6 +570,11 @@ impl_cached_bessel_convenience_functions!(CachedBesselJY, (f64, f64, f64, f64));
 /// * `K_nu(x)` - Modified Bessel function of the second kind
 /// * `I_nu'(x)` - Derivative of the modified Bessel function of the first kind
 /// * `K_nu'(x)` - Derivative of the modified Bessel function of the second kind
+///
+/// # Panics
+///
+/// Panics if `x` ≤ 0 or if `nu` < 0.
+/// Also panics if `x` is too large or if the function fails to converge.
 pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
     const MAXIT: usize = 10000;
     const EPS: f64 = f64::EPSILON;
@@ -685,7 +695,7 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
             q += c * q_new;
             b += 2.0;
             d = 1.0 / (b + a * d);
-            delh = (b * d - 1.0) * delh;
+            delh *= b * d - 1.0;
             h += delh;
             let dels = q * delh;
             s += dels;
@@ -697,7 +707,7 @@ pub fn besselik(nu: f64, x: f64) -> (f64, f64, f64, f64) {
         if i >= MAXIT {
             panic!("besselik: failure to converge in cf2");
         }
-        h = a1 * h;
+        h *= a1;
         rkmu = (PI / (2.0 * x)).sqrt() * (-x).exp() / s;
         rk1 = rkmu * (xmu + x + 0.5 - h) * xi;
     }
@@ -747,16 +757,12 @@ impl CachedBesselIK {
     ///
     /// Panics if `x` is less than or equal to 0, or if `nu` is less than zero.
     /// Also panics `x` is too large or the implementation fails to converge.
-    pub fn besselik(
-        nu: f64,
-        x: f64,
-        cache: &mut HashMap<(u64, u64), (f64, f64, f64, f64)>,
-    ) -> (f64, f64, f64, f64) {
-        if let Some(&res) = cache.get(&(nu.to_bits(), x.to_bits())) {
+    pub fn besselik(&mut self, nu: f64, x: f64) -> (f64, f64, f64, f64) {
+        if let Some(&res) = self.0.get(&(nu.to_bits(), x.to_bits())) {
             res
         } else {
             let res = besselik(nu, x);
-            cache.insert((nu.to_bits(), x.to_bits()), res);
+            self.0.insert((nu.to_bits(), x.to_bits()), res);
             res
         }
     }

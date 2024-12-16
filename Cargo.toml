@@ -1,6 +1,6 @@
 [package]
 name = "puruspe"
-version = "0.2.5"
+version = "0.3.0"
 authors = ["Axect <axect@outlook.kr>"]
 description = "Pure Rust Special function library"
 edition = "2018"
@@ -21,9 +21,8 @@ cmplx = ["dep:num-complex"]
 rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]
-lambert_w = { version = "0.5.2", default-features = false, features = ["24bits", "50bits", "std"] }
-num-complex = { version = "0.4", optional = true }
+lambert_w = { version = "1.0.0", default-features = false, features = ["std"] }
 
 [dev-dependencies]
-peroxide = { version = "0.37", features = ["plot"] }
+peroxide = { version = "0.39", features = ["plot"] }
 approx = "0.5"

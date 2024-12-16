@@ -1,5 +1,8 @@
 use approx::assert_relative_eq;
-use puruspe::{besselik, besseljy, In, Inu_Knu, Jn, Jnu_Ynu, Kn, Yn};
+use puruspe::{
+    besselik, besseljy, CachedBesselIK, CachedBesselJY, CachedInuKnu, CachedJnuYnu, In, Inu_Knu,
+    Jn, Jnu_Ynu, Kn, Yn,
+};
 
 // epsilon in the assertion has been set to the smallest magnitude for which the tests pass.
 
@@ -56,6 +59,26 @@ fn test_jnu_ynu() {
 }
 
 #[test]
+fn cached_jnuynu_test() {
+    const ABS_EPS: f64 = f64::EPSILON;
+    const REL_EPS: f64 = 1e-12;
+
+    let mut cache = CachedJnuYnu::with_capacity(JNU_YNU_TABLE.len());
+    for (nu, x, expected_jnu, expected_ynu) in JNU_YNU_TABLE {
+        let (jnu, ynu) = cache.Jnu_Ynu(nu, x);
+
+        assert_relative_eq!(jnu, expected_jnu, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(ynu, expected_ynu, epsilon = ABS_EPS, max_relative = REL_EPS);
+
+        assert!(cache.contains(nu, x));
+        let &(cached_jnu, cached_ynu) = cache.get(nu, x).unwrap();
+
+        assert_eq!(cached_jnu, jnu);
+        assert_eq!(cached_ynu, ynu);
+    }
+}
+
+#[test]
 fn test_inu_knu() {
     for &(nu, x, expected_inu, expected_knu) in INU_KNU_TABLE.iter() {
         let (inu, knu) = Inu_Knu(nu, x);
@@ -64,6 +87,26 @@ fn test_inu_knu() {
 
         assert_relative_eq!(inu, expected_inu, epsilon = abs_eps, max_relative = rel_eps);
         assert_relative_eq!(knu, expected_knu, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn cached_inuknu_test() {
+    const ABS_EPS: f64 = f64::EPSILON;
+    const REL_EPS: f64 = 1e-12;
+
+    let mut cache = CachedInuKnu::with_capacity(INU_KNU_TABLE.len());
+    for (nu, x, expected_inu, expected_knu) in INU_KNU_TABLE {
+        let (inu, knu) = cache.Inu_Knu(nu, x);
+
+        assert_relative_eq!(inu, expected_inu, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(knu, expected_knu, epsilon = ABS_EPS, max_relative = REL_EPS);
+
+        assert!(cache.contains(nu, x));
+        let &(cached_inu, cached_knu) = cache.get(nu, x).unwrap();
+
+        assert_eq!(cached_inu, inu);
+        assert_eq!(cached_knu, knu);
     }
 }
 
@@ -81,6 +124,30 @@ fn test_besseljy() {
 }
 
 #[test]
+fn test_cached_besseljy() {
+    const ABS_EPS: f64 = f64::EPSILON;
+    const REL_EPS: f64 = 1e-12;
+
+    let mut cache = CachedBesselJY::with_capacity(BESSELJY_TABLE.len());
+
+    for &(nu, x, expected_j, expected_y, expected_jp, expected_yp) in BESSELJY_TABLE.iter() {
+        let (j, y, jp, yp) = cache.besseljy(nu, x);
+
+        assert_relative_eq!(j, expected_j, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(y, expected_y, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(jp, expected_jp, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(yp, expected_yp, epsilon = ABS_EPS, max_relative = REL_EPS);
+
+        assert!(cache.contains(nu, x));
+        let &(cached_j, cached_y, cached_jp, cached_yp) = cache.get(nu, x).unwrap();
+        assert_eq!(cached_j, j);
+        assert_eq!(cached_jp, jp);
+        assert_eq!(cached_y, y);
+        assert_eq!(cached_yp, yp);
+    }
+}
+
+#[test]
 fn test_besselik() {
     for &(nu, x, expected_i, expected_k, expected_ip, expected_kp) in BESSELIK_TABLE.iter() {
         let (i, k, ip, kp) = besselik(nu, x);
@@ -90,6 +157,31 @@ fn test_besselik() {
         assert_relative_eq!(k, expected_k, epsilon = abs_eps, max_relative = rel_eps);
         assert_relative_eq!(ip, expected_ip, epsilon = abs_eps, max_relative = rel_eps);
         assert_relative_eq!(kp, expected_kp, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+#[test]
+fn test_cached_besselik() {
+    const ABS_EPS: f64 = f64::EPSILON;
+    const REL_EPS: f64 = 1e-12;
+
+    let mut cache = CachedBesselIK::with_capacity(BESSELIK_TABLE.len());
+
+    for &(nu, x, expected_i, expected_k, expected_ip, expected_kp) in BESSELIK_TABLE.iter() {
+        let (i, k, ip, kp) = cache.besselik(nu, x);
+
+        assert_relative_eq!(i, expected_i, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(k, expected_k, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(ip, expected_ip, epsilon = ABS_EPS, max_relative = REL_EPS);
+        assert_relative_eq!(kp, expected_kp, epsilon = ABS_EPS, max_relative = REL_EPS);
+
+        assert!(cache.contains(nu, x));
+        let &(cached_i, cached_k, cached_ip, cached_kp) = cache.get(nu, x).unwrap();
+
+        assert_eq!(cached_i, i);
+        assert_eq!(cached_ip, ip);
+        assert_eq!(cached_k, k);
+        assert_eq!(cached_kp, kp);
     }
 }
 
