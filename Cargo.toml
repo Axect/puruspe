@@ -22,6 +22,7 @@ rustdoc-args = [ "--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]
 lambert_w = { version = "1.0.0", default-features = false, features = ["std"] }
+num-complex = { version = "0.4", optional = true }
 
 [dev-dependencies]
 peroxide = { version = "0.39", features = ["plot"] }
