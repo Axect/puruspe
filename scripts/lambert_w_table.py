@@ -30,12 +30,14 @@ lambert_wm1_x_values = [
     -1e-3, -3.1e-5, -1e-100,
 ]
 
-lambert_wm1_table = [(x, lambertw(x, -1)) for x in lambert_wm1_x_values]
+lambert_wm1_table = [(x, np.real(lambertw(x, -1))) for x in lambert_wm1_x_values]
 
 print("const LAMBERT_WM1_TABLE: [(f64, f64); {}] = [".format(len(lambert_wm1_table)))
 for x, y in lambert_wm1_table:
     print("    ({:.14e}, {:.14e}),".format(x, y))
 print("];")
 
-# Test close to the edge of the domain
-print("const DOMAIN_EDGE: (f64, f64) = (-0.36787944117144233, -1.0);")
+# We hard code the result here because scipy.lambertw gives nan for the branch point,
+# while we define the value of the principal and secondary branch at the branch point
+# to be -1. This aligns with Wolfram Mathematica as well as Wikipedia.
+print("const BRANCH_POINT: (f64, f64) = (-0.36787944117144232, -1.0);")
