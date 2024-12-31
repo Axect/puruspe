@@ -30,6 +30,7 @@ use crate::{complex::erfcx::erfcx, dawson};
 /// [Faddeeva package](http://ab-initio.mit.edu/faddeeva/)
 /// written by Steven G. Johnson at MIT. (MIT License)
 pub fn w(re: f64, im: f64) -> (f64, f64) {
+    println!("\n----------------------------------------------------");
     use num_complex::Complex64 as c64;
     let mut res = c64::default();
 
@@ -128,6 +129,7 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
     }
 
     if z_sqared >= 49. {
+        res = c64::new(0., 0.);
         let xs = if y < 0. { -z.re } else { z.re }; // compute for -z if y < 0
 
         if z_sqared > 4.8e15 {
@@ -221,20 +223,29 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
     }
 
     println!("DEBUG: USING TAYLOR EXPANSION.");
-    let kp = COVER[(((INV_A * xabs) * N_X_COVER as f64) as usize) + ((INV_A * yabs) as usize)];
-    dbg!(kp);
-    assert!(kp >= 0, "kP is always > 0 in the libcerf code.");
+    let i_tile =
+        2 * ((INV_A * xabs) as isize * N_X_COVER as isize + (INV_A * yabs) as isize) as usize;
+    let kp = TILES[i_tile];
+    assert!(kp >= 0, "kP is always >= 0 in the libcerf code.");
     let idx = 2 * (NTAY + 1) * kp as usize;
     let t = TAYLOR_COEFFS[idx];
     let t_next = TAYLOR_COEFFS[idx + 1];
+    dbg!(t, t_next);
     let dz = c64::new(xabs - t, yabs - t_next);
-    res = c64::new(TAYLOR_COEFFS[2 * NTAY], TAYLOR_COEFFS[2 * NTAY + 1]);
-    // Equivalent to `for (int k = NTay-1; k >= 1; --k)` in libcerf.
-    for k in (1..NTAY).rev() {
+
+    // Something is wrong here...
+    let nk = TILES[i_tile + 1];
+    assert!(nk >= 0); // Not sure how a negative value would affect the loop...
+    res = c64::new(
+        TAYLOR_COEFFS[(idx as isize + 2 * nk as isize) as usize],
+        TAYLOR_COEFFS[(idx as isize + 2 * nk as isize) as usize + 1],
+    );
+    // Equivalent to `for (int k = Nk-1; k >= 1; --k)` in libcerf.
+    for k in (1..nk).rev() {
         res = res * dz
             + c64::new(
-                TAYLOR_COEFFS[idx + (2 * k)],
-                TAYLOR_COEFFS[idx + (2 * k + 1)],
+                TAYLOR_COEFFS[(idx as isize + (2 * k as isize)) as usize],
+                TAYLOR_COEFFS[(idx as isize + (2 * k as isize)) as usize + 1],
             );
     }
 
@@ -243,7 +254,7 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
             res = 2.0 * c64::new((y - x) * (x + y), -2. * x * y).exp() - res;
             return (res.re, res.im);
         }
-        res = 2. * (c64::new((y - x) * (x + y), -2. * x * y)).exp() - c64::new(res.re, -res.im);
+        res = 2. * (c64::new((y - x) * (x + y), -2. * x * y)).exp() - c64::new(res.re, -(res.im));
         return (res.re, res.im);
     }
     if x < 0. {

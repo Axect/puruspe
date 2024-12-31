@@ -22,7 +22,7 @@
 
 use puruspe::complex::w;
 
-const MAX_ERR: f64 = 1e-3;
+const MAX_ERR: f64 = 1e-15;
 
 #[test]
 fn test_w() {
@@ -32,7 +32,6 @@ fn test_w() {
         let w = w(z.0, z.1);
         let libcerf_val = W_OF_Z_TABLE[i];
 
-        println!("---------------------------------------------------");
         println!("RE(Z): {}, IM(Z): {}", z.0, z.1);
         println!("REAL DIFFERENCE: {}", (libcerf_val.0 - w.0).abs());
         println!("IMAG DIFFERENCE: {}", (libcerf_val.1 - w.1).abs());
