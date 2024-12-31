@@ -1,4 +1,4 @@
-use super::erfcx_chebyshev_coeffs::*;
+use super::{erfcx_chebyshev_coeffs::*, INV_SQRT_PI};
 use crate::utils::frexp;
 
 /// Helper function for erfcx(x).
@@ -166,5 +166,5 @@ pub fn erfcx(x: f64) -> f64 {
             * r;
     }
     // 1-term expansion, important to avoid overflow
-    return 0.56418958354775629 / x;
+    return INV_SQRT_PI / x;
 }

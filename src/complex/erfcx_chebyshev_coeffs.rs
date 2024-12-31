@@ -1,4 +1,30 @@
 //! Literally just a whole bunch of coefficients for the Chebyshev expansion of erfcx().
+//!
+//! The `libcerf` code has these given in hexadecimal floating-point literals, which Rust
+//! does not currently support in the stable release. I parsed them using the following
+//! code:
+//! ```Rust
+//! use std::io::*;
+//! use hexf_parse::*;
+//!
+//! fn main() {
+//!     for line in stdin().lock().lines() {
+//!         println!("{}", hex_to_decimal(line.unwrap().trim()));
+//!     }
+//! }
+//!
+//! fn hex_to_decimal(hex: &str) -> f64 {
+//!     parse_hexf64(hex, false).unwrap()
+//! }
+//! ```
+//!
+//! Make sure to add the `hexf_parse` crate, and then pipe the hexadecimal numbers
+//! to the program. Assuming you have them in a file, with all whitespace and commas
+//! removed, and each number on a separate line, this works:
+//! ```bash
+//! cargo b --release
+//! cat coeffs.txt | ./target/release/hexfloat > results.txt
+//! ```
 
 pub const CHEBYSHEV_COEFFS_0: [f64; 448 * 2] = [
     0.8723338250030206,
