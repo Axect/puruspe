@@ -18,21 +18,20 @@ use crate::{complex::erfcx::erfcx, dawson};
 /// is ℜ(w(z)) and the second is ℑ(w(z)).
 ///
 /// ### Notes on Implementation:
-/// For sufficiently large |z|, we use a continued-fraction expansion,
+/// This is effectively a Rust port of `libcerf` and the
+/// [Faddeeva package](http://ab-initio.mit.edu/faddeeva/)
+/// written by Steven G. Johnson at MIT. (MIT License)
+///
+/// For sufficiently large |z|, it uses a continued-fraction expansion,
 /// which is an independent reimplementation of W. Gautschi's algorithm
 /// in [this paper](http://dx.doi.org/10.1137/0707012). It is roughly
 /// similar to [Algorithm 680](http://dx.doi.org/10.1145/77626.77629).
 ///
-/// For ℑ(z) near the real axis or small |z|, we use an independent reimplementation
+/// For ℑ(z) near the real axis or small |z|, it uses an independent reimplementation
 /// of M. Zaghloul's [Algorithm 916](http://dx.doi.org/10.1145/2049673.2049679).
-///
-/// This is effectively a Rust port of `libcerf` and the
-/// [Faddeeva package](http://ab-initio.mit.edu/faddeeva/)
-/// written by Steven G. Johnson at MIT. (MIT License)
 pub fn w(re: f64, im: f64) -> (f64, f64) {
-    println!("\n----------------------------------------------------");
     use num_complex::Complex64 as c64;
-    let mut res = c64::default();
+    let mut res: c64;
 
     let z = c64::new(re, im);
     let x = re;
@@ -60,8 +59,13 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
         return (e2 + y * 2. * (x * wi - INV_SQRT_PI), wi - 2. * x * y * e2);
     }
 
+    /* **************************************************************** */
+    /*     Case when |ℑ(z)| >> |ℜ(z)|: In this scenario we may have    */
+    /* precision issues because the complex norm can be very accurate,  */
+    /* but either of the components may be off by orders of magnitude.  */
+    /* **************************************************************** */
+
     if xabs < 1e-8 * yabs {
-        println!("DEBUG: CALLED ERFCX(Y).");
         let wr = erfcx(y);
         if xabs == 0. {
             return (wr, 0.);
@@ -69,7 +73,9 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
         return (wr, x * (2. * (INV_SQRT_PI - y * wr)));
     }
 
-    // When z tends to zero, we use the MacLaurin series...
+    /* **************************************************************** */
+    /*     Case when |z| -> 0: Use the MacLaurin series.                */
+    /* **************************************************************** */
 
     if z_sqared < 0.053 {
         if z_sqared < 0.00689 {
@@ -128,8 +134,11 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
         return (res.re, res.im);
     }
 
+    /* **************************************************************** */
+    /*     Case when |z| -> infinity: Use the MacLaurin series.         */
+    /* **************************************************************** */
+
     if z_sqared >= 49. {
-        res = c64::new(0., 0.);
         let xs = if y < 0. { -z.re } else { z.re }; // compute for -z if y < 0
 
         if z_sqared > 4.8e15 {
@@ -222,7 +231,10 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
         return (y, y);
     }
 
-    println!("DEBUG: USING TAYLOR EXPANSION.");
+    /* **************************************************************** */
+    /*     Fall back to a Taylor series around z.                       */
+    /* **************************************************************** */
+
     let i_tile =
         2 * ((INV_A * xabs) as isize * N_X_COVER as isize + (INV_A * yabs) as isize) as usize;
     let kp = TILES[i_tile];
@@ -230,12 +242,10 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
     let idx = 2 * (NTAY + 1) * kp as usize;
     let t = TAYLOR_COEFFS[idx];
     let t_next = TAYLOR_COEFFS[idx + 1];
-    dbg!(t, t_next);
     let dz = c64::new(xabs - t, yabs - t_next);
 
     // Something is wrong here...
     let nk = TILES[i_tile + 1];
-    assert!(nk >= 0); // Not sure how a negative value would affect the loop...
     res = c64::new(
         TAYLOR_COEFFS[(idx as isize + 2 * nk as isize) as usize],
         TAYLOR_COEFFS[(idx as isize + 2 * nk as isize) as usize + 1],
@@ -268,6 +278,5 @@ pub fn w(re: f64, im: f64) -> (f64, f64) {
 /// This equals the imaginary part of the Faddeeva
 /// function of x, for real x.
 fn im_w_of_x(x: f64) -> f64 {
-    println!("DEBUG: CALLED DAWSON(X).");
     2. * dawson(x) * INV_SQRT_PI
 }
