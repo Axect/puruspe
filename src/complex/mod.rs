@@ -16,4 +16,5 @@ use core::f64;
 
 const INV_SQRT_PI: f64 = 0.5641895835_4775628694; // Inverse square root of pi from WolframAlpha.
 
+pub use erfcx::erfcx;
 pub use faddeeva::w;
