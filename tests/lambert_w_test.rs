@@ -56,6 +56,8 @@ fn test_lambert_w0() {
     }
     assert_eq!(lambert_w0(f64::INFINITY), f64::INFINITY);
     assert_eq!(sp_lambert_w0(f64::INFINITY), f64::INFINITY);
+    assert!(lambert_w0(f64::NAN).is_nan());
+    assert!(sp_lambert_w0(f64::NAN).is_nan());
 }
 
 #[test]
@@ -72,4 +74,6 @@ fn test_lambert_wm1() {
         assert_relative_eq!(lambert_wm1(x), y, max_relative = 1e-14);
         assert_relative_eq!(sp_lambert_wm1(x), y, max_relative = 1e-7);
     }
+    assert!(lambert_wm1(f64::NAN).is_nan());
+    assert!(sp_lambert_wm1(f64::NAN).is_nan());
 }
