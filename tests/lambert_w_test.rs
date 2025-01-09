@@ -1,5 +1,3 @@
-use core::f64;
-
 use approx::assert_abs_diff_eq;
 use puruspe::*;
 
