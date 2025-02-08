@@ -1,4 +1,4 @@
-use crate::{dawson, erfcx::erfcx, INV_SQRT_PI};
+use crate::{dawson, error::erfcx, INV_SQRT_PI};
 
 /// The complex Faddeeva function, or w(z). This is Abramowitz
 /// & Stegun function (7.1.3), also known as the plasma dispersion

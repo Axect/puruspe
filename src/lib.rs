@@ -21,14 +21,13 @@ pub use error::{erf, erfc, inverf, inverfc};
 pub mod dawson;
 pub use dawson::dawson;
 
+pub mod faddeeva;
+
 pub mod bessel;
 pub use bessel::{
     besselik, besseljy, CachedBesselIK, CachedBesselJY, CachedInuKnu, CachedJnuYnu, In, Inu_Knu,
     Jn, Jnu_Ynu, Kn, Yn,
 };
-
-pub mod erfcx;
-pub mod faddeeva;
 
 // =============================================================================
 // Constants
