@@ -51,19 +51,19 @@ pub fn erfc(x: f64) -> f64 {
     }
 }
 
-/// Calculates the inverse of the error function.
+/// Calculates the inverse of the complementary error function.
 ///
 /// This function finds x such that:
 ///
-/// $$ p = \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} dt $$
+/// $$ p = \text{erfc}(x) = 1 - \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_x^\infty e^{-t^2} dt $$
 ///
 /// # Arguments
 ///
-/// * `p` - The probability value (between -1 and 1)
+/// * `p` - The probability value (between 0 and 2)
 ///
 /// # Returns
 ///
-/// The value of $x$ for which $\text{erf}(x) = p$
+/// The value of $x$ for which $\text{erfc}(x) = p$
 pub fn inverfc(p: f64) -> f64 {
     // Return arbitrary large pos or neg value
     if p >= 2f64 {
@@ -87,19 +87,19 @@ pub fn inverfc(p: f64) -> f64 {
     }
 }
 
-/// Calculates the inverse of the complementary error function.
+/// Calculates the inverse of the error function.
 ///
 /// This function finds x such that:
 ///
-/// $$ p = \text{erfc}(x) = 1 - \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_x^\infty e^{-t^2} dt $$
+/// $$ p = \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_0^x e^{-t^2} dt $$
 ///
 /// # Arguments
 ///
-/// * `p` - The probability value (between 0 and 2)
+/// * `p` - The probability value (between -1 and 1)
 ///
 /// # Returns
 ///
-/// The value of $x$ for which $\text{erfc}(x) = p$
+/// The value of $x$ for which $\text{erf}(x) = p$
 pub fn inverf(p: f64) -> f64 {
     inverfc(1f64 - p)
 }
