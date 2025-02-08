@@ -27,14 +27,15 @@ pub use bessel::{
     Jn, Jnu_Ynu, Kn, Yn,
 };
 
-#[cfg(feature = "cmplx")]
-pub mod complex;
+pub mod erfcx;
+pub mod faddeeva;
 
 // =============================================================================
 // Constants
 // =============================================================================
 const EPS: f64 = f64::EPSILON;
 const FPMIN: f64 = f64::MIN_POSITIVE / EPS;
+const INV_SQRT_PI: f64 = 0.5641895835_4775628694;
 // For gamma functions & beta functions
 const Y: [f64; 18] = [
     0.0021695375159141994,

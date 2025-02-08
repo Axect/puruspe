@@ -21,7 +21,7 @@
 //! gcc -o myprogram myprogram.c -lcerf -lm
 //! ```
 
-use puruspe::complex::erfcx;
+use puruspe::erfcx::erfcx;
 
 const MAX_ERR: f64 = 1e-15;
 

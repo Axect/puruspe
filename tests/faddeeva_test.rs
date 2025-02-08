@@ -20,7 +20,7 @@
 //! gcc -o myprogram myprogram.c -lcerf -lm
 //! ```
 
-use puruspe::complex::w;
+use puruspe::faddeeva::w;
 
 const MAX_ERR: f64 = 1e-15;
 
