@@ -20,16 +20,16 @@
 //! gcc -o myprogram myprogram.c -lcerf -lm
 //! ```
 
-use puruspe::faddeeva::w;
+use puruspe::faddeeva::faddeeva;
 
 const MAX_ERR: f64 = 1e-15;
 
 #[test]
-fn test_w() {
+fn test_faddeeva() {
     let mut z = (0., 0.);
     for i in 0..1000 {
         z = (z.0 + 0.01, z.1 + 0.01);
-        let w = w(z.0, z.1);
+        let w = faddeeva(z.0, z.1);
         let libcerf_val = W_OF_Z_TABLE[i];
 
         println!("RE(Z): {}, IM(Z): {}", z.0, z.1);

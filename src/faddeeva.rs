@@ -27,7 +27,7 @@ use crate::{dawson, error::erfcx, INV_SQRT_PI};
 ///
 /// For ℑ(z) near the real axis or small |z|, it uses an independent reimplementation
 /// of M. Zaghloul's [Algorithm 916](http://dx.doi.org/10.1145/2049673.2049679).
-pub fn w(re: f64, im: f64) -> (f64, f64) {
+pub fn faddeeva(re: f64, im: f64) -> (f64, f64) {
     use num_complex::Complex64 as c64;
     let mut res: c64;
 
