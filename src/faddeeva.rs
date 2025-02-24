@@ -307,10 +307,10 @@ fn im_w_of_x(x: f64) -> f64 {
 /// cat coeffs.txt | ./target/release/hexfloat > results.txt
 /// ```
 
-pub const INV_A: f64 = 7.000000;
-pub const N_X_COVER: usize = 50;
+const INV_A: f64 = 7.000000;
+const N_X_COVER: usize = 50;
 
-pub const TILES: [i8; 5000] = [
+const TILES: [i8; 5000] = [
     -2, -2, 3, 18, 3, 15, 3, 19, 13, 20, 13, 17, 13, 14, 13, 17, 13, 23, 29, 20, 29, 18, 29, 15,
     29, 13, 29, 15, 29, 18, 29, 23, 38, 17, 38, 15, 38, 13, 38, 13, 38, 15, 38, 18, 38, 20, 38, 23,
     48, 20, 48, 18, 48, 16, 48, 15, 48, 13, 48, 11, 48, 13, 48, 15, 48, 17, 48, 19, 48, 21, 48, 23,
@@ -522,8 +522,8 @@ pub const TILES: [i8; 5000] = [
     -2, -2, -2, -2, -2,
 ];
 
-pub const NTAY: usize = 23;
-pub const TAYLOR_COEFFS: [f64; 2 * 24 * 63] = [
+const NTAY: usize = 23;
+const TAYLOR_COEFFS: [f64; 2 * 24 * 63] = [
     0.21428571428571427,
     0.2857142857142854,
     0.7200231235172582,

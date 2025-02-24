@@ -355,7 +355,7 @@ fn erfccheb(z: f64) -> f64 {
 /// cat coeffs.txt | ./target/release/hexfloat > results.txt
 /// ```
 
-pub const CHEBYSHEV_COEFFS_0: [f64; 448 * 2] = [
+const CHEBYSHEV_COEFFS_0: [f64; 448 * 2] = [
     0.8723338250030206,
     -0.0008872968103933578,
     0.8705621184027384,
@@ -1254,7 +1254,7 @@ pub const CHEBYSHEV_COEFFS_0: [f64; 448 * 2] = [
     -0.00013801218733498934,
 ];
 
-pub const CHEBYSHEV_COEFFS_1: [f64; 448 * 8] = [
+const CHEBYSHEV_COEFFS_1: [f64; 448 * 8] = [
     0.0000007227635731337331,
     -0.0000000005048499485391656,
     0.000000000000313586201559153,
