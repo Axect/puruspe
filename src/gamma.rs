@@ -55,7 +55,7 @@ pub fn ln_gamma(z: f64) -> f64 {
 ///
 /// The value of the gamma function at `z`
 pub fn gamma(z: f64) -> f64 {
-    if z > 1f64 {
+    if z >= 1f64 {
         let z_int = z as usize;
         if (z - (z_int as f64)).abs() < EPS {
             return factorial(z_int - 1);
