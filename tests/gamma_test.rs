@@ -1,5 +1,11 @@
 use approx::assert_relative_eq;
+use proptest::prelude::*;
 use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma};
+
+unsafe extern "C" {
+    fn tgamma(x: f64) -> f64;
+    fn lgamma(x: f64) -> f64;
+}
 
 #[test]
 fn test_ln_gamma() {
@@ -47,6 +53,26 @@ fn test_invgammp() {
         let result = invgammp(p, a);
         let abs_eps = f64::EPSILON;
         let rel_eps = 1e-9;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
+    }
+}
+
+proptest! {
+    #[test]
+    fn test_gamma_proptest(x in 0.00001f64..100000.0) {
+        let result = gamma(x);
+        let expected = unsafe { tgamma(x) };
+        let abs_eps = f64::EPSILON;
+        let rel_eps = 1e-10;
+        assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
+    }
+
+    #[test]
+    fn test_ln_gamma_proptest(x in 0.00001f64..100000.0) {
+        let result = ln_gamma(x);
+        let expected = unsafe { lgamma(x) };
+        let abs_eps = 1e-10;
+        let rel_eps = 1e-8;
         assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 }
