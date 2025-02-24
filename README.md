@@ -52,8 +52,12 @@ fn main() {
 ### Error Functions
 - `erf(x)`: Error function
 - `erfc(x)`: Complementary error function
+- `erfcx(x)`: Scaled complementary error function
 - `inverf(p)`: Inverse error function
 - `inverfc(p)`: Inverse complementary error function
+
+### Faddeeva Function
+- `faddeeva(x)`: Faddeeva function
 
 ### Bessel Functions
 - `Jn(n, x)`: Bessel function of the first kind of integer order
@@ -83,6 +87,7 @@ For detailed information about the precision of specific functions, please refer
 - Beta function precision: see `tests/beta_test.rs`
 - Bessel function precision: see `tests/bessel_test.rs`
 - Error function precision: see `tests/erf_test.rs`
+- Faddeeva function precision: see `tests/faddeeva_test.rs`
 - Lambert W function precision: see `tests/lambert_w_test.rs`
 - Dawson function precision: see `tests/dawson_test.rs`
 

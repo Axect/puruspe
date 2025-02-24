@@ -1,3 +1,18 @@
+# Ver 0.4.0 (2025-02-24)
+
+## Implement Faddeeva function
+
+- Contributors: [**ethanbarry**](https://github.com/ethanbarry), [inkydragon](https://github.com/inkydragon), [Axect](https://github.com/Axect), [JSorngard](https://github.com/JSorngard)
+- Related PRs
+  - [#30](https://github.com/Axect/puruspe/pull/30)
+- Newly added dependencies
+  - [num-complex](https://crates.io/crates/num-complex)
+
+## Fix bugs
+
+- [#32](https://github.com/Axect/puruspe/issues/32) : Fix swapped doc for `inverf` and `inverfc` (Thanks to [ethanbarry](https://github.com/ethanbarry))
+- [#36](https://github.com/Axect/puruspe/issues/36) : Fix `gamma` function for `1f64` (Thanks to [arihant2math](https://github.com/arihant2math))
+
 # Ver 0.3.0 (2024-10-17)
 
 ## Implement comprehensive Tests & Integrate `lambert_w`
