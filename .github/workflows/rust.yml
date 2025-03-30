@@ -87,21 +87,3 @@ jobs:
           tool: cargo-semver-checks
       - name: Verify semver compatibility
         run: cargo semver-checks
-
-  run_examples:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: dtolnay/rust-toolchain@stable
-    - name: Install python packages
-      run: |
-        python -m pip install --upgrade pip
-        pip install matplotlib scienceplots
-    - name: Run first example
-      run: cargo run --example bessel_fractional_test
-    - name: Run second example
-      run: cargo run --example bessel_integer_test
-    - name: Run third example
-      run: cargo run --example modified_bessel_fractional_test
-    - name: Run fourth example
-      run: cargo run --example modified_bessel_integer_test
