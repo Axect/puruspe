@@ -93,6 +93,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: dtolnay/rust-toolchain@stable
+    - name: Install python packages
+      run: |
+        python -m pip install --upgrade pip
+        pip install matplotlib
     - name: Run first example
       run: cargo run --example bessel_fractional_test
     - name: Run second example
