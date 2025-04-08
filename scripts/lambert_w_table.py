@@ -41,3 +41,24 @@ print("];")
 # while we define the value of the principal and secondary branch at the branch point
 # to be -1. This aligns with Wolfram Mathematica as well as Wikipedia.
 print("const BRANCH_POINT: (f64, f64) = (-0.36787944117144232, -1.0);")
+
+z_values = [
+    # Some complex numbers
+    0.1 + 0.2j, -1.5 - 0.5j, 1.0 + 1.0j, -2.0 + 2.0j,
+    # Small complex numbers
+    1e-3 + 1e-3j, -1e-5 - 1e-5j, 1e-10 + 1e-10j,
+    # Large complex numbers
+    1e5 + 1e5j, -1e10 - 1e10j
+]
+
+k_values = [
+    0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5,
+    10, -10, 20, -20, 50, -50
+]
+
+print("const COMPLEX_LAMBERT_W_TABLE: [(i32, (f64, f64), (f64, f64)); {}] = [".format(len(k_values) * len(z_values)))
+for k in k_values:
+    for z in z_values:
+        w = lambertw(z, k)
+        print("    ({}, ({:.14e}, {:.14e}), ({:.14e}, {:.14e})),".format(k, np.real(z), np.imag(z), np.real(w), np.imag(w)))
+print("];")

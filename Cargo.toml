@@ -17,7 +17,7 @@ readme = "README.md"
 rustdoc-args = ["--html-in-header", "katex-header.html", "--cfg", "docsrs"]
 
 [dependencies]
-lambert_w = { version = "1.0", default-features = false, features = ["std"] }
+lambert_w = { version = "1.1", default-features = false, features = ["std"] }
 num-complex = { version = "0.4" }
 
 [dev-dependencies]
