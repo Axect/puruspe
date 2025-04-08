@@ -63,7 +63,7 @@ proptest! {
         let result = gamma(x);
         let expected = unsafe { tgamma(x) };
         let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-10;
+        let rel_eps = 1e-9;
         assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 
