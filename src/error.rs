@@ -117,7 +117,7 @@ fn cheb_interpolant(x: f64) -> f64 {
 
     // Integer arithmetics to obtain reduced coordinate t:
     let ip = ((1 << (M + 1)) as f64 * xm) as i32; // index in octave + 2^M
-    let lij = (je * (1 << M) + ip - loff); // index in lookup table
+    let lij = je * (1 << M) + ip - loff; // index in lookup table
     let t = ((1 << (M + 2)) as f64 * xm) - (1 + 2 * ip) as f64;
 
     let p_idx = lij * 8;
