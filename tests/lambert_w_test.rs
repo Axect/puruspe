@@ -255,9 +255,9 @@ fn test_lambert_w() {
         assert!(w.0.is_nan() && w.1.is_nan());
     }
 
-    for (k, (z_re, z_im), (w_re, w_im)) in COMPLEX_LAMBERT_W_TABLE {
+    for (k, (z_re, z_im), (ans_re, ans_im)) in COMPLEX_LAMBERT_W_TABLE {
         let w = lambert_w(k, z_re, z_im);
-        assert_relative_eq!(w.0, w_re, max_relative = 1e-10);
-        assert_relative_eq!(w.1, w_im, max_relative = 1e-10);
+        assert_relative_eq!(w.0, ans_re, max_relative = 1e-10);
+        assert_relative_eq!(w.1, ans_im, max_relative = 1e-10);
     }
 }
