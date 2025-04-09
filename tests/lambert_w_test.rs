@@ -3,6 +3,7 @@ use core::f64;
 use approx::{assert_abs_diff_eq, assert_relative_eq};
 use puruspe::{lambert_w, lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
 
+/// Formatted as (z, W_0(z))
 const LAMBERT_W0_TABLE: [(f64, f64); 20] = [
     (1.00000000000000e-01, 9.12765271608623e-02),
     (2.00000000000000e-01, 1.68915973499110e-01),
@@ -25,6 +26,7 @@ const LAMBERT_W0_TABLE: [(f64, f64); 20] = [
     (1.00000000000000e+10, 2.00286854133050e+01),
     (1.00000000000000e+308, 7.02641362034107e+02),
 ];
+/// Formatted as (z, W_{-1}(z))
 const LAMBERT_WM1_TABLE: [(f64, f64); 13] = [
     (-1.62330466849397e-01, -2.87373297576420e+00),
     (-1.41318890794931e-02, -6.06123496778854e+00),
@@ -40,8 +42,10 @@ const LAMBERT_WM1_TABLE: [(f64, f64); 13] = [
     (-3.10000000000000e-05, -1.29420012897721e+01),
     (-1.00000000000000e-100, -2.35721158875685e+02),
 ];
+/// The branch point of the Lambert W function and the value of the principal and secondary branches
+/// of it at said point.
 const BRANCH_POINT: (f64, f64) = (-0.36787944117144232, -1.0);
-
+/// Formatted as (branch, (re(z), im(z)), (re(w), im(w)))
 #[rustfmt::skip]
 const COMPLEX_LAMBERT_W_TABLE: [(i32, (f64, f64), (f64, f64)); 153] = [
     (0, (1.00000000000000e-01, 2.00000000000000e-01), (1.16456459794844e-01, 1.61397090591358e-01)),
