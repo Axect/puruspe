@@ -22,6 +22,7 @@ pub mod dawson;
 pub use dawson::dawson;
 
 pub mod faddeeva;
+pub use faddeeva::faddeeva;
 
 pub mod bessel;
 pub use bessel::{
