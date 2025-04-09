@@ -257,10 +257,6 @@ fn test_lambert_w() {
 
     for (k, (z_re, z_im), (w_re, w_im)) in COMPLEX_LAMBERT_W_TABLE {
         let w = lambert_w(k, z_re, z_im);
-        println!(
-            "k: {}, z: ({}, {}), out: ({}, {}), correct: ({}, {})",
-            k, z_re, z_im, w.0, w.1, w_re, w_im
-        );
         assert_relative_eq!(w.0, w_re, max_relative = 1e-10);
         assert_relative_eq!(w.1, w_im, max_relative = 1e-10);
     }
