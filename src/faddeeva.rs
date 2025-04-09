@@ -1,3 +1,5 @@
+//! This module provides an implementation of the complex Faddeeva function.
+
 use core::f64::consts::FRAC_2_SQRT_PI;
 
 use crate::{dawson, error::erfcx, INV_SQRT_PI};
