@@ -2,7 +2,7 @@
 // Import from other crates
 // =============================================================================
 // Lambert W functions
-pub use lambert_w::{lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
+pub use lambert_w::{lambert_w, lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
 
 // =============================================================================
 // Export funcionts
