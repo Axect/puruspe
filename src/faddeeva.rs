@@ -1,3 +1,5 @@
+use core::f64::consts::FRAC_2_SQRT_PI;
+
 use crate::{dawson, error::erfcx, INV_SQRT_PI};
 
 /// The complex Faddeeva function, or w(z). This is Abramowitz
@@ -82,7 +84,7 @@ pub fn faddeeva(re: f64, im: f64) -> (f64, f64) {
                               c64::new(5e-1, 0.) ) * z // z^4
                           + c64::new(0., -7.522_527_780_636_751e-1) ) * z // z^3
                          + c64::new(-1.0, 0.) ) * z // z^2
-                        + c64::new(0., 1.128_379_167_095_512_6) ) * z // z^1
+                        + c64::new(0., FRAC_2_SQRT_PI) ) * z // z^1
                     + 1.;
 
                 return (res.re, res.im);
@@ -101,7 +103,7 @@ pub fn faddeeva(re: f64, im: f64) -> (f64, f64) {
                        + c64::new(5e-1, 0.) ) * z // z^4
                       + c64::new(0., -7.522_527_780_636_751e-1) ) * z // z^3
                      + c64::new(-1.0, 0.) ) * z // z^2
-                    + c64::new(0., 1.128_379_167_095_512_6) ) * z // z^1
+                    + c64::new(0., FRAC_2_SQRT_PI) ) * z // z^1
                 + 1.;
 
             return (res.re, res.im);
@@ -126,7 +128,7 @@ pub fn faddeeva(re: f64, im: f64) -> (f64, f64) {
 		   + c64::new(5e-1, 0.) ) * z // z^4
 		  + c64::new(0., -7.522_527_780_636_751e-1) ) * z // z^3
 		 + c64::new(-1.0, 0.) ) * z // z^2
-		+ c64::new(0., 1.128_379_167_095_512_6) ) * z // z^1
+		+ c64::new(0., FRAC_2_SQRT_PI) ) * z // z^1
 	    + 1.;
 
         return (res.re, res.im);
