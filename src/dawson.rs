@@ -43,12 +43,12 @@ pub fn dawson(x: f64) -> f64 {
         d2 = d1 - 2.0;
         sum = 0.0;
 
-        for i in 0..NMAX {
+        for cval in c {
             d1 += 2.;
             d2 -= 2.;
             e1 *= e2;
 
-            sum += c[i] * (e1 / d1 + 1.0 / (d2 * e1));
+            sum += cval * (e1 / d1 + 1.0 / (d2 * e1));
         }
 
         ans = (1. / PI.sqrt()) * sign(f64::exp(-xp * xp), x) * sum;
