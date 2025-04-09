@@ -26,8 +26,8 @@ pub fn dawson(x: f64) -> f64 {
     let xx: f64;
     let ans: f64;
 
-    for i in 0..NMAX {
-        c[i] = f64::exp(-((2. * i as f64 + 1.) * h).powf(2.));
+    for (i, cval) in c.iter_mut().enumerate() {
+        *cval = f64::exp(-((2. * i as f64 + 1.) * h).powf(2.));
     }
 
     if x.abs() < 0.2 {
