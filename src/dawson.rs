@@ -53,5 +53,5 @@ pub fn dawson(x: f64) -> f64 {
 
         ans = (1. / PI.sqrt()) * sign(f64::exp(-xp * xp), x) * sum;
     }
-    return ans;
+    ans
 }
