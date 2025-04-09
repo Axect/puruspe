@@ -1,5 +1,3 @@
-use core::f64;
-
 use approx::{assert_abs_diff_eq, assert_relative_eq};
 use puruspe::{lambert_w, lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
 
