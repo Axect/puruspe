@@ -7,6 +7,8 @@
 //! - `inverf`: Calculates the inverse of the error function.
 //! - `inverfc`: Calculates the inverse of the complementary error function.
 
+use core::f64::consts::FRAC_2_SQRT_PI;
+
 use crate::{utils::frexp, INV_SQRT_PI};
 
 /// Calculates the error function.
@@ -201,7 +203,7 @@ pub fn erfcx(x: f64) -> f64 {
             * x
             + 1.0)
             * x
-            - 1.128_379_167_095_512_6)
+            - FRAC_2_SQRT_PI)
             * x
             + 1.0;
     }
