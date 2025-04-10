@@ -10,7 +10,6 @@ use std::f64::consts::PI;
 /// Accurate to about 2e-7 for small inputs.
 pub fn dawson(x: f64) -> f64 {
     const NMAX: usize = 6;
-    let mut c = [0_f64; NMAX];
     let h = 0.4;
     let a1 = 2. / 3.;
     let a2 = 0.4;
@@ -26,10 +25,6 @@ pub fn dawson(x: f64) -> f64 {
     let xx: f64;
     let ans: f64;
 
-    for (i, cval) in c.iter_mut().enumerate() {
-        *cval = f64::exp(-((2. * i as f64 + 1.) * h).powi(2));
-    }
-
     if x.abs() < 0.2 {
         x2 = x * x;
         ans = x * (1.0 - a1 * x2 * (1.0 - a2 * x2 * (1.0 - a3 * x2)));
@@ -43,7 +38,8 @@ pub fn dawson(x: f64) -> f64 {
         d2 = d1 - 2.0;
         sum = 0.0;
 
-        for cval in c {
+        for i in 0..NMAX {
+            let cval = f64::exp(-((2. * i as f64 + 1.) * h).powi(2));
             d1 += 2.;
             d2 -= 2.;
             e1 *= e2;
