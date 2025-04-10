@@ -7,6 +7,8 @@
 //! - `inverf`: Calculates the inverse of the error function.
 //! - `inverfc`: Calculates the inverse of the complementary error function.
 
+use core::f64::consts::FRAC_2_SQRT_PI;
+
 use crate::{utils::frexp, INV_SQRT_PI};
 
 /// Calculates the error function.
@@ -117,7 +119,7 @@ fn cheb_interpolant(x: f64) -> f64 {
 
     // Integer arithmetics to obtain reduced coordinate t:
     let ip = ((1 << (M + 1)) as f64 * xm) as i32; // index in octave + 2^M
-    let lij = (je * (1 << M) + ip - loff) as i32; // index in lookup table
+    let lij = je * (1 << M) + ip - loff; // index in lookup table
     let t = ((1 << (M + 2)) as f64 * xm) - (1 + 2 * ip) as f64;
 
     let p_idx = lij * 8;
@@ -177,32 +179,33 @@ pub fn erfcx(x: f64) -> f64 {
         /* **************************************************************** */
         /* Use the Maclaurin series.                                        */
         /* **************************************************************** */
-        return ((((((((((((((1.9841269841269841e-04) * x - 5.3440090793734269e-04) * x
-            + 1.3888888888888889e-03)
+        return (((((((((((((1.984_126_984_126_984e-4 * x - 5.344_009_079_373_427e-4)
             * x
-            - 3.4736059015927274e-03)
+            + 1.388_888_888_888_889e-3)
             * x
-            + 8.3333333333333332e-03)
+            - 3.473_605_901_592_727_4e-3)
             * x
-            - 1.9104832458760001e-02)
+            + 8.333_333_333_333_333e-3)
             * x
-            + 4.1666666666666664e-02)
+            - 1.910_483_245_876e-2)
             * x
-            - 8.5971746064419999e-02)
+            + 4.166_666_666_666_666_4e-2)
             * x
-            + 1.6666666666666666e-01)
+            - 8.597_174_606_442e-2)
             * x
-            - 3.0090111122547003e-01)
+            + 1.666_666_666_666_666_6e-1)
             * x
-            + 5.0000000000000000e-01)
+            - 3.009_011_112_254_700_3e-1)
             * x
-            - 7.5225277806367508e-01)
+            + 5e-1)
             * x
-            + 1.0000000000000000e+00)
+            - 7.522_527_780_636_751e-1)
             * x
-            - 1.1283791670955126e+00)
+            + 1.0)
             * x
-            + 1.0000000000000000e+00;
+            - FRAC_2_SQRT_PI)
+            * x
+            + 1.0;
     }
 
     if x < 0. {
@@ -228,48 +231,49 @@ pub fn erfcx(x: f64) -> f64 {
 
     if x < 150. {
         if x < 23.2 {
-            return (((((((((((3.6073371500083758e+05) * (r * r) - 3.7971970000088164e+04)
+            return ((((((((((3.607_337_150_008_376e5 * (r * r)
+                - 3.797_197_000_008_816_4e4)
                 * (r * r)
-                + 4.4672905882456671e+03)
+                + 4.467_290_588_245_667e3)
                 * (r * r)
-                - 5.9563874509942218e+02)
+                - 5.956_387_450_994_222e2)
                 * (r * r)
-                + 9.1636730015295726e+01)
+                + 9.163_673_001_529_573e1)
                 * (r * r)
-                - 1.6661223639144676e+01)
+                - 1.666_122_363_914_467_6e1)
                 * (r * r)
-                + 3.7024941420321507e+00)
+                + 3.702_494_142_032_150_7)
                 * (r * r)
-                - 1.0578554691520430e+00)
+                - 1.057_855_469_152_043)
                 * (r * r)
-                + 4.2314218766081724e-01)
+                + 4.231_421_876_608_172_4e-1)
                 * (r * r)
-                - 2.8209479177387814e-01)
+                - 2.820_947_917_738_781_4e-1)
                 * (r * r)
-                + 5.6418958354775628e-01)
+                + 5.641_895_835_477_563e-1)
                 * r;
         }
-        return (((((((9.1636730015295726e+01) * (r * r) - 1.6661223639144676e+01) * (r * r)
-            + 3.7024941420321507e+00)
+        return ((((((9.163_673_001_529_573e1 * (r * r) - 1.666_122_363_914_467_6e1) * (r * r)
+            + 3.702_494_142_032_150_7)
             * (r * r)
-            - 1.0578554691520430e+00)
+            - 1.057_855_469_152_043)
             * (r * r)
-            + 4.2314218766081724e-01)
+            + 4.231_421_876_608_172_4e-1)
             * (r * r)
-            - 2.8209479177387814e-01)
+            - 2.820_947_917_738_781_4e-1)
             * (r * r)
-            + 5.6418958354775628e-01)
+            + 5.641_895_835_477_563e-1)
             * r;
     }
     if x < 6.9e7 {
-        return ((((-1.0578554691520430e+00) * (r * r) + 4.2314218766081724e-01) * (r * r)
-            - 2.8209479177387814e-01)
+        return ((((-1.057_855_469_152_043) * (r * r) + 4.231_421_876_608_172_4e-1) * (r * r)
+            - 2.820_947_917_738_781_4e-1)
             * (r * r)
-            + 5.6418958354775628e-01)
+            + 5.641_895_835_477_563e-1)
             * r;
     }
     // 1-term expansion, important to avoid overflow
-    return INV_SQRT_PI / x;
+    INV_SQRT_PI / x
 }
 
 // =============================================================================
@@ -278,9 +282,9 @@ pub fn erfcx(x: f64) -> f64 {
 const NCOEF: usize = 28;
 const COF: [f64; 28] = [
     -1.3026537197817094,
-    6.4196979235649026e-1,
+    6.419_697_923_564_902e-1,
     1.9476473204185836e-2,
-    -9.561514786808631e-3,
+    -9.561_514_786_808_63e-3,
     -9.46595344482036e-4,
     3.66839497852761e-4,
     4.2523324806907e-5,
@@ -327,33 +331,33 @@ fn erfccheb(z: f64) -> f64 {
     t * (-z.powi(2) + 0.5 * (COF[0] + ty * d) - dd).exp()
 }
 
-/// Literally just a whole bunch of coefficients for the Chebyshev expansion of erfcx().
-///
-/// The `libcerf` code has these given in hexadecimal floating-point literals, which Rust
-/// does not currently support in the stable release. I parsed them using the following
-/// code:
-/// ```Rust
-/// use std::io::*;
-/// use hexf_parse::*;
-///
-/// fn main() {
-///     for line in stdin().lock().lines() {
-///         println!("{}", hex_to_decimal(line.unwrap().trim()));
-///     }
-/// }
-///
-/// fn hex_to_decimal(hex: &str) -> f64 {
-///     parse_hexf64(hex, false).unwrap()
-/// }
-/// ```
-///
-/// Make sure to add the `hexf_parse` crate, and then pipe the hexadecimal numbers
-/// to the program. Assuming you have them in a file, with all whitespace and commas
-/// removed, and each number on a separate line, this works:
-/// ```bash
-/// cargo b --release
-/// cat coeffs.txt | ./target/release/hexfloat > results.txt
-/// ```
+// Literally just a whole bunch of coefficients for the Chebyshev expansion of erfcx().
+//
+// The `libcerf` code has these given in hexadecimal floating-point literals, which Rust
+// does not currently support in the stable release. I parsed them using the following
+// code:
+// ```Rust
+// use std::io::*;
+// use hexf_parse::*;
+//
+// fn main() {
+//     for line in stdin().lock().lines() {
+//         println!("{}", hex_to_decimal(line.unwrap().trim()));
+//     }
+// }
+//
+// fn hex_to_decimal(hex: &str) -> f64 {
+//     parse_hexf64(hex, false).unwrap()
+// }
+// ```
+//
+// Make sure to add the `hexf_parse` crate, and then pipe the hexadecimal numbers
+// to the program. Assuming you have them in a file, with all whitespace and commas
+// removed, and each number on a separate line, this works:
+// ```bash
+// cargo b --release
+// cat coeffs.txt | ./target/release/hexfloat > results.txt
+// ```
 
 const CHEBYSHEV_COEFFS_0: [f64; 448 * 2] = [
     0.8723338250030206,
@@ -1254,7 +1258,7 @@ const CHEBYSHEV_COEFFS_0: [f64; 448 * 2] = [
     -0.00013801218733498934,
 ];
 
-const CHEBYSHEV_COEFFS_1: [f64; 448 * 8] = [
+static CHEBYSHEV_COEFFS_1: [f64; 448 * 8] = [
     0.0000007227635731337331,
     -0.0000000005048499485391656,
     0.000000000000313586201559153,

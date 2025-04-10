@@ -9,7 +9,7 @@
 
 use crate::utils::factorial;
 use crate::{EPS, FPMIN, W, Y};
-use std::f64::consts::PI;
+use core::f64::consts::PI;
 const ASWITCH: usize = 100;
 const NGAU: usize = 18;
 const G: f64 = 5f64;
@@ -34,8 +34,8 @@ pub fn ln_gamma(z: f64) -> f64 {
     let z = z - 1f64;
     let base = z + G + 0.5;
     let mut s = 0f64;
-    for i in 1..N {
-        s += LG5N7[i] / (z + i as f64);
+    for (i, &coeff) in LG5N7.iter().enumerate().skip(1) {
+        s += coeff / (z + i as f64);
     }
     s += LG5N7[0];
     (2f64 * PI).sqrt().ln() + s.ln() - base + base.ln() * (z + 0.5)
@@ -311,7 +311,7 @@ pub fn invgammp(p: f64, a: f64) -> f64 {
 // Lanczos approximation of Gamma
 // =============================================================================
 /// Lanczos g=5, n=7
-const LG5N7: [f64; 7] = [
+const LG5N7: [f64; N] = [
     1.000000000189712,
     76.18009172948503,
     -86.50532032927205,
