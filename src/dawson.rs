@@ -4,7 +4,7 @@
 //! - `dawson`: Calculates Dawson's integral for real values.
 
 use crate::utils::sign;
-use std::f64::consts::PI;
+use core::f64::consts::PI;
 
 /// Dawson's integral for real values.
 /// Accurate to about 2e-7 for small inputs.

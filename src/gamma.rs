@@ -9,7 +9,7 @@
 
 use crate::utils::factorial;
 use crate::{EPS, FPMIN, W, Y};
-use std::f64::consts::PI;
+use core::f64::consts::PI;
 const ASWITCH: usize = 100;
 const NGAU: usize = 18;
 const G: f64 = 5f64;

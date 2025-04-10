@@ -1076,8 +1076,8 @@ const XJ00: f64 = 5.783185962946785;
 const XJ10: f64 = 3.047126234366209e1;
 const XJ01: f64 = 1.468197064212389e1;
 const XJ11: f64 = 4.921_845_632_169_46e1;
-const TWOOPI: f64 = std::f64::consts::FRAC_2_PI;
-const PIO4: f64 = std::f64::consts::FRAC_PI_4;
+const TWOOPI: f64 = core::f64::consts::FRAC_2_PI;
+const PIO4: f64 = core::f64::consts::FRAC_PI_4;
 
 const J0R: [f64; 7] = [
     1.682397144220462e-4,
