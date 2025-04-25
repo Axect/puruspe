@@ -20,7 +20,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-puruspe = "0.3.0"
+puruspe = "0.4.1"
 ```
 
 ## Example
@@ -133,4 +133,4 @@ at your option.
 
 ## Reference
 
-- Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007. 
+- Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007.

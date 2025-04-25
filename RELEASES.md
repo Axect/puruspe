@@ -1,3 +1,17 @@
+# Ver 0.4.1 (2025-04-25)
+
+- Add all branches of the complex Lambert W function
+  - Contributors: [**JSorngard**](https://github.com/JSorngard)
+  - Related issue: [#40](https://github.com/Axect/puruspe/issues/40)
+  - Related PR: [#45](https://github.com/Axect/puruspe/pull/45)
+- Enhance CI / Fix proptest & lint
+  - Contributors: [**JSorngard**](https://github.com/JSorngard)
+  - Related issue: [#42](https://github.com/Axect/puruspe/issues/42)
+  - Related PRs:
+    - [#41](https://github.com/Axect/puruspe/pull/41)
+    - [#43](https://github.com/Axect/puruspe/pull/43)
+    - [#44](https://github.com/Axect/puruspe/pull/44)
+
 # Ver 0.4.0 (2025-02-24)
 
 ## Implement Faddeeva function
@@ -76,4 +90,3 @@
 # Ver 0.1.4 (2020-08-06)
 
 * Make public `ln_gamma`. (Thanks to [rw](https://github.com/rw))
-
