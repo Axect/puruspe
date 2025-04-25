@@ -56,7 +56,7 @@ pub fn beta(z: f64, w: f64) -> f64 {
 /// Panics if `a` ≤ 0, if `b` ≤ 0 or if x is not in the range `0..=1`.
 pub fn betai(a: f64, b: f64, x: f64) -> f64 {
     assert!(a > 0f64 && b > 0f64, "Bad a or b in routine betai");
-    assert!(x >= 0f64 && x <= 1f64, "Bad x in routine betai");
+    assert!((0f64..=1f64).contains(&x), "Bad x in routine betai");
     if x == 0f64 || x == 1f64 {
         return x;
     }
