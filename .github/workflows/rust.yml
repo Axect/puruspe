@@ -9,14 +9,82 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+# Abort a run of CI jobs if a newer run is triggered from the same branch.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
-  build:
-
+  format:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+    - name: Check formatting
+      run: cargo fmt --check
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+    - name: Check
+      run: cargo check --verbose
+  
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
+    - name: Clippy
+      run: cargo clippy --verbose -- -D warnings
+
+  # Emulates building the documentation on docs.rs and fails if there are any errors or warnings.
+  doc:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+      RUSTDOCFLAGS: --cfg docsrs
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@nightly
+    - name: Generate documentation
+      run: cargo +nightly doc --no-deps
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: dtolnay/rust-toolchain@stable
     - name: Build
       run: cargo build --verbose
-    - name: Run tests
-      run: cargo test --verbose
+
+  # Tests the crate on both stable and beta toolchains.
+  # This lets us catch potential issues on the beta toolchain before they are released.
+  test:
+      strategy:
+        matrix:
+          toolchain: [stable, beta]
+          os: [ubuntu-latest, macos-latest, windows-latest]
+      runs-on: ${{ matrix.os }}
+      steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - name: Test
+        run: cargo test --verbose
+
+  # Verify that we have not broken semver in the API.
+  semver-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: cargo-semver-checks
+      - name: Verify semver compatibility
+        run: cargo semver-checks
