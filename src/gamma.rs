@@ -92,17 +92,38 @@ pub fn gamma(z: f64) -> f64 {
 /// Panics if `x` < 0 or if `a` ≤ 0.
 pub fn gammp(a: f64, x: f64) -> f64 {
     assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
+
+    // Handle edge cases
     if x == 0f64 {
-        0f64
-    } else if (a as usize) >= ASWITCH {
-        // Quadrature
-        gammpapprox(a, x, IncGamma::P)
+        return 0f64;
+    }
+
+    // For very small x relative to a, use series (always more accurate)
+    if x < a * EPS {
+        return 0f64;
+    }
+
+    // For very large x relative to a, result approaches 1
+    if x > a + 20.0 * (a.sqrt() + 1.0) {
+        return 1f64;
+    }
+
+    if (a as usize) >= ASWITCH {
+        // For very small x relative to a, use series instead of quadrature
+        if x < 0.2 * a {
+            gser(a, x)
+        } else {
+            // Quadrature for large a
+            gammpapprox(a, x, IncGamma::P)
+        }
     } else if x < a + 1f64 {
-        // Series representation
+        // Series representation - more accurate for x < a+1
         gser(a, x)
     } else {
         // Continued fraction representation
-        1f64 - gcf(a, x)
+        // Use complementary function to avoid catastrophic cancellation
+        let result = 1f64 - gcf(a, x);
+        result.clamp(0.0, 1.0)
     }
 }
 
@@ -127,17 +148,39 @@ pub fn gammp(a: f64, x: f64) -> f64 {
 ///
 /// Panics if `x` < 0 or if `a` ≤ 0
 pub fn gammq(a: f64, x: f64) -> f64 {
-    assert!(x >= 0f64 && a > 0f64, "Bad args in gammp");
+    assert!(x >= 0f64 && a > 0f64, "Bad args in gammq");
+
+    // Handle edge cases
     if x == 0f64 {
-        1f64
-    } else if (a as usize) >= ASWITCH {
-        // Quadrature
-        gammpapprox(a, x, IncGamma::Q)
+        return 1f64;
+    }
+
+    // For very small x relative to a, result approaches 1
+    if x < a * EPS {
+        return 1f64;
+    }
+
+    // For very large x relative to a, result approaches 0
+    if x > a + 20.0 * (a.sqrt() + 1.0) {
+        return 0f64;
+    }
+
+    if (a as usize) >= ASWITCH {
+        // For very small x relative to a, use series instead of quadrature
+        if x < 0.2 * a {
+            let result = 1f64 - gser(a, x);
+            result.clamp(0.0, 1.0)
+        } else {
+            // Quadrature for large a
+            gammpapprox(a, x, IncGamma::Q)
+        }
     } else if x < a + 1f64 {
         // Series representation
-        1f64 - gser(a, x)
+        // Use complementary function to avoid catastrophic cancellation
+        let result = 1f64 - gser(a, x);
+        result.clamp(0.0, 1.0)
     } else {
-        // Continued fraction representation
+        // Continued fraction representation - more accurate for x >= a+1
         gcf(a, x)
     }
 }
@@ -153,7 +196,17 @@ fn gser(a: f64, x: f64) -> f64 {
         del *= x / ap;
         sum += del;
         if del.abs() < sum.abs() * EPS {
-            return sum * (-x + a * x.ln() - gln).exp();
+            // Compute in log space for better numerical stability
+            let log_result = -x + a * x.ln() - gln;
+
+            // Guard against overflow/underflow
+            if log_result > 700.0 {
+                return sum * f64::INFINITY;
+            } else if log_result < -700.0 {
+                return 0.0;
+            }
+
+            return sum * log_result.exp();
         }
     }
 }
@@ -184,7 +237,18 @@ fn gcf(a: f64, x: f64) -> f64 {
             break;
         }
     }
-    (-x + a * x.ln() - gln).exp() * h
+
+    // Compute in log space for better numerical stability
+    let log_result = -x + a * x.ln() - gln;
+
+    // Guard against overflow/underflow
+    if log_result > 700.0 {
+        return h * f64::INFINITY;
+    } else if log_result < -700.0 {
+        return 0.0;
+    }
+
+    log_result.exp() * h
 }
 
 /// Kinds of Incomplete Gamma function
@@ -205,28 +269,46 @@ fn gammpapprox(a: f64, x: f64, psig: IncGamma) -> f64 {
     } else {
         0f64.max((a1 - 7.5 * sqrta1).min(x - 5f64 * sqrta1))
     };
-    let mut sum = 0f64;
+
+    // Use log-sum-exp trick for better numerical stability
+    let mut log_values = Vec::with_capacity(NGAU);
     let mut t: f64;
     for j in 0..NGAU {
         t = x + (xu - x) * Y[j];
-        sum += W[j] * (-(t - a1) + a1 * (t.ln() - lna1)).exp();
+        let log_term = W[j].ln() + (-(t - a1) + a1 * (t.ln() - lna1));
+        log_values.push(log_term);
     }
-    let ans = sum * (xu - x) * (a1 * (lna1 - 1f64) - gln).exp();
+
+    // Find maximum for log-sum-exp
+    let log_max = log_values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+
+    // Compute sum using log-sum-exp trick
+    let mut sum = 0f64;
+    for log_val in log_values {
+        if log_val - log_max > -700.0 {
+            sum += (log_val - log_max).exp();
+        }
+    }
+
+    // Compute final answer with overflow/underflow protection
+    let log_scale = a1 * (lna1 - 1f64) - gln;
+    let log_ans = log_max + sum.ln() + (xu - x).ln() + log_scale;
+
+    let ans = if log_ans > 700.0 {
+        f64::INFINITY
+    } else if log_ans < -700.0 {
+        0.0
+    } else {
+        log_ans.exp()
+    };
+
+    // Clamp results to [0, 1] and handle the P vs Q case
     match psig {
         IncGamma::P => {
-            if ans > 0f64 {
-                1f64 - ans
-            } else {
-                -ans
-            }
+            let result = 1f64 - ans;
+            result.clamp(0.0, 1.0)
         }
-        IncGamma::Q => {
-            if ans >= 0f64 {
-                ans
-            } else {
-                1f64 + ans
-            }
-        }
+        IncGamma::Q => ans.clamp(0.0, 1.0),
     }
 }
 

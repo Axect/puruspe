@@ -1,3 +1,13 @@
+# Ver 0.4.2 (2025-10-15)
+
+- Improve numerical stability in `gammp` and `gammq`
+  - Add overflow/underflow guards in series and continued fraction methods
+  - Implement log-sum-exp trick in quadrature approximation
+  - Add edge case handling and result clamping to [0,1]
+  - Fix NaN issue when x << a for large a (a >= 100) by using series expansion instead of quadrature
+    - For large a with x < 0.2*a, now uses more stable series method
+    - Resolves edge case failures in test suite (e.g., gammp(120, 0.1))
+
 # Ver 0.4.1 (2025-04-25)
 
 - Add all branches of the complex Lambert W function
