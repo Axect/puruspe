@@ -103,3 +103,15 @@ pub fn sign(a: f64, b: f64) -> f64 {
         -(a.abs())
     }
 }
+
+/// Evaluate a polynomial at x using [Horner's method](https://en.wikipedia.org/wiki/Horner%27s_method).
+///
+/// The coefficients are assumed to be sorted in increasing order by the degree of the associated x-term.
+///
+/// For example, to evaluate 4x^2 + 3x + 2, use `coefficients = [2.0, 3.0, 4.0]`.
+pub fn polynomial<const N: usize>(x: f64, coefficients: &[f64; N]) -> f64 {
+    coefficients
+        .iter()
+        .rev()
+        .fold(0.0, |acc, &coeff| acc * x + coeff)
+}

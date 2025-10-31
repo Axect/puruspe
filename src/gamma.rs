@@ -7,8 +7,8 @@
 //! - `gammq`: Calculates the regularized upper incomplete gamma function.
 //! - `invgammp`: Calculates the inverse of the regularized lower incomplete gamma function.
 
-use crate::utils::factorial;
-use crate::{EPS, FPMIN, W, Y};
+use crate::{utils::polynomial, EPS, FPMIN, W, Y};
+use core::f64;
 use std::f64::consts::PI;
 const ASWITCH: usize = 100;
 const NGAU: usize = 18;
@@ -54,19 +54,103 @@ pub fn ln_gamma(z: f64) -> f64 {
 /// # Returns
 ///
 /// The value of the gamma function at `z`
-pub fn gamma(z: f64) -> f64 {
-    if z >= 1f64 {
-        let z_int = z as usize;
-        if (z - (z_int as f64)).abs() < EPS {
-            return factorial(z_int - 1);
-        }
+///
+// Based on the Fortran implementation by Toshio Fukushima: <https://www.researchgate.net/publication/336578125_xgamtxt_Fortran_90_test_program_package_of_qgam_dgam_and_sgam_fast_computation_of_Gamma_function_with_quadruple_double_and_single_precision_accuracy_respectively>
+pub fn gamma(mut x: f64) -> f64 {
+    /// This input gives an output of [`f64::MAX`].
+    /// Computed with WolframAlpha: https://www.wolframalpha.com/input?i=solve+gamma%28x%29+%3D+%281+%E2%88%92+2%5E%28%E2%88%9253%29%29*2%5E1024+for+x+%3E+1.
+    const MAX_INPUT: f64 = 171.624376956302720;
+
+    // Special cases.
+    if x > MAX_INPUT {
+        // Output is too large to represent.
+        return f64::INFINITY;
+    } else if x == 0.0 {
+        // The gamma function diverges for an input of zero.
+        // It diverges to positive or negative infinity depending on which direction zero is approached from.
+        // According to entry F.9.5.4 of the ISO C 99 standard (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf)
+        // gamma(+/- 0) = +/- infinity.
+        // This is the standard followed by `scipy.special.gamma` as well as the `tgamma` function in `libc`.
+        // Since the Gamma function in (nightly) Rust's standard library currently corresponds to `tgamma`
+        // and thus follows the standard we do the same here.
+        return f64::INFINITY.copysign(x);
+    } else if x <= 0.0 && x.fract() == 0.0 {
+        // The Gamma function diverges for non-positive integers.
+        // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
+        // According to the same standard as above the gamma function should return NaN for these inputs.
+        return f64::NAN;
     }
 
-    if z < 0.5 {
-        PI / ((PI * z).sin() * gamma(1f64 - z))
+    let f = if x > 3.5 {
+        let mut f = 1.0;
+        // Decrement x by 1 until less than 3.5.
+        // This will not be a massively long loop since we checked for too large input above.
+        while x >= 3.5 {
+            x -= 1.0;
+            f *= x;
+        }
+        f
+    } else if x < 2.5 {
+        let mut f = 1.0;
+        // Increment x by 1 until larger than 2.5.
+        while x <= 2.5 {
+            f *= x;
+            if f.is_infinite() {
+                // There is no point in continuing the calculation,
+                // as `f` will remain infinite when multiplied by any finite number.
+                // The final result will thus be `g` / inf,
+                // which underflows to 0 since `g` (defined below) is always finite.
+                // This early return stops the loop from running too long for very large negative inputs.
+                return 0.0;
+            }
+            x += 1.0;
+        }
+        f.recip()
     } else {
-        ln_gamma(z).exp()
-    }
+        1.0
+    };
+
+    let g = if x > 3.0 {
+        polynomial(
+            x - 3.25,
+            &[
+                2.5492569667185291891,
+                2.5925711651299805640,
+                1.7769198047099783654,
+                0.85885382288064637892,
+                0.34626855336056872905,
+                0.11526048279921955157,
+                0.034350198197417378854,
+                0.0088826032863543439287,
+                0.0021498495721144269788,
+                0.00045576674678513314905,
+                0.000095940184093793519324,
+                0.000016738398919923317512,
+            ],
+        )
+    } else if x < 3.0 {
+        polynomial(
+            x - 2.75,
+            &[
+                1.6083594219855455740,
+                1.3170871791928586304,
+                0.89116794802647661936,
+                0.38477912014818524560,
+                0.15595585685363435567,
+                0.046735160424814165697,
+                0.014576803693379529708,
+                0.0032284372223208491985,
+                0.00091425286320138797078,
+                0.00013276357775573942004,
+                0.000048420884483658205918,
+                7.3776577743984342365e-7,
+            ],
+        )
+    } else {
+        2.0
+    };
+
+    g * f
 }
 
 // =============================================================================

@@ -29,7 +29,8 @@ print("];")
 # └──────────────────────────────────────────────────────────┘
 # x values to test (excluding inputs that would result in complex outputs)
 gamma_x_values = [
-    -1.5, -0.5,  # Negative non-integer values that result in real outputs
+    -1.5, -0.5, -100.5,  # Negative non-integer values that result in real outputs
+    -4503599627370495.5,  # Large negative non-integer value that underflows to zero.
     0.1, 0.2, 0.5,  # Values between 0 and 1
     1.0, 1.5, 2.0, 2.5,  # Values between 1 and 3
     3.0, 4.0, 5.0,  # Small integers and values between them
@@ -45,7 +46,7 @@ table = [(x, gamma(x)) for x in gamma_x_values if not np.iscomplex(gamma(x))]
 # Print in Rust code format
 print("const GAMMA_TABLE: [(f64, f64); {}] = [".format(len(table)))
 for x, y in table:
-    print(f"    ({x:.14e}, {y:.14e}),")
+    print(f"    ({x:.16e}, {y:.16e}),")
 print("];")
 
 # a values to test for gammp, gammq, and invgammp
