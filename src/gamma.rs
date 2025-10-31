@@ -97,6 +97,7 @@ pub fn gamma(mut x: f64) -> f64 {
             if f.is_infinite() {
                 // There is no point in continuing the calculation,
                 // as `f` will remain infinite when multiplied by any finite number.
+                // (except zero, but that can only happen if x is an integer, which we have handled above.)
                 // The final result will thus be `g` / inf,
                 // which underflows to 0 since `g` (defined below) is always finite.
                 // This early return stops the loop from running too long for very large negative inputs.
