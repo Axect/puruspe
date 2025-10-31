@@ -74,7 +74,7 @@ pub fn gamma(mut z: f64) -> f64 {
         // and thus follows the standard we do the same here.
         return f64::INFINITY.copysign(z);
     } else if z < 0.0 && z.fract() == 0.0 {
-        // The Gamma function diverges for non-positive integers.
+        // The Gamma function also diverges for negative integers.
         // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
         // According to the same standard as above the gamma function should return NaN for these inputs.
         return f64::NAN;
