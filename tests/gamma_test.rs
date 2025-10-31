@@ -70,6 +70,8 @@ fn test_gamma_edge_cases() {
     // Test gamma at special values
 
     assert!(gamma(f64::NAN).is_nan());
+    assert!(gamma(f64::NEG_INFINITY).is_nan());
+    assert_eq!(gamma(f64::INFINITY), f64::INFINITY);
 
     // Γ(±0) = ±∞
     assert_eq!(gamma(0.0), f64::INFINITY);
