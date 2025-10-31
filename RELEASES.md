@@ -1,3 +1,27 @@
+# Ver 0.4.2 (2025-10-15)
+
+- Improve numerical stability in `gammp` and `gammq`
+  - Add overflow/underflow guards in series and continued fraction methods
+  - Implement log-sum-exp trick in quadrature approximation
+  - Add edge case handling and result clamping to [0,1]
+  - Fix NaN issue when x << a for large a (a >= 100) by using series expansion instead of quadrature
+    - For large a with x < 0.2*a, now uses more stable series method
+    - Resolves edge case failures in test suite (e.g., gammp(120, 0.1))
+
+# Ver 0.4.1 (2025-04-25)
+
+- Add all branches of the complex Lambert W function
+  - Contributors: [**JSorngard**](https://github.com/JSorngard)
+  - Related issue: [#40](https://github.com/Axect/puruspe/issues/40)
+  - Related PR: [#45](https://github.com/Axect/puruspe/pull/45)
+- Enhance CI / Fix proptest & lint
+  - Contributors: [**JSorngard**](https://github.com/JSorngard)
+  - Related issue: [#42](https://github.com/Axect/puruspe/issues/42)
+  - Related PRs:
+    - [#41](https://github.com/Axect/puruspe/pull/41)
+    - [#43](https://github.com/Axect/puruspe/pull/43)
+    - [#44](https://github.com/Axect/puruspe/pull/44)
+
 # Ver 0.4.0 (2025-02-24)
 
 ## Implement Faddeeva function
@@ -76,4 +100,3 @@
 # Ver 0.1.4 (2020-08-06)
 
 * Make public `ln_gamma`. (Thanks to [rw](https://github.com/rw))
-

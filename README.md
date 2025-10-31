@@ -20,7 +20,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-puruspe = "0.3.0"
+puruspe = "0.4.1"
 ```
 
 ## Example
@@ -70,6 +70,8 @@ fn main() {
 - `besselik(nu, x)`: Modified Bessel functions of the first and second kind with derivatives
 
 ### Lambert W Functions
+- `lambert_w(k, z_re, z_im)`: Branch `k` of the complex valued Lambert W function computed at point `z`
+ in the complex plane.
 - `lambert_w0(x)`: The principal branch of the Lambert W function computed to 50 bits of accuracy.
 - `lambert_wm1(x)`: The secondary branch of the Lambert W function computed to 50 bits of accuracy.
 - `sp_lambert_w0(x)`: The principal branch of the Lambert W function computed to 24 bits of accuracy on `f64`s.
@@ -131,4 +133,4 @@ at your option.
 
 ## Reference
 
-- Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007. 
+- Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007.

@@ -59,6 +59,267 @@ fn test_invgammp() {
     }
 }
 
+// ┌─────────────────────────────────────────────────────────┐
+//  Edge Case Tests
+// └─────────────────────────────────────────────────────────┘
+
+#[test]
+fn test_gamma_edge_cases() {
+    // Test gamma at special values
+    // Γ(1) = 1
+    assert_relative_eq!(gamma(1.0), 1.0, epsilon = 1e-15);
+
+    // Γ(2) = 1
+    assert_relative_eq!(gamma(2.0), 1.0, epsilon = 1e-15);
+
+    // Γ(1/2) = √π
+    let sqrt_pi = std::f64::consts::PI.sqrt();
+    assert_relative_eq!(gamma(0.5), sqrt_pi, epsilon = 1e-10);
+
+    // Γ(3/2) = √π/2
+    assert_relative_eq!(gamma(1.5), sqrt_pi / 2.0, epsilon = 1e-10);
+
+    // Γ(5/2) = 3√π/4
+    assert_relative_eq!(gamma(2.5), 3.0 * sqrt_pi / 4.0, epsilon = 1e-10);
+
+    // Test very small positive values
+    let result_small = gamma(1e-8);
+    assert!(result_small > 1e7 && result_small < 1e9);
+
+    // Test negative values (using reflection formula)
+    // Γ(-0.5) = -2√π
+    assert_relative_eq!(gamma(-0.5), -2.0 * sqrt_pi, epsilon = 1e-10);
+
+    // Test near-integer negative values
+    let result_neg = gamma(-1.5);
+    assert!(result_neg > 2.0 && result_neg < 3.0);
+
+    // Test value very close to 0 but positive
+    let result_tiny = gamma(1e-15);
+    assert!(result_tiny > 1e14);
+
+    // Test integer factorials
+    // Γ(6) = 5! = 120
+    assert_relative_eq!(gamma(6.0), 120.0, epsilon = 1e-13);
+
+    // Γ(11) = 10! = 3628800
+    assert_relative_eq!(gamma(11.0), 3628800.0, epsilon = 1e-9);
+}
+
+#[test]
+fn test_ln_gamma_edge_cases() {
+    // Test ln_gamma at special values
+    // ln(Γ(1)) = 0
+    assert_relative_eq!(ln_gamma(1.0), 0.0, epsilon = 1e-10);
+
+    // ln(Γ(2)) = 0
+    assert_relative_eq!(ln_gamma(2.0), 0.0, epsilon = 1e-10);
+
+    // ln(Γ(1/2)) = ln(√π)
+    assert_relative_eq!(
+        ln_gamma(0.5),
+        (std::f64::consts::PI.sqrt()).ln(),
+        epsilon = 1e-10
+    );
+
+    // Test very small positive values
+    let result_small = ln_gamma(1e-10);
+    assert!(result_small > 20.0 && result_small < 25.0);
+
+    // Test very large values - should return large positive values without overflow
+    let result_large = ln_gamma(1e5);
+    assert!(result_large > 1e6 && result_large < 1.1e6);
+
+    // Test values near 1 and 2 (where gamma has minima)
+    let result_near_1 = ln_gamma(1.0001);
+    assert!(result_near_1 < 0.0001);
+
+    let result_near_2 = ln_gamma(1.9999);
+    assert!(result_near_2 < 0.0001);
+
+    // Test integer values (factorials)
+    // ln(Γ(6)) = ln(5!) = ln(120)
+    assert_relative_eq!(ln_gamma(6.0), 120_f64.ln(), epsilon = 1e-10);
+
+    // Test extreme large value
+    let result_extreme = ln_gamma(1e10);
+    assert!(result_extreme > 2e11 && result_extreme < 2.3e11);
+}
+
+#[test]
+fn test_gammp_edge_cases() {
+    // Test when x = 0 (should be 0)
+    assert_relative_eq!(gammp(1.0, 0.0), 0.0, epsilon = 1e-15);
+    assert_relative_eq!(gammp(5.0, 0.0), 0.0, epsilon = 1e-15);
+    assert_relative_eq!(gammp(100.0, 0.0), 0.0, epsilon = 1e-15);
+
+    // Test very small x (should approach 0)
+    assert_relative_eq!(gammp(1.0, 1e-15), 0.0, epsilon = 1e-14);
+    assert_relative_eq!(gammp(10.0, 1e-20), 0.0, epsilon = 1e-15);
+
+    // Test very large x relative to a (should approach 1)
+    assert_relative_eq!(gammp(1.0, 100.0), 1.0, epsilon = 1e-15);
+    assert_relative_eq!(gammp(5.0, 100.0), 1.0, epsilon = 1e-15);
+    assert_relative_eq!(gammp(0.5, 50.0), 1.0, epsilon = 1e-15);
+
+    // Test x = a (should be around 0.5 for reasonable values)
+    let result = gammp(10.0, 10.0);
+    assert!(result > 0.4 && result < 0.6);
+
+    // Test with very small a
+    let result_small_a = gammp(0.01, 0.01);
+    assert_relative_eq!(result_small_a, 0.96034742352, epsilon = 1e-9);
+
+    // Test with very large a (using quadrature)
+    let result_large_a = gammp(150.0, 150.0);
+    assert!(result_large_a > 0.45 && result_large_a < 0.55);
+
+    // Test complement property: P(a,x) + Q(a,x) = 1
+    let a = 3.5;
+    let x = 2.7;
+    let p = gammp(a, x);
+    let q = gammq(a, x);
+    assert_relative_eq!(p + q, 1.0, epsilon = 1e-14);
+
+    // Test multiple values for complement property
+    for a in [0.5, 1.0, 2.0, 5.0, 10.0, 50.0, 120.0].iter() {
+        for x in [0.1, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0].iter() {
+            let p = gammp(*a, *x);
+            let q = gammq(*a, *x);
+            assert_relative_eq!(p + q, 1.0, epsilon = 1e-13, max_relative = 1e-12);
+        }
+    }
+}
+
+#[test]
+fn test_gammq_edge_cases() {
+    // Test when x = 0 (should be 1)
+    assert_relative_eq!(gammq(1.0, 0.0), 1.0, epsilon = 1e-15);
+    assert_relative_eq!(gammq(5.0, 0.0), 1.0, epsilon = 1e-15);
+    assert_relative_eq!(gammq(100.0, 0.0), 1.0, epsilon = 1e-15);
+
+    // Test very small x (should approach 1)
+    assert_relative_eq!(gammq(1.0, 1e-15), 1.0, epsilon = 1e-15);
+    assert_relative_eq!(gammq(10.0, 1e-20), 1.0, epsilon = 1e-15);
+
+    // Test very large x relative to a (should approach 0)
+    assert_relative_eq!(gammq(1.0, 100.0), 0.0, epsilon = 1e-15);
+    assert_relative_eq!(gammq(5.0, 100.0), 0.0, epsilon = 1e-15);
+    assert_relative_eq!(gammq(0.5, 50.0), 0.0, epsilon = 1e-15);
+
+    // Test x = a (should be around 0.5 for reasonable values)
+    let result = gammq(10.0, 10.0);
+    assert!(result > 0.4 && result < 0.6);
+
+    // Test with very small a
+    let result_small_a = gammq(0.01, 0.01);
+    assert_relative_eq!(result_small_a, 0.03965257648, epsilon = 1e-9);
+
+    // Test with very large a (using quadrature)
+    let result_large_a = gammq(150.0, 150.0);
+    assert!(result_large_a > 0.45 && result_large_a < 0.55);
+}
+
+#[test]
+fn test_invgammp_edge_cases() {
+    // Test p = 0 (should return 0)
+    assert_relative_eq!(invgammp(0.0, 1.0), 0.0, epsilon = 1e-15);
+    assert_relative_eq!(invgammp(0.0, 5.0), 0.0, epsilon = 1e-15);
+    assert_relative_eq!(invgammp(0.0, 100.0), 0.0, epsilon = 1e-15);
+
+    // Test p = 1 (should return large value)
+    let result_1 = invgammp(1.0, 1.0);
+    assert!(result_1 > 100.0);
+
+    let result_2 = invgammp(1.0, 5.0);
+    assert!(result_2 > 100.0);
+
+    // Test very small p (should return very small x)
+    let result_small_p = invgammp(1e-10, 2.0);
+    assert!(result_small_p < 1e-4);
+
+    // Test very large p close to 1
+    let result_large_p = invgammp(0.9999, 2.0);
+    assert!(result_large_p > 10.0);
+
+    // Test p = 0.5 for various a values
+    for a in [0.5, 1.0, 2.0, 5.0, 10.0].iter() {
+        let x = invgammp(0.5, *a);
+        // Verify by computing gammp(a, x) ≈ 0.5
+        let p = gammp(*a, x);
+        assert_relative_eq!(p, 0.5, epsilon = 1e-9, max_relative = 1e-8);
+    }
+
+    // Test round-trip: invgammp(gammp(a, x), a) ≈ x
+    for a in [0.5, 1.0, 2.0, 5.0, 10.0].iter() {
+        for x in [0.5, 1.0, 2.0, 5.0].iter() {
+            let p = gammp(*a, *x);
+            if p > 1e-10 && p < (1.0 - 1e-10) {
+                let x_recovered = invgammp(p, *a);
+                assert_relative_eq!(x_recovered, *x, epsilon = 1e-8, max_relative = 1e-7);
+            }
+        }
+    }
+
+    // Test with very small a
+    let result_small_a = invgammp(0.5, 0.1);
+    let p_check = gammp(0.1, result_small_a);
+    assert_relative_eq!(p_check, 0.5, epsilon = 1e-9);
+
+    // Test with large a
+    let result_large_a = invgammp(0.5, 100.0);
+    let p_check_large = gammp(100.0, result_large_a);
+    assert_relative_eq!(p_check_large, 0.5, epsilon = 1e-9);
+}
+
+#[test]
+#[should_panic(expected = "Bad args in gammp")]
+fn test_gammp_negative_x() {
+    gammp(1.0, -1.0);
+}
+
+#[test]
+#[should_panic(expected = "Bad args in gammp")]
+fn test_gammp_negative_a() {
+    gammp(-1.0, 1.0);
+}
+
+#[test]
+#[should_panic(expected = "Bad args in gammp")]
+fn test_gammp_zero_a() {
+    gammp(0.0, 1.0);
+}
+
+#[test]
+#[should_panic(expected = "Bad args in gammq")]
+fn test_gammq_negative_x() {
+    gammq(1.0, -1.0);
+}
+
+#[test]
+#[should_panic(expected = "Bad args in gammq")]
+fn test_gammq_negative_a() {
+    gammq(-1.0, 1.0);
+}
+
+#[test]
+#[should_panic(expected = "Bad args in gammq")]
+fn test_gammq_zero_a() {
+    gammq(0.0, 1.0);
+}
+
+#[test]
+#[should_panic(expected = "a must be positive in invgammp")]
+fn test_invgammp_negative_a() {
+    invgammp(0.5, -1.0);
+}
+
+#[test]
+#[should_panic(expected = "a must be positive in invgammp")]
+fn test_invgammp_zero_a() {
+    invgammp(0.5, 0.0);
+}
+
 proptest! {
     #[test]
     fn test_gamma_proptest(x in 0.00001f64..100000.0) {
