@@ -103,3 +103,17 @@ pub fn sign(a: f64, b: f64) -> f64 {
         -(a.abs())
     }
 }
+
+/// Evaluate a polynomial at x using [Horner's method](https://en.wikipedia.org/wiki/Horner%27s_method).
+///
+/// The iterator is assumed to give the coefficients in decreasing order by the degree of the associated x-term.
+///
+/// For example, to evaluate 4x^2 + 3x + 2, the iterator should give 4.0 then 3.0, and finally 2.0.
+pub fn polynomial<I>(x: f64, coefficients: I) -> f64
+where
+    I: IntoIterator<Item = f64>,
+{
+    coefficients
+        .into_iter()
+        .fold(0.0, |acc, coeff| acc * x + coeff)
+}
