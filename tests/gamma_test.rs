@@ -1,3 +1,5 @@
+use core::f64;
+
 use approx::assert_relative_eq;
 use proptest::prelude::*;
 use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma};
@@ -66,6 +68,8 @@ fn test_invgammp() {
 #[test]
 fn test_gamma_edge_cases() {
     // Test gamma at special values
+
+    assert!(gamma(f64::NAN).is_nan());
 
     // Γ(±0) = ±∞
     assert_eq!(gamma(0.0), f64::INFINITY);

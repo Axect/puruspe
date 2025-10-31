@@ -78,6 +78,8 @@ pub fn gamma(mut z: f64) -> f64 {
         // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
         // According to the same standard as above the gamma function should return NaN for these inputs.
         return f64::NAN;
+    } else if z.is_nan() {
+        return f64::NAN;
     }
 
     let f = if z > 3.5 {
