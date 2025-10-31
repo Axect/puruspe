@@ -54,7 +54,6 @@ pub fn ln_gamma(z: f64) -> f64 {
 /// # Returns
 ///
 /// The value of the gamma function at `z`
-///
 // Based on the Fortran implementation by Toshio Fukushima: <https://www.researchgate.net/publication/336578125_xgamtxt_Fortran_90_test_program_package_of_qgam_dgam_and_sgam_fast_computation_of_Gamma_function_with_quadruple_double_and_single_precision_accuracy_respectively>
 pub fn gamma(mut x: f64) -> f64 {
     /// This input gives an output of [`f64::MAX`].
