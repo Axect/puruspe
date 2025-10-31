@@ -55,16 +55,16 @@ pub fn ln_gamma(z: f64) -> f64 {
 ///
 /// The value of the gamma function at `z`
 // Based on the Fortran implementation by Toshio Fukushima: <https://www.researchgate.net/publication/336578125_xgamtxt_Fortran_90_test_program_package_of_qgam_dgam_and_sgam_fast_computation_of_Gamma_function_with_quadruple_double_and_single_precision_accuracy_respectively>
-pub fn gamma(mut x: f64) -> f64 {
+pub fn gamma(mut z: f64) -> f64 {
     /// This input gives an output of [`f64::MAX`].
     /// Computed with WolframAlpha: https://www.wolframalpha.com/input?i=solve+gamma%28x%29+%3D+%281+%E2%88%92+2%5E%28%E2%88%9253%29%29*2%5E1024+for+x+%3E+1.
     const MAX_INPUT: f64 = 171.624_376_956_302_7;
 
     // Special cases.
-    if x > MAX_INPUT {
+    if z > MAX_INPUT {
         // Output is too large to represent.
         return f64::INFINITY;
-    } else if x == 0.0 {
+    } else if z == 0.0 {
         // The gamma function diverges for an input of zero.
         // It diverges to positive or negative infinity depending on which direction zero is approached from.
         // According to entry F.9.5.4 of the ISO C 99 standard (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf)
@@ -72,47 +72,47 @@ pub fn gamma(mut x: f64) -> f64 {
         // This is the standard followed by `scipy.special.gamma` as well as the `tgamma` function in `libc`.
         // Since the Gamma function in (nightly) Rust's standard library currently corresponds to `tgamma`
         // and thus follows the standard we do the same here.
-        return f64::INFINITY.copysign(x);
-    } else if x < 0.0 && x.fract() == 0.0 {
+        return f64::INFINITY.copysign(z);
+    } else if z < 0.0 && z.fract() == 0.0 {
         // The Gamma function diverges for non-positive integers.
         // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
         // According to the same standard as above the gamma function should return NaN for these inputs.
         return f64::NAN;
     }
 
-    let f = if x > 3.5 {
+    let f = if z > 3.5 {
         let mut f = 1.0;
-        // Decrement x by 1 until less than 3.5.
+        // Decrement z by 1 until less than 3.5.
         // This will not be a massively long loop since we checked for too large input above.
-        while x >= 3.5 {
-            x -= 1.0;
-            f *= x;
+        while z >= 3.5 {
+            z -= 1.0;
+            f *= z;
         }
         f
-    } else if x < 2.5 {
+    } else if z < 2.5 {
         let mut f = 1.0;
-        // Increment x by 1 until larger than 2.5.
-        while x <= 2.5 {
-            f *= x;
+        // Increment z by 1 until larger than 2.5.
+        while z <= 2.5 {
+            f *= z;
             if f.is_infinite() {
                 // There is no point in continuing the calculation,
                 // as `f` will remain infinite when multiplied by any finite number.
-                // (except zero, but that can only happen if x is an integer, which we have handled above.)
+                // (except zero, but that can only happen if z is an integer, which we have handled above.)
                 // The final result will thus be `g` / inf,
                 // which underflows to 0 since `g` (defined below) is always finite.
                 // This early return stops the loop from running too long for very large negative inputs.
                 return 0.0;
             }
-            x += 1.0;
+            z += 1.0;
         }
         f.recip()
     } else {
         1.0
     };
 
-    let g = if x > 3.0 {
+    let g = if z > 3.0 {
         polynomial(
-            x - 3.25,
+            z - 3.25,
             [
                 0.000_016_738_398_919_923_317,
                 0.000_095_940_184_093_793_52,
@@ -128,9 +128,9 @@ pub fn gamma(mut x: f64) -> f64 {
                 2.549_256_966_718_529,
             ],
         )
-    } else if x < 3.0 {
+    } else if z < 3.0 {
         polynomial(
-            x - 2.75,
+            z - 2.75,
             [
                 7.377_657_774_398_435e-7,
                 0.000_048_420_884_483_658_204,
