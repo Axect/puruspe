@@ -54,7 +54,7 @@ pub fn ln_gamma(z: f64) -> f64 {
 /// # Returns
 ///
 /// The value of the gamma function at `z`
-// Based on the Fortran implementation by Toshio Fukushima: <https://www.researchgate.net/publication/336578125_xgamtxt_Fortran_90_test_program_package_of_qgam_dgam_and_sgam_fast_computation_of_Gamma_function_with_quadruple_double_and_single_precision_accuracy_respectively>
+// Based on the Fortran implementation by Toshio Fukushima: https://www.researchgate.net/publication/336578125_xgamtxt_Fortran_90_test_program_package_of_qgam_dgam_and_sgam_fast_computation_of_Gamma_function_with_quadruple_double_and_single_precision_accuracy_respectively
 pub fn gamma(mut z: f64) -> f64 {
     /// This input gives an output of [`f64::MAX`].
     /// Computed with WolframAlpha: https://www.wolframalpha.com/input?i=solve+gamma%28x%29+%3D+%281+%E2%88%92+2%5E%28%E2%88%9253%29%29*2%5E1024+for+x+%3E+1.
