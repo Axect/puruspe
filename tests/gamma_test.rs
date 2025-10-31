@@ -100,7 +100,7 @@ fn test_gamma_edge_cases() {
     assert_relative_eq!(gamma(-0.5), -2.0 * sqrt_pi);
 
     // Test near-integer negative values
-    assert_relative_eq!(gamma(-1.5), 4.0*sqrt_pi/3.0);
+    assert_relative_eq!(gamma(-1.5), 4.0 * sqrt_pi / 3.0);
 
     // Test value very close to 0 but positive
     // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-15%29
