@@ -74,7 +74,7 @@ pub fn gamma(mut x: f64) -> f64 {
         // Since the Gamma function in (nightly) Rust's standard library currently corresponds to `tgamma`
         // and thus follows the standard we do the same here.
         return f64::INFINITY.copysign(x);
-    } else if x <= 0.0 && x.fract() == 0.0 {
+    } else if x < 0.0 && x.fract() == 0.0 {
         // The Gamma function diverges for non-positive integers.
         // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
         // According to the same standard as above the gamma function should return NaN for these inputs.
