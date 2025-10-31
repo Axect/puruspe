@@ -66,44 +66,49 @@ fn test_invgammp() {
 #[test]
 fn test_gamma_edge_cases() {
     // Test gamma at special values
+
+    // Γ(±0) = ±∞
+    assert_eq!(gamma(0.0), f64::INFINITY);
+    assert_eq!(gamma(-0.0), -f64::INFINITY);
+
     // Γ(1) = 1
-    assert_relative_eq!(gamma(1.0), 1.0, epsilon = 1e-15);
+    assert_eq!(gamma(1.0), 1.0);
 
     // Γ(2) = 1
-    assert_relative_eq!(gamma(2.0), 1.0, epsilon = 1e-15);
+    assert_eq!(gamma(2.0), 1.0);
 
     // Γ(1/2) = √π
-    let sqrt_pi = std::f64::consts::PI.sqrt();
-    assert_relative_eq!(gamma(0.5), sqrt_pi, epsilon = 1e-10);
+    let sqrt_pi = core::f64::consts::PI.sqrt();
+    assert_relative_eq!(gamma(0.5), sqrt_pi);
 
     // Γ(3/2) = √π/2
-    assert_relative_eq!(gamma(1.5), sqrt_pi / 2.0, epsilon = 1e-10);
+    assert_relative_eq!(gamma(1.5), sqrt_pi / 2.0);
 
     // Γ(5/2) = 3√π/4
-    assert_relative_eq!(gamma(2.5), 3.0 * sqrt_pi / 4.0, epsilon = 1e-10);
+    assert_relative_eq!(gamma(2.5), 3.0 * sqrt_pi / 4.0);
 
-    // Test very small positive values
-    let result_small = gamma(1e-8);
-    assert!(result_small > 1e7 && result_small < 1e9);
+    // Test very small positive values.
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-8%29.
+    assert_relative_eq!(gamma(1e-8), 99999999.42278434, max_relative = 1.5*f64::EPSILON);
 
-    // Test negative values (using reflection formula)
+    // Test negative values
     // Γ(-0.5) = -2√π
-    assert_relative_eq!(gamma(-0.5), -2.0 * sqrt_pi, epsilon = 1e-10);
+    assert_relative_eq!(gamma(-0.5), -2.0 * sqrt_pi);
 
     // Test near-integer negative values
-    let result_neg = gamma(-1.5);
-    assert!(result_neg > 2.0 && result_neg < 3.0);
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%28-1.5%29
+    assert_relative_eq!(gamma(-1.5), 2.363271801207355);
 
     // Test value very close to 0 but positive
-    let result_tiny = gamma(1e-15);
-    assert!(result_tiny > 1e14);
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-15%29
+    assert_relative_eq!(gamma(1e-15), 999999999999999.4, max_relative = 2.0*f64::EPSILON);
 
     // Test integer factorials
     // Γ(6) = 5! = 120
-    assert_relative_eq!(gamma(6.0), 120.0, epsilon = 1e-13);
+    assert_eq!(gamma(6.0), 120.0);
 
     // Γ(11) = 10! = 3628800
-    assert_relative_eq!(gamma(11.0), 3628800.0, epsilon = 1e-9);
+    assert_eq!(gamma(11.0), 3628800.0);
 }
 
 #[test]
