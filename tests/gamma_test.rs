@@ -69,8 +69,12 @@ fn test_invgammp() {
 fn test_gamma_edge_cases() {
     // Test gamma at special values
 
+    // Can't do anything with NaNs. Just propagate it.
     assert!(gamma(f64::NAN).is_nan());
+
+    // No limit for Γ(x) as x → -∞
     assert!(gamma(f64::NEG_INFINITY).is_nan());
+    // Γ(+∞) = +∞
     assert_eq!(gamma(f64::INFINITY), f64::INFINITY);
 
     // Γ(±0) = ±∞
