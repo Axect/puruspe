@@ -104,6 +104,12 @@ fn test_gamma_edge_cases() {
         99999999.42278434,
         max_relative = 1.5 * f64::EPSILON
     );
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-15%29
+    assert_relative_eq!(
+        gamma(1e-15),
+        999999999999999.4,
+        max_relative = 2.0 * f64::EPSILON
+    );
     // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%5B2.2250738585072014E-308%5D.
     assert_relative_eq!(gamma(f64::MIN_POSITIVE), 4.4942328371557897e307);
 
@@ -113,14 +119,6 @@ fn test_gamma_edge_cases() {
 
     // Test near-integer negative values
     assert_relative_eq!(gamma(-1.5), 4.0 * sqrt_pi / 3.0);
-
-    // Test value very close to 0 but positive
-    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-15%29
-    assert_relative_eq!(
-        gamma(1e-15),
-        999999999999999.4,
-        max_relative = 2.0 * f64::EPSILON
-    );
 
     // Test integer factorials
     // Γ(6) = 5! = 120
