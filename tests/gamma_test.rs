@@ -1,8 +1,6 @@
-use core::f64;
-
 use approx::assert_relative_eq;
 use proptest::prelude::*;
-use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma};
+use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma, utils::factorial};
 
 unsafe extern "C" {
     fn tgamma(x: f64) -> f64;
@@ -121,11 +119,9 @@ fn test_gamma_edge_cases() {
     assert_relative_eq!(gamma(-1.5), 4.0 * sqrt_pi / 3.0);
 
     // Test integer factorials
-    // Γ(6) = 5! = 120
-    assert_eq!(gamma(6.0), 120.0);
-
-    // Γ(11) = 10! = 3628800
-    assert_eq!(gamma(11.0), 3628800.0);
+    for i in 1..=25 {
+        assert_eq!(gamma(i as f64), factorial(i - 1));
+    }
 }
 
 #[test]
