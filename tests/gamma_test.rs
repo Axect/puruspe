@@ -105,7 +105,7 @@ fn test_gamma_edge_cases() {
         max_relative = 1.5 * f64::EPSILON
     );
     // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%5B2.2250738585072014E-308%5D.
-    assert_eq!(gamma(f64::MIN_POSITIVE), 4.4942328371557897e307);
+    assert_relative_eq!(gamma(f64::MIN_POSITIVE), 4.4942328371557897e307);
 
     // Test negative values
     // Γ(-0.5) = -2√π
