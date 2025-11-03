@@ -119,7 +119,7 @@ fn test_gamma_edge_cases() {
     assert_relative_eq!(gamma(-1.5), 4.0 * sqrt_pi / 3.0);
 
     // Test integer factorials
-    for i in 1..=25 {
+    for i in 1..=172 {
         assert_eq!(gamma(i as f64), factorial(i - 1));
     }
 }

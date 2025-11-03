@@ -7,7 +7,7 @@
 //! - `gammq`: Calculates the regularized upper incomplete gamma function.
 //! - `invgammp`: Calculates the inverse of the regularized lower incomplete gamma function.
 
-use crate::utils::polynomial;
+use crate::utils::{factorial, polynomial};
 use crate::{EPS, FPMIN, W, Y};
 use core::f64::consts::PI;
 const ASWITCH: usize = 100;
@@ -73,11 +73,18 @@ pub fn gamma(mut z: f64) -> f64 {
         // Since the Gamma function in (nightly) Rust's standard library currently corresponds to `tgamma`
         // and thus follows the standard we do the same here.
         return f64::INFINITY.copysign(z);
-    } else if z < 0.0 && z.fract() == 0.0 {
-        // The Gamma function also diverges for negative integers.
-        // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
-        // According to the same standard as above the gamma function should return NaN for these inputs.
-        return f64::NAN;
+    } else if z.fract() == 0.0 {
+        // z is a non-zero integer less than or equal to 171.
+
+        if z < 0.0 {
+            // The Gamma function also diverges for negative integers.
+            // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
+            // According to the same standard as above the gamma function should return NaN for these inputs.
+            return f64::NAN;
+        }
+
+        // 0 < z <= 171, we can just use the factorial.
+        return factorial(z as usize - 1);
     } else if z == f64::NEG_INFINITY {
         // There is no well defined limit for z --> -inf.
         return f64::NAN;
