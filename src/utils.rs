@@ -115,7 +115,7 @@ where
 {
     coefficients
         .into_iter()
-        .fold(0.0, |acc, coeff| mul_add(acc, x, coeff)
+        .fold(0.0, |acc, coeff| mul_add(acc, x, coeff))
 }
 
 
