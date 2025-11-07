@@ -115,5 +115,20 @@ where
 {
     coefficients
         .into_iter()
-        .fold(0.0, |acc, coeff| acc * x + coeff)
+        .fold(0.0, |acc, coeff| mul_add(acc, x, coeff)
+}
+
+
+/// Multiplies `x` by `mul` and adds `add`.
+/// If the target CPU supports fused multiply-add instructions this function will use those.
+fn mul_add(x: f64, mul: f64, add: f64) -> f64 {
+    #[cfg(not(target_feature = "fma"))] 
+    {
+        x * mul + add
+    }
+
+    #[cfg(target_feature = "fma")]
+    {
+        x.mul_add(mul, add)
+    }
 }
