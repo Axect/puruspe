@@ -1,6 +1,6 @@
 use approx::assert_relative_eq;
 use proptest::prelude::*;
-use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma};
+use puruspe::{gamma, gammp, gammq, invgammp, ln_gamma, utils::factorial};
 
 unsafe extern "C" {
     fn tgamma(x: f64) -> f64;
@@ -22,9 +22,11 @@ fn test_gamma() {
     for (x, y) in GAMMA_TABLE {
         let result = gamma(x);
         let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-10;
+        let rel_eps = 1e-14;
         assert_relative_eq!(result, y, epsilon = abs_eps, max_relative = rel_eps);
     }
+
+    assert_eq!(gamma(-4503599627370495.5), 0.0);
 }
 
 #[test]
@@ -64,44 +66,62 @@ fn test_invgammp() {
 #[test]
 fn test_gamma_edge_cases() {
     // Test gamma at special values
+
+    // Can't do anything with NaNs. Just propagate it.
+    assert!(gamma(f64::NAN).is_nan());
+
+    // No limit for Γ(z) as z → -∞
+    assert!(gamma(f64::NEG_INFINITY).is_nan());
+    // Γ(+∞) = +∞
+    assert_eq!(gamma(f64::INFINITY), f64::INFINITY);
+
+    // Γ(±0) = ±∞
+    assert_eq!(gamma(0.0), f64::INFINITY);
+    assert_eq!(gamma(-0.0), -f64::INFINITY);
+
     // Γ(1) = 1
-    assert_relative_eq!(gamma(1.0), 1.0, epsilon = 1e-15);
+    assert_eq!(gamma(1.0), 1.0);
 
     // Γ(2) = 1
-    assert_relative_eq!(gamma(2.0), 1.0, epsilon = 1e-15);
+    assert_eq!(gamma(2.0), 1.0);
 
     // Γ(1/2) = √π
-    let sqrt_pi = std::f64::consts::PI.sqrt();
-    assert_relative_eq!(gamma(0.5), sqrt_pi, epsilon = 1e-10);
+    let sqrt_pi = core::f64::consts::PI.sqrt();
+    assert_relative_eq!(gamma(0.5), sqrt_pi);
 
     // Γ(3/2) = √π/2
-    assert_relative_eq!(gamma(1.5), sqrt_pi / 2.0, epsilon = 1e-10);
+    assert_relative_eq!(gamma(1.5), sqrt_pi / 2.0);
 
     // Γ(5/2) = 3√π/4
-    assert_relative_eq!(gamma(2.5), 3.0 * sqrt_pi / 4.0, epsilon = 1e-10);
+    assert_relative_eq!(gamma(2.5), 3.0 * sqrt_pi / 4.0);
 
-    // Test very small positive values
-    let result_small = gamma(1e-8);
-    assert!(result_small > 1e7 && result_small < 1e9);
+    // Test very small positive values.
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-8%29.
+    assert_relative_eq!(
+        gamma(1e-8),
+        99999999.42278434,
+        max_relative = 1.5 * f64::EPSILON
+    );
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%281e-15%29
+    assert_relative_eq!(
+        gamma(1e-15),
+        999999999999999.4,
+        max_relative = 2.0 * f64::EPSILON
+    );
+    // Computed with WolframAlpha: https://www.wolframalpha.com/input?i=Gamma%5B2.2250738585072014E-308%5D.
+    assert_relative_eq!(gamma(f64::MIN_POSITIVE), 4.4942328371557897e307);
 
-    // Test negative values (using reflection formula)
+    // Test negative values
     // Γ(-0.5) = -2√π
-    assert_relative_eq!(gamma(-0.5), -2.0 * sqrt_pi, epsilon = 1e-10);
+    assert_relative_eq!(gamma(-0.5), -2.0 * sqrt_pi);
 
     // Test near-integer negative values
-    let result_neg = gamma(-1.5);
-    assert!(result_neg > 2.0 && result_neg < 3.0);
-
-    // Test value very close to 0 but positive
-    let result_tiny = gamma(1e-15);
-    assert!(result_tiny > 1e14);
+    assert_relative_eq!(gamma(-1.5), 4.0 * sqrt_pi / 3.0);
 
     // Test integer factorials
-    // Γ(6) = 5! = 120
-    assert_relative_eq!(gamma(6.0), 120.0, epsilon = 1e-13);
-
-    // Γ(11) = 10! = 3628800
-    assert_relative_eq!(gamma(11.0), 3628800.0, epsilon = 1e-9);
+    for i in 1..=172 {
+        assert_eq!(gamma(i as f64), factorial(i - 1));
+    }
 }
 
 #[test]
@@ -324,7 +344,7 @@ proptest! {
         let result = gamma(x);
         let expected = unsafe { tgamma(x) };
         let abs_eps = f64::EPSILON;
-        let rel_eps = 1e-9;
+        let rel_eps = 1e-14;
         assert_relative_eq!(result, expected, epsilon = abs_eps, max_relative = rel_eps);
     }
 
@@ -363,28 +383,30 @@ const LN_GAMMA_TABLE: [(f64, f64); 19] = [
     (1.00000000000000e+10, 2.20258509288811e+11),
 ];
 
-const GAMMA_TABLE: [(f64, f64); 21] = [
-    (-1.50000000000000e+00, 2.36327180120735e+00),
-    (-5.00000000000000e-01, -3.54490770181103e+00),
-    (1.00000000000000e-01, 9.51350769866873e+00),
-    (2.00000000000000e-01, 4.59084371199880e+00),
-    (5.00000000000000e-01, 1.77245385090552e+00),
-    (1.00000000000000e+00, 1.00000000000000e+00),
-    (1.50000000000000e+00, 8.86226925452758e-01),
-    (2.00000000000000e+00, 1.00000000000000e+00),
-    (2.50000000000000e+00, 1.32934038817914e+00),
-    (3.00000000000000e+00, 2.00000000000000e+00),
-    (4.00000000000000e+00, 6.00000000000000e+00),
-    (5.00000000000000e+00, 2.40000000000000e+01),
-    (1.00000000000000e+01, 3.62880000000000e+05),
-    (2.00000000000000e+01, 1.21645100408832e+17),
-    (5.00000000000000e+01, 6.08281864034268e+62),
-    (2.50000000000000e-01, 3.62560990822191e+00),
-    (7.50000000000000e-01, 1.22541670246518e+00),
-    (1.00000000000000e-05, 9.99994227942255e+04),
-    (1.00000000000000e-10, 9.99999999942278e+09),
-    (1.00000000000000e+02, 9.33262154439442e+155),
-    (1.70000000000000e+02, 4.26906800900471e+304),
+const GAMMA_TABLE: [(f64, f64); 23] = [
+    (-1.5000000000000000e+00, 2.3632718012073548e+00),
+    (-5.0000000000000000e-01, -3.5449077018110318e+00),
+    (-1.0050000000000000e+02, -3.3536908198076757e-159),
+    (-4.5035996273704955e+15, -0.0000000000000000e+00),
+    (1.0000000000000001e-01, 9.5135076986687324e+00),
+    (2.0000000000000001e-01, 4.5908437119988035e+00),
+    (5.0000000000000000e-01, 1.7724538509055159e+00),
+    (1.0000000000000000e+00, 1.0000000000000000e+00),
+    (1.5000000000000000e+00, 8.8622692545275794e-01),
+    (2.0000000000000000e+00, 1.0000000000000000e+00),
+    (2.5000000000000000e+00, 1.3293403881791370e+00),
+    (3.0000000000000000e+00, 2.0000000000000000e+00),
+    (4.0000000000000000e+00, 6.0000000000000000e+00),
+    (5.0000000000000000e+00, 2.4000000000000000e+01),
+    (1.0000000000000000e+01, 3.6288000000000000e+05),
+    (2.0000000000000000e+01, 1.2164510040883200e+17),
+    (5.0000000000000000e+01, 6.0828186403426756e+62),
+    (2.5000000000000000e-01, 3.6256099082219082e+00),
+    (7.5000000000000000e-01, 1.2254167024651774e+00),
+    (1.0000000000000001e-05, 9.9999422794225538e+04),
+    (1.0000000000000000e-10, 9.9999999994227848e+09),
+    (1.0000000000000000e+02, 9.3326215443944153e+155),
+    (1.7000000000000000e+02, 4.2690680090047053e+304),
 ];
 
 const GAMMP_TABLE: [(f64, f64, f64); 42] = [
