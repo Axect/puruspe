@@ -108,8 +108,21 @@ pub fn sign(a: f64, b: f64) -> f64 {
 ///
 /// The iterator is assumed to give the coefficients in decreasing order by the degree of the associated x-term.
 ///
-/// For example, to evaluate 4x^2 + 3x + 2, the iterator should give 4.0 then 3.0, and finally 2.0.
-pub fn polynomial<I>(x: f64, coefficients: I) -> f64
+/// # Example
+/// 
+/// Evaluate 4x^2 + 3x + 2 at x = 2:
+/// 
+/// ```
+/// use puruspe::utils::polynomial;
+/// 
+/// let x = 2.0;
+/// assert_eq!(
+///     polynomial(x, [4.0, 3.0, 2.0]),
+///     4.0*x*x + 3.0*x + 2.0,
+/// );
+/// ```
+// Should we change this `pub(crate)` to a `pub` and export it to the user?
+pub(crate) fn polynomial<I>(x: f64, coefficients: I) -> f64
 where
     I: IntoIterator<Item = f64>,
 {
