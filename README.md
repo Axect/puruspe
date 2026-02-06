@@ -20,7 +20,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-puruspe = "0.4.1"
+puruspe = "0.4.3"
 ```
 
 ## Example
@@ -134,3 +134,4 @@ at your option.
 ## Reference
 
 - Press, William H., and William T. Vetterling. *Numerical Recipes.* Cambridge: Cambridge Univ. Press, 2007.
+- Fukushima, Toshio. *Fast computation of Gamma function with quadruple, double and single precision accuracy.* 2019.

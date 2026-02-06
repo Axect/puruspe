@@ -1,3 +1,13 @@
+# Ver 0.4.3 (2025-11-12)
+
+- Implement the Gamma function by Toshio Fukushima with very low relative error
+  - Replace the previous Lanczos + reflection formula based implementation with Fukushima's polynomial approximation algorithm
+  - Reduce relative error from ~1e-10 to ~1e-14 (often within a single ULP)
+  - Add comprehensive special case handling following the ISO C 99 standard (NaN, ±∞, ±0, negative integers)
+  - Add `polynomial` (Horner's method) and `mul_add` utility functions with optional FMA support
+  - Contributors: [**JSorngard**](https://github.com/JSorngard)
+  - Related PR: [#47](https://github.com/Axect/puruspe/pull/47)
+
 # Ver 0.4.2 (2025-10-15)
 
 - Improve numerical stability in `gammp` and `gammq`
