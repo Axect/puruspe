@@ -7,7 +7,7 @@
 //! - `gammq`: Calculates the regularized upper incomplete gamma function.
 //! - `invgammp`: Calculates the inverse of the regularized lower incomplete gamma function.
 
-use crate::utils::factorial;
+use crate::utils::{factorial, polynomial};
 use crate::{EPS, FPMIN, W, Y};
 use core::f64::consts::PI;
 const ASWITCH: usize = 100;
@@ -54,19 +54,115 @@ pub fn ln_gamma(z: f64) -> f64 {
 /// # Returns
 ///
 /// The value of the gamma function at `z`
-pub fn gamma(z: f64) -> f64 {
-    if z >= 1f64 {
-        let z_int = z as usize;
-        if (z - (z_int as f64)).abs() < EPS {
-            return factorial(z_int - 1);
+// Based on the Fortran implementation by Toshio Fukushima: https://www.researchgate.net/publication/336578125_xgamtxt_Fortran_90_test_program_package_of_qgam_dgam_and_sgam_fast_computation_of_Gamma_function_with_quadruple_double_and_single_precision_accuracy_respectively
+pub fn gamma(mut z: f64) -> f64 {
+    /// This input gives an output of [`f64::MAX`].
+    /// Computed with WolframAlpha: https://www.wolframalpha.com/input?i=solve+gamma%28x%29+%3D+%281+%E2%88%92+2%5E%28%E2%88%9253%29%29*2%5E1024+for+x+%3E+1.
+    const MAX_INPUT: f64 = 171.624_376_956_302_7;
+
+    // Special cases.
+    if z > MAX_INPUT {
+        // Output is too large to represent.
+        return f64::INFINITY;
+    } else if z == 0.0 {
+        // The gamma function diverges for an input of zero.
+        // It diverges to positive or negative infinity depending on which direction zero is approached from.
+        // According to entry F.9.5.4 of the ISO C 99 standard (https://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf)
+        // gamma(+/- 0) = +/- infinity.
+        // This is the standard followed by `scipy.special.gamma` as well as the `tgamma` function in `libc`.
+        // Since the Gamma function in (nightly) Rust's standard library currently corresponds to `tgamma`
+        // and thus follows the standard we do the same here.
+        return f64::INFINITY.copysign(z);
+    } else if z.fract() == 0.0 {
+        // z is a non-zero integer less than or equal to 171.
+
+        if z < 0.0 {
+            // The Gamma function also diverges for negative integers.
+            // There is however no clear way for the caller to signal whether the input approached the integer from above or below.
+            // According to the same standard as above the gamma function should return NaN for these inputs.
+            return f64::NAN;
         }
+
+        // 0 < z <= 171, we can just use the factorial.
+        return factorial(z as usize - 1);
+    } else if z == f64::NEG_INFINITY {
+        // There is no well defined limit for z --> -inf.
+        return f64::NAN;
+    } else if z.is_nan() {
+        return f64::NAN;
     }
 
-    if z < 0.5 {
-        PI / ((PI * z).sin() * gamma(1f64 - z))
+    let f = if z > 3.5 {
+        let mut f = 1.0;
+        // Decrement z by 1 until less than 3.5.
+        // This will not be a massively long loop since we checked for too large input above.
+        while z >= 3.5 {
+            z -= 1.0;
+            f *= z;
+        }
+        f
+    } else if z < 2.5 {
+        let mut f = 1.0;
+        // Increment z by 1 until larger than 2.5.
+        while z <= 2.5 {
+            f *= z;
+            if f.is_infinite() {
+                // There is no point in continuing the calculation,
+                // as `f` will remain infinite when multiplied by any finite number.
+                // (except zero, but that can only happen if z is an integer, which we have handled above.)
+                // The final result will thus be `g` / inf,
+                // which underflows to 0 since `g` (defined below) is always finite.
+                // This early return stops the loop from running too long for very large negative inputs.
+                return 0.0;
+            }
+            z += 1.0;
+        }
+        f.recip()
     } else {
-        ln_gamma(z).exp()
-    }
+        1.0
+    };
+
+    let g = if z > 3.0 {
+        polynomial(
+            z - 3.25,
+            [
+                0.000_016_738_398_919_923_317,
+                0.000_095_940_184_093_793_52,
+                0.000_455_766_746_785_133_16,
+                0.002_149_849_572_114_427,
+                0.008_882_603_286_354_344,
+                0.034_350_198_197_417_38,
+                0.115_260_482_799_219_55,
+                0.346_268_553_360_568_7,
+                0.858_853_822_880_646_4,
+                1.776_919_804_709_978_3,
+                2.592_571_165_129_980_8,
+                2.549_256_966_718_529,
+            ],
+        )
+    } else if z < 3.0 {
+        polynomial(
+            z - 2.75,
+            [
+                7.377_657_774_398_435e-7,
+                0.000_048_420_884_483_658_204,
+                0.000_132_763_577_755_739_43,
+                0.000_914_252_863_201_387_9,
+                0.003_228_437_222_320_849,
+                0.014_576_803_693_379_53,
+                0.046_735_160_424_814_17,
+                0.155_955_856_853_634_36,
+                0.384_779_120_148_185_27,
+                0.891_167_948_026_476_6,
+                1.317_087_179_192_858_7,
+                1.608_359_421_985_545_5,
+            ],
+        )
+    } else {
+        2.0
+    };
+
+    g * f
 }
 
 // =============================================================================
