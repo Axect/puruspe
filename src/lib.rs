@@ -16,7 +16,7 @@ pub mod beta;
 pub use beta::{beta, betai, invbetai};
 
 pub mod error;
-pub use error::{erf, erfc, inverf, inverfc};
+pub use error::{erf, erfc, erfcx, inverf, inverfc};
 
 pub mod dawson;
 pub use dawson::dawson;

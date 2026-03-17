@@ -26,7 +26,12 @@ const SWITCH: usize = 3000;
 /// # Returns
 ///
 /// The value of the beta function $B(z,w)$
+///
+/// # Panics
+///
+/// Panics if `z` ≤ 0 or `w` ≤ 0.
 pub fn beta(z: f64, w: f64) -> f64 {
+    assert!(z > 0f64 && w > 0f64, "Bad args in beta: z and w must be positive");
     (ln_gamma(z) + ln_gamma(w) - ln_gamma(z + w)).exp()
 }
 

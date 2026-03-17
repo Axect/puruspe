@@ -20,7 +20,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-puruspe = "0.4.3"
+puruspe = "0.4.4"
 ```
 
 ## Example

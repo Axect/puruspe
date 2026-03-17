@@ -1,3 +1,12 @@
+# Ver 0.4.4 (2026-03-17)
+
+- Update dependencies ([#48](https://github.com/Axect/puruspe/pull/48))
+  - Thanks to [**JSorngard**](https://github.com/JSorngard)
+- Export `erfcx` from public API
+- Add max iteration guard to `gser`/`gcf` to prevent potential infinite loops
+- Add input validation to `beta()`
+- Clarify misleading comment in faddeeva.rs
+
 # Ver 0.4.3 (2025-11-12)
 
 - Implement the Gamma function by Toshio Fukushima with very low relative error

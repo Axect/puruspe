@@ -283,11 +283,12 @@ pub fn gammq(a: f64, x: f64) -> f64 {
 
 /// Series expansion
 fn gser(a: f64, x: f64) -> f64 {
+    const MAXIT: usize = 10_000;
     let gln = ln_gamma(a);
     let mut ap = a;
     let mut del = 1f64 / a;
     let mut sum = 1f64 / a;
-    loop {
+    for _ in 0..MAXIT {
         ap += 1f64;
         del *= x / ap;
         sum += del;
@@ -305,18 +306,28 @@ fn gser(a: f64, x: f64) -> f64 {
             return sum * log_result.exp();
         }
     }
+    // Return best estimate if not fully converged
+    let log_result = -x + a * x.ln() - gln;
+    if log_result > 700.0 {
+        sum * f64::INFINITY
+    } else if log_result < -700.0 {
+        0.0
+    } else {
+        sum * log_result.exp()
+    }
 }
 
 /// Continued Fraction
 fn gcf(a: f64, x: f64) -> f64 {
+    const MAXIT: usize = 10_000;
     let gln = ln_gamma(a);
     let mut b = x + 1f64 - a;
     let mut c = 1f64 / FPMIN;
     let mut d = 1f64 / b;
     let mut h = d;
     let mut an: f64;
-    for i in 1.. {
-        an = -i as f64 * (i as f64 - a);
+    for i in 1..=MAXIT {
+        an = -(i as f64) * (i as f64 - a);
         b += 2f64;
         d = an * d + b;
         if d.abs() < FPMIN {

@@ -243,7 +243,7 @@ pub fn faddeeva(re: f64, im: f64) -> (f64, f64) {
     let t_next = TAYLOR_COEFFS[idx + 1];
     let dz = c64::new(xabs - t, yabs - t_next);
 
-    // Something is wrong here...
+    // Horner's method: loop stops at k=1 (not k=0), matching libcerf
     let nk = TILES[i_tile + 1];
     res = c64::new(
         TAYLOR_COEFFS[(idx as isize + 2 * nk as isize) as usize],
