@@ -10,7 +10,7 @@ use lambert_w::lambert_w as complex_lambert_w;
 /// Branch k of the complex valued Lambert W function computed on 64-bit floats with Halley's method.
 /// The return value is a tuple where the first element is the real part and the second element is the imaginary part.
 ///
-/// The function iterates until the current and previous iterations are within floating point epsilon, or it has iterated a maximum number of times
+/// The function iterates until the current and previous iterations are within floating point epsilon, or it has iterated a maximum number of times.
 ///
 /// This function may be slightly less accurate close to the branch cut at -1/e, as well as close to zero on branches other than k=0.
 ///
