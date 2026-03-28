@@ -131,6 +131,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "lambert_w"
+version = "2.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1809c947da7b51d3b401028c81f6c58c1815c481786a3224a16c84e85a337dd4"
+dependencies = [
+ "num-complex",
+ "num-traits",
+]
+
+[[package]]
 name = "libc"
 version = "0.2.180"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -300,7 +310,7 @@ version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0893368b28f4d37983703c75b345967d4c7184ae3306a6c048c0b711573ae3b"
 dependencies = [
- "lambert_w",
+ "lambert_w 1.2.34",
  "num-complex",
 ]
 
@@ -309,7 +319,7 @@ name = "puruspe"
 version = "0.4.4"
 dependencies = [
  "approx",
- "lambert_w",
+ "lambert_w 2.0.1",
  "num-complex",
  "peroxide",
  "proptest",
