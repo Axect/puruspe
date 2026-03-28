@@ -15,6 +15,8 @@ use lambert_w::lambert_w as complex_lambert_w;
 /// This function may be slightly less accurate close to the branch cut at -1/e, as well as close to zero on branches other than k=0.
 ///
 /// If you know you want the principal or secondary branches where they are real-valued, take a look at the [`lambert_w0`] or [`lambert_wm1`] functions instead. They can be up to two orders of magnitude faster.
+// We inline this function since it's just a trivial wrapper.
+#[inline]
 pub fn lambert_w(k: i32, z_re: f64, z_im: f64) -> (f64, f64) {
     complex_lambert_w(k, z_re, z_im, f64::EPSILON)
 }
