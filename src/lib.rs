@@ -2,7 +2,22 @@
 // Import from other crates
 // =============================================================================
 // Lambert W functions
-pub use lambert_w::{lambert_w, lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
+pub use lambert_w::{lambert_w0, lambert_wm1, sp_lambert_w0, sp_lambert_wm1};
+use lambert_w::lambert_w as complex_lambert_w;
+
+// Re-export the complex Lambert W function as the version of `lambert_w` from version 2 of the crate takes an error tolerance,
+// which we set to floating point epsilon to match the API and performance of version 1.
+/// Branch k of the complex valued Lambert W function computed on 64-bit floats with Halley's method.
+/// The return value is a tuple where the first element is the real part and the second element is the imaginary part.
+///
+/// The function iterates until the current and previous iterations are within floating point epsilon, or it has iterated a maximum number of times
+///
+/// This function may be slightly less accurate close to the branch cut at -1/e, as well as close to zero on branches other than k=0.
+///
+/// If you know you want the principal or secondary branches where they are real-valued, take a look at the [`lambert_w0`] or [`lambert_wm1`] functions instead. They can be up to two orders of magnitude faster.
+pub fn lambert_w(k: i32, z_re: f64, z_im: f64) -> (f64, f64) {
+    complex_lambert_w(k, z_re, z_im, f64::EPSILON)
+}
 
 // =============================================================================
 // Export funcionts
